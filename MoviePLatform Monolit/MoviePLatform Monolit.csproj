@@ -28,14 +28,17 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Engagment\Controllers\" />
-      <Folder Include="Engagment\CQRS\" />
-      <Folder Include="Engagment\DTO\REQUEST\" />
-      <Folder Include="Engagment\DTO\RESPONSE\" />
-      <Folder Include="Engagment\Repositories\" />
-      <Folder Include="Movie\Controllers\" />
-      <Folder Include="Users\Controllers\" />
-      <Folder Include="Validators\Mappings\" />
+      <Folder Include="Modules\Engagement\Domain\Controllers\" />
+      <Folder Include="Modules\Users\Domain\Controllers\" />
+      <Folder Include="Modules\Movies\Aplication\" />
+      <Folder Include="Modules\Movies\Domain\Controllers\" />
+      <Folder Include="Modules\Movies\Infrastructure\" />
+      <Folder Include="Modules\Commerce\Aplication\" />
+      <Folder Include="Modules\Commerce\Domain\" />
+      <Folder Include="Modules\Commerce\Infrastructure\" />
+      <Folder Include="Modules\Users\Aplication\" />
+      <Folder Include="Modules\Users\Infrastructure\" />
+      <Folder Include="Modules\SharedKernel\" />
     </ItemGroup>
 
 </Project>
