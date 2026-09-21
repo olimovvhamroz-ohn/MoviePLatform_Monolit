@@ -6,10 +6,22 @@ namespace MoviePLatform_Monolit.Movie.Repositories;
 public interface IReviewRepository:IBaseRepo<ReviewEntity>
 {
     Task<List<MovieEntity>> GetTopMovie(int page, int pageSize);
+    Task<List<ReviewEntity>> GetMovieReviews(long movieId,int page, int pageSize);
 }
 public class ReviewRepository:BaseRepository<ReviewEntity>,IReviewRepository
 {
     public ReviewRepository (ApplicationDbContext context):base(context){}
+
+    public async Task<List<ReviewEntity>> GetMovieReviews(long movieId, int page, int pageSize)
+    {
+        var skip = (page - 1) * pageSize;
+        var result = await _context.Reviews.
+            Where(x => x.MovieId == movieId)
+            .Skip(skip)
+            .Take(pageSize)
+            .ToListAsync();
+        return result;
+    }
 
     public async Task<List<MovieEntity>> GetTopMovie(int page, int pageSize)
     {

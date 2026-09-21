@@ -1,5 +1,4 @@
-﻿using MoviePLatform_Monolit.Entity;
-using MoviePLatform_Monolit.Movie.Entity.Enums;
+﻿using MoviePLatform_Monolit.Movie.Entity.Enums;
 
 namespace MoviePLatform_Monolit.Movie.DTO.REQUEST;
 

@@ -1,6 +1,4 @@
-﻿using MoviePLatform_Monolit.Entity;
-
-namespace MoviePLatform_Monolit.Movie.DTO.REQUEST;
+﻿namespace MoviePLatform_Monolit.Movie.DTO.REQUEST;
 
 public class CategoryRequest
 {

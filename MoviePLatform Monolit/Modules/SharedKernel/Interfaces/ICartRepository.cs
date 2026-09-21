@@ -1,4 +1,5 @@
 ﻿using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 
 public interface ICartRepository
 {

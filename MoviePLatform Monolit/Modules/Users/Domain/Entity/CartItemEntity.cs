@@ -1,4 +1,4 @@
-﻿using MoviePLatform_Monolit.Movie.Entity;
+﻿using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 
 namespace MoviePLatform_Monolit.Entity;
 

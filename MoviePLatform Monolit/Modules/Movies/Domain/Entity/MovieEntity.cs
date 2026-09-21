@@ -1,4 +1,4 @@
-﻿using MoviePLatform_Monolit.Movie.Entity;
+﻿using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
 using MoviePLatform_Monolit.Movie.Entity.Enums;
 
 namespace MoviePLatform_Monolit.Entity;
@@ -21,4 +21,7 @@ public class MovieEntity : BaseEntity
 
     public ICollection<ActorEntity> Actors { get; set; } = new List<ActorEntity>();
     public ICollection<ReviewEntity> Reviews { get; set; } = new List<ReviewEntity>();
+   
+
+
 }

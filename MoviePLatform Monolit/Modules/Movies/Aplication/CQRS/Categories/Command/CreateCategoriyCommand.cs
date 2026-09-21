@@ -10,11 +10,11 @@ public record CreateCategoryCommand(CategoryRequest Request):IRequest<CategoryRe
 
 public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, CategoryResponse>
 {
-    private readonly ICateoriyRepository _repository;
+    private readonly ICategoriyRepository _repository;
     private readonly IMapper _mapper;
     private readonly ILogger<CreateCategoryCommand> _logger;
 
-    public CreateCategoryCommandHandler(ILogger<CreateCategoryCommand> logger, ICateoriyRepository repository,
+    public CreateCategoryCommandHandler(ILogger<CreateCategoryCommand> logger, ICategoriyRepository repository,
         IMapper mapper)
     {
         _repository = repository;

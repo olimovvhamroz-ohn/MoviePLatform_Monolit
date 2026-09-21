@@ -1,7 +1,6 @@
 ﻿
 
 using MediatR;
-using MoviePLatform_Monolit.Movie.Repositories;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 using UserService.Domain.Extensions;
 
@@ -29,6 +28,7 @@ public class CheckEntitlementQueryHandler : IRequestHandler<CheckEntitlementQuer
             throw new BadRequestException("Invalid userId or movieId");
 
         var user = await _userRepository.GetById(request.UserId);
+        if (user == null) throw new NotFoundException($"User {request.UserId} not found");
 
         var movie = await _movieRepository.GetByIdAsync(request.MovieId, cancellationToken);
         if (movie == null)

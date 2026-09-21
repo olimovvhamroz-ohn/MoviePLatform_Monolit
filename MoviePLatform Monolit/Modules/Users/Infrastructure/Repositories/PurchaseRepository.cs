@@ -28,7 +28,6 @@ public class PurchaseRepository : IPurchaseRepository
     public async Task<List<PurchaseEntity>> GetUserPurchases(int id)
     {
         return await _context.Purchases
-            .Include(x => x.MovieId)
             .Where(x => x.UserId == id)
             .ToListAsync();
     }

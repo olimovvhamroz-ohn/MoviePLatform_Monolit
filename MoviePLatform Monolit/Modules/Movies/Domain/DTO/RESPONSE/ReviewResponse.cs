@@ -1,6 +1,6 @@
 ﻿namespace MoviePLatform_Monolit.Movie.DTO.RESPONSE;
 
-public class ReviewRespose
+public class ReviewResponse
 {
     public long UserId { get; set; }
     public int Rating { get; set; }

@@ -1,7 +1,7 @@
 ﻿
-using EngagementService.Domain.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Entity;
 
 public record GetTrendingQuery(int Days, int Take) : IRequest<List<TrendingMovieResponse>>;
 
@@ -35,5 +35,6 @@ public class GetTrendingQueryHandler : IRequestHandler<GetTrendingQuery, List<Tr
             PosterUrl = movies.TryGetValue(x.MovieId, out var m2) ? m2.PosterUrl : null,
             Views = x.Views
         }).ToList();
+  
     }
 }

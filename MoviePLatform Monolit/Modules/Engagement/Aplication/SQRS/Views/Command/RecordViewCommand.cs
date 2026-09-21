@@ -1,8 +1,6 @@
 ﻿
 
-using EngagementService.Domain.Interfaces;
 using MediatR;
-using MoviePLatform_Monolit.Movie.Repositories;
 using UserService.Domain.Extensions;
 
 public record RecordViewCommand(
@@ -11,7 +9,6 @@ public record RecordViewCommand(
     int PositionSeconds, 
     bool IsCompleted) : IRequest<ViewResponse>;
 
-// Ислоҳ: Типи баргардонанда ViewResponse гузошта шуд
 public class RecordViewCommandHandler : IRequestHandler<RecordViewCommand, ViewResponse>
 {
     private readonly IViewRepository _viewRepository;

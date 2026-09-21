@@ -16,8 +16,13 @@
           "Microsoft.EntityFrameworkCore": "10.0.0",
           "Microsoft.EntityFrameworkCore.Design": "10.0.0",
           "Microsoft.EntityFrameworkCore.Relational": "10.0.0",
+          "Microsoft.Extensions.Caching.StackExchangeRedis": "10.0.12",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.0",
-          "Swashbuckle.AspNetCore": "10.2.3"
+          "Scalar.AspNetCore": "2.17.3",
+          "Serilog": "4.4.1-dev-02447",
+          "Serilog.Extensions.Logging": "10.0.0",
+          "Serilog.Settings.Configuration": "10.0.1",
+          "Serilog.Sinks.File": "8.0.0-nblumhardt-02322"
         },
         "runtime": {
           "MoviePLatform Monolit.dll": {}
@@ -94,7 +99,7 @@
       },
       "Microsoft.AspNetCore.OpenApi/10.0.1": {
         "dependencies": {
-          "Microsoft.OpenApi": "2.7.5"
+          "Microsoft.OpenApi": "2.0.0"
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.OpenApi.dll": {
@@ -497,6 +502,17 @@
           }
         }
       },
+      "Microsoft.Extensions.Caching.StackExchangeRedis/10.0.12": {
+        "dependencies": {
+          "StackExchange.Redis": "2.7.27"
+        },
+        "runtime": {
+          "lib/net10.0/Microsoft.Extensions.Caching.StackExchangeRedis.dll": {
+            "assemblyVersion": "10.0.12.0",
+            "fileVersion": "10.0.1226.42308"
+          }
+        }
+      },
       "Microsoft.Extensions.DependencyModel/10.0.0": {
         "runtime": {
           "lib/net10.0/Microsoft.Extensions.DependencyModel.dll": {
@@ -578,11 +594,11 @@
           }
         }
       },
-      "Microsoft.OpenApi/2.7.5": {
+      "Microsoft.OpenApi/2.0.0": {
         "runtime": {
           "lib/net8.0/Microsoft.OpenApi.dll": {
-            "assemblyVersion": "2.7.5.0",
-            "fileVersion": "2.7.5.0"
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.0.0.0"
           }
         }
       },
@@ -626,40 +642,72 @@
           }
         }
       },
-      "Swashbuckle.AspNetCore/10.2.3": {
-        "dependencies": {
-          "Swashbuckle.AspNetCore.Swagger": "10.2.3",
-          "Swashbuckle.AspNetCore.SwaggerGen": "10.2.3",
-          "Swashbuckle.AspNetCore.SwaggerUI": "10.2.3"
-        }
-      },
-      "Swashbuckle.AspNetCore.Swagger/10.2.3": {
-        "dependencies": {
-          "Microsoft.OpenApi": "2.7.5"
-        },
+      "Pipelines.Sockets.Unofficial/2.2.8": {
         "runtime": {
-          "lib/net10.0/Swashbuckle.AspNetCore.Swagger.dll": {
-            "assemblyVersion": "10.2.3.0",
-            "fileVersion": "10.2.3.2721"
+          "lib/net5.0/Pipelines.Sockets.Unofficial.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "2.2.8.1080"
           }
         }
       },
-      "Swashbuckle.AspNetCore.SwaggerGen/10.2.3": {
-        "dependencies": {
-          "Swashbuckle.AspNetCore.Swagger": "10.2.3"
-        },
+      "Scalar.AspNetCore/2.17.3": {
         "runtime": {
-          "lib/net10.0/Swashbuckle.AspNetCore.SwaggerGen.dll": {
-            "assemblyVersion": "10.2.3.0",
-            "fileVersion": "10.2.3.2721"
+          "lib/net10.0/Scalar.AspNetCore.dll": {
+            "assemblyVersion": "2.17.3.0",
+            "fileVersion": "2.17.3.0"
           }
         }
       },
-      "Swashbuckle.AspNetCore.SwaggerUI/10.2.3": {
+      "Serilog/4.4.1-dev-02447": {
         "runtime": {
-          "lib/net10.0/Swashbuckle.AspNetCore.SwaggerUI.dll": {
-            "assemblyVersion": "10.2.3.0",
-            "fileVersion": "10.2.3.2721"
+          "lib/net10.0/Serilog.dll": {
+            "assemblyVersion": "4.4.0.0",
+            "fileVersion": "4.4.0.0"
+          }
+        }
+      },
+      "Serilog.Extensions.Logging/10.0.0": {
+        "dependencies": {
+          "Serilog": "4.4.1-dev-02447"
+        },
+        "runtime": {
+          "lib/net10.0/Serilog.Extensions.Logging.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.0.0.0"
+          }
+        }
+      },
+      "Serilog.Settings.Configuration/10.0.1": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyModel": "10.0.0",
+          "Serilog": "4.4.1-dev-02447"
+        },
+        "runtime": {
+          "lib/net10.0/Serilog.Settings.Configuration.dll": {
+            "assemblyVersion": "10.0.1.0",
+            "fileVersion": "10.0.1.0"
+          }
+        }
+      },
+      "Serilog.Sinks.File/8.0.0-nblumhardt-02322": {
+        "dependencies": {
+          "Serilog": "4.4.1-dev-02447"
+        },
+        "runtime": {
+          "lib/net9.0/Serilog.Sinks.File.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.0.0"
+          }
+        }
+      },
+      "StackExchange.Redis/2.7.27": {
+        "dependencies": {
+          "Pipelines.Sockets.Unofficial": "2.2.8"
+        },
+        "runtime": {
+          "lib/net6.0/StackExchange.Redis.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.7.27.49176"
           }
         }
       },
@@ -978,6 +1026,13 @@
       "path": "microsoft.entityframeworkcore.relational/10.0.0",
       "hashPath": "microsoft.entityframeworkcore.relational.10.0.0.nupkg.sha512"
     },
+    "Microsoft.Extensions.Caching.StackExchangeRedis/10.0.12": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-iQoMgbt02dl49cv7GLNeh771xstAbg9xKpuWosYmnOU0CJ9ni10F3+1IrgvbjyaV0JGulauGRrNir50QKWonKQ==",
+      "path": "microsoft.extensions.caching.stackexchangeredis/10.0.12",
+      "hashPath": "microsoft.extensions.caching.stackexchangeredis.10.0.12.nupkg.sha512"
+    },
     "Microsoft.Extensions.DependencyModel/10.0.0": {
       "type": "package",
       "serviceable": true,
@@ -1034,12 +1089,12 @@
       "path": "microsoft.net.stringtools/17.14.28",
       "hashPath": "microsoft.net.stringtools.17.14.28.nupkg.sha512"
     },
-    "Microsoft.OpenApi/2.7.5": {
+    "Microsoft.OpenApi/2.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-0FA67RSnRM4tcBKqiqVu/HPdZ9+QOKbmeRjxRUGTCjPU4C0bmUhd97Dso7Yild5P7nOV6GxJ2xrK0Kv/O9xp0w==",
-      "path": "microsoft.openapi/2.7.5",
-      "hashPath": "microsoft.openapi.2.7.5.nupkg.sha512"
+      "sha512": "sha512-GGYLfzV/G/ct80OZ45JxnWP7NvMX1BCugn/lX7TH5o0lcVaviavsLMTxmFV2AybXWjbi3h6FF1vgZiTK6PXndw==",
+      "path": "microsoft.openapi/2.0.0",
+      "hashPath": "microsoft.openapi.2.0.0.nupkg.sha512"
     },
     "Mono.TextTemplating/3.0.0": {
       "type": "package",
@@ -1069,33 +1124,54 @@
       "path": "npgsql.entityframeworkcore.postgresql/10.0.0",
       "hashPath": "npgsql.entityframeworkcore.postgresql.10.0.0.nupkg.sha512"
     },
-    "Swashbuckle.AspNetCore/10.2.3": {
+    "Pipelines.Sockets.Unofficial/2.2.8": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-8KNh1RWvofdU6DVLyBs4Z/OpUMnmf8oNvJQc0QxpwySRbi42bwLfdVMMrXZWANg5U5KQGQq1xW6r/hlcqw99tQ==",
-      "path": "swashbuckle.aspnetcore/10.2.3",
-      "hashPath": "swashbuckle.aspnetcore.10.2.3.nupkg.sha512"
+      "sha512": "sha512-zG2FApP5zxSx6OcdJQLbZDk2AVlN2BNQD6MorwIfV6gVj0RRxWPEp2LXAxqDGZqeNV1Zp0BNPcNaey/GXmTdvQ==",
+      "path": "pipelines.sockets.unofficial/2.2.8",
+      "hashPath": "pipelines.sockets.unofficial.2.2.8.nupkg.sha512"
     },
-    "Swashbuckle.AspNetCore.Swagger/10.2.3": {
+    "Scalar.AspNetCore/2.17.3": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-1jUUs3WQnrS0FUtaZPLSy1yYMEwS1zlvDmvQ2/eldPHUANX0LJSLVZecCMgSMdeGiRqeaRrIXLtSz++TCiTMww==",
-      "path": "swashbuckle.aspnetcore.swagger/10.2.3",
-      "hashPath": "swashbuckle.aspnetcore.swagger.10.2.3.nupkg.sha512"
+      "sha512": "sha512-TwAf1zy/MH2famozcDqk9+/jD37VAbonRXfnjAso0Q2YKeWtA0kH59WxhuevvAxWDL3jUU3TDpNmUFS2gF9bHw==",
+      "path": "scalar.aspnetcore/2.17.3",
+      "hashPath": "scalar.aspnetcore.2.17.3.nupkg.sha512"
     },
-    "Swashbuckle.AspNetCore.SwaggerGen/10.2.3": {
+    "Serilog/4.4.1-dev-02447": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-y7t4coDRAeFYChmvlMRiH2OjbiRrm9AVIDgt17fQfs3x9PVAI5PiwWYOhg+4F13R4Q36WDc9lqfoOnNa3tNbGg==",
-      "path": "swashbuckle.aspnetcore.swaggergen/10.2.3",
-      "hashPath": "swashbuckle.aspnetcore.swaggergen.10.2.3.nupkg.sha512"
+      "sha512": "sha512-STlr1uMeRcm3Z3jDMn/iOQZnH3Fk+inwPUCcxk2Ocd4ulNER4PWB0yU8qkK9CncHgzpt3nq0W8N/RQyGfMyFUg==",
+      "path": "serilog/4.4.1-dev-02447",
+      "hashPath": "serilog.4.4.1-dev-02447.nupkg.sha512"
     },
-    "Swashbuckle.AspNetCore.SwaggerUI/10.2.3": {
+    "Serilog.Extensions.Logging/10.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-nthWONRs/FJ4yyG206g1cC52WEG8EqrjuMWjGdR+5XG7lbjFto6NqcI9EMICgVFom/UivIjUVwI76ZHbHwTPfQ==",
-      "path": "swashbuckle.aspnetcore.swaggerui/10.2.3",
-      "hashPath": "swashbuckle.aspnetcore.swaggerui.10.2.3.nupkg.sha512"
+      "sha512": "sha512-vx0kABKl2dWbBhhqAfTOk53/i8aV/5VaT3a6il9gn72Wqs2pM7EK2OB6No6xdqK2IaY6Zf9gdjLuK9BVa2rT+Q==",
+      "path": "serilog.extensions.logging/10.0.0",
+      "hashPath": "serilog.extensions.logging.10.0.0.nupkg.sha512"
+    },
+    "Serilog.Settings.Configuration/10.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ayFE7h66mqMqzwfPrzDCMbWU27FdNC2bkCG+jnkeHFZTBRh+yWdr4aa/2WuX7c8RmqxGPMW2UqoJ3fw9hK3QhA==",
+      "path": "serilog.settings.configuration/10.0.1",
+      "hashPath": "serilog.settings.configuration.10.0.1.nupkg.sha512"
+    },
+    "Serilog.Sinks.File/8.0.0-nblumhardt-02322": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-EA6O7RwYBl52t/SDul6itYPla3wSSm6F+XLGtSiHiqjYlmWH6YGhXL92/FHWhzQglRmXhbgFDK0m9RFKW110/w==",
+      "path": "serilog.sinks.file/8.0.0-nblumhardt-02322",
+      "hashPath": "serilog.sinks.file.8.0.0-nblumhardt-02322.nupkg.sha512"
+    },
+    "StackExchange.Redis/2.7.27": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Uqc2OQHglqj9/FfGQ6RkKFkZfHySfZlfmbCl+hc+u2I/IqunfelQ7QJi7ZhvAJxUtu80pildVX6NPLdDaUffOw==",
+      "path": "stackexchange.redis/2.7.27",
+      "hashPath": "stackexchange.redis.2.7.27.nupkg.sha512"
     },
     "System.CodeDom/9.0.0": {
       "type": "package",

@@ -1,6 +1,5 @@
 ﻿
 
-using EngagementService.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using UserService.Domain.Extensions;
 

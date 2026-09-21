@@ -1,30 +1,32 @@
-﻿
-
-using MediatR;
+﻿using MediatR;
+using AutoMapper;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
+using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
-public record UpdateFavoriteGenresCommand(long UserId, UpdateFavoriteGenresRequest Dto) : IRequest<Unit>;
+public record UpdateFavoriteGenresCommand(long UserId, UpdateFavoriteGenresRequest Dto) : IRequest<UserResponse>;
 
-public class UpdateFavoriteGenresCommandHandler : IRequestHandler<UpdateFavoriteGenresCommand, Unit>
+public class UpdateFavoriteGenresCommandHandler : IRequestHandler<UpdateFavoriteGenresCommand, UserResponse>
 {
     private readonly IUserRepository _repository;
+    private readonly IMapper _mapper;
     private readonly ILogger<UpdateFavoriteGenresCommandHandler> _logger;
 
-    public UpdateFavoriteGenresCommandHandler(IUserRepository repository, ILogger<UpdateFavoriteGenresCommandHandler> logger)
+    public UpdateFavoriteGenresCommandHandler(IUserRepository repository, IMapper mapper, ILogger<UpdateFavoriteGenresCommandHandler> logger)
     {
         _repository = repository;
+        _mapper = mapper;
         _logger = logger;
-        
     }
 
-    public async Task<Unit> Handle(UpdateFavoriteGenresCommand request, CancellationToken cancellationToken)
+    public async Task<UserResponse> Handle(UpdateFavoriteGenresCommand request, CancellationToken cancellationToken)
     {
-        await _repository.GetById(request.UserId); // кинет NotFoundException агар набошад
-        var user= 
-         _repository.SetFavoriteCategoriesAsync(request.UserId, request.Dto.CategoryIds);
+        var user = await _repository.GetById(request.UserId); // бросит NotFoundException, если нет
+
+        await _repository.SetFavoriteCategoriesAsync(request.UserId, request.Dto.CategoryIds);
 
         _logger.LogInformation("User {UserId} updated favorite genres: {Ids}", request.UserId, string.Join(",", request.Dto.CategoryIds));
 
-        return Unit.Value;
+        var updated = await _repository.GetById(request.UserId);
+        return _mapper.Map<UserResponse>(updated);
     }
 }

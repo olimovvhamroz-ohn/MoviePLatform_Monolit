@@ -3,17 +3,17 @@ using MoviePLatform_Monolit.Entity;
 
 namespace MoviePLatform_Monolit.Movie.Repositories;
 
-public interface ICateoriyRepository : IBaseRepo<CategoryEntity>
+public interface ICategoriyRepository : IBaseRepo<CategoryEntity>
 {
     Task<bool> ExistsByNameAsync(string title, CancellationToken cancellationToken = default);
     
 }
 
-public class CateoryRepository : BaseRepository<CategoryEntity>, ICateoriyRepository
+public class CategoryRepository : BaseRepository<CategoryEntity>, ICategoriyRepository
 {
     
     
-    public CateoryRepository(ApplicationDbContext context) : base(context) { }
+    public CategoryRepository(ApplicationDbContext context) : base(context) { }
 
     public async Task<bool> ExistsByNameAsync(string title, CancellationToken cancellationToken = default)
     {

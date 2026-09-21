@@ -7,8 +7,8 @@ using MoviePLatform_Monolit.Movie.Repositories;
 
 namespace MoviePLatform_Monolit.Movie.CQRS.Reviews.Command;
 
-public record AddReviewCommand( long UserId,long MovieId,ReviewRespose Dto) : IRequest<ReviewRespose>;
-public class AddReviewCommandHandler : IRequestHandler<AddReviewCommand, ReviewRespose>
+public record AddReviewCommand( long UserId,long MovieId,ReviewResponse Dto) : IRequest<ReviewResponse>;
+public class AddReviewCommandHandler : IRequestHandler<AddReviewCommand, ReviewResponse>
 {
     private readonly IMapper _mapper;
     private readonly IReviewRepository _reviewRepository;
@@ -27,7 +27,7 @@ public class AddReviewCommandHandler : IRequestHandler<AddReviewCommand, ReviewR
         _userRepository = userRepository;
     }
 
-    public async Task<ReviewRespose> Handle(AddReviewCommand request, CancellationToken cancellationToken)
+    public async Task<ReviewResponse> Handle(AddReviewCommand request, CancellationToken cancellationToken)
     {
        
         await _movieRepository.GetByIdAsync(request.MovieId, cancellationToken);
@@ -42,6 +42,6 @@ public class AddReviewCommandHandler : IRequestHandler<AddReviewCommand, ReviewR
         var created = await _reviewRepository.CreateAsync(entity, cancellationToken);
 
    
-        return _mapper.Map<ReviewRespose>(created);
+        return _mapper.Map<ReviewResponse>(created);
     }
 }

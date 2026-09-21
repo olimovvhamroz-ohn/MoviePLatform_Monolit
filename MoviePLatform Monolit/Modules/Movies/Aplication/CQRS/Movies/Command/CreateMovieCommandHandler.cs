@@ -3,7 +3,6 @@ using MediatR;
 using MoviePLatform_Monolit.Entity;
 using MoviePLatform_Monolit.Movie.DTO.REQUEST;
 using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
-using MoviePLatform_Monolit.Movie.Repositories;
 
 namespace MoviePLatform_Monolit.Movie.CQRS.Movies.Command;
 

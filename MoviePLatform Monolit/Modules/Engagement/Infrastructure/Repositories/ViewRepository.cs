@@ -1,6 +1,6 @@
 ﻿
-using EngagementService.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 public class ViewRepository : IViewRepository
 {
@@ -62,19 +62,40 @@ public class ViewRepository : IViewRepository
             .OrderByDescending(x => x.LastWatchedAt)
             .ToListAsync();
     }
+    
+   
+   public async Task<List<(long MovieId, int Views)>> GetTrending(int days, int take)
+   {
+       var since = DateTime.UtcNow.AddDays(-days);
 
-    public async Task<List<(long MovieId, int Views)>> GetTrending(int days, int take)
-    {
-        var since = DateTime.UtcNow.AddDays(-days);
+       var result = await _context.Views
+           .Where(x => x.LastWatchedAt >= since)
+           .GroupBy(x => x.MovieId)
+           .Select(g => new
+           {
+               MovieId = g.Key,
+               Views = g.Count()
+           })
+           .OrderByDescending(x => x.Views)
+           .Take(take)
+           .ToListAsync();
 
-        var result = await _context.Views
-            .Where(x => x.LastWatchedAt >= since)
-            .GroupBy(x => x.MovieId)
-            .Select(g => new { MovieId = g.Key, Views = g.Count() })
-            .OrderByDescending(x => x.Views)
-            .Take(take)
-            .ToListAsync();
-
-        return result.Select(x => (x.MovieId, x.Views)).ToList();
-    }
+       return result
+           .Select(x => (x.MovieId, x.Views))
+           .ToList();
+   }
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
 }

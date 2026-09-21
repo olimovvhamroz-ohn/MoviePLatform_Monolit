@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using MoviePLatform_Monolit.Entity;
 
 namespace MoviePLatform_Monolit.Users.Configuration;
 
@@ -22,6 +21,8 @@ public class UserConfiguration:IEntityTypeConfiguration<UserEntity>
 
         builder.Property(u => u.PasswordHash)
             .IsRequired();
+        builder.Property(x => x.DateOfBirth)
+            .HasColumnType("date");
         
     }
     

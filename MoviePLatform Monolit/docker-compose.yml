@@ -5,7 +5,7 @@ services:
     image: postgres:16-alpine
     container_name: movieplatform_db
     environment:
-      POSTGRES_DB: MoviePlatformDb
+      POSTGRES_DB: movieplatform
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 10110
     ports:

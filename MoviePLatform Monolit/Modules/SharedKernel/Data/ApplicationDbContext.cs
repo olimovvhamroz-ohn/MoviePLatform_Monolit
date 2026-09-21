@@ -2,6 +2,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
+using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 
 public class ApplicationDbContext : DbContext
 {

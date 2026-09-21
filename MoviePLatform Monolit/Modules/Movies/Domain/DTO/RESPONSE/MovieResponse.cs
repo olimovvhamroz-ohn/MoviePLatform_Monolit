@@ -1,10 +1,12 @@
 ﻿using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
 using MoviePLatform_Monolit.Movie.Entity.Enums;
 
 namespace MoviePLatform_Monolit.Movie.DTO.RESPONSE;
 
 public class MovieResponse
 {
+    public long Id  { get; set; }
     public string Title { get; set; } = string.Empty;
     public int Year { get; set; }
     public decimal Price { get; set; }

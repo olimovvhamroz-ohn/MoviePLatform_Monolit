@@ -3,12 +3,11 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using MoviePLatform_Monolit.Entity;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 using UserService.Domain.Extensions;
 
-public record CreateUserCommand(UserRequest Dto) : IRequest<UserResponse>;
+public record CreateUserCommand(UserRequest reques) : IRequest<UserResponse>;
 
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserResponse>
 {
@@ -31,11 +30,11 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserR
 
     public async Task<UserResponse> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var dto = request.Dto;
+        var dto = request.reques;
 
         _logger.LogInformation("Creating user with email: {Email}", dto.Email);
 
-        var exists = await _repository.GetByemail(dto.Email);
+        var exists = await _repository.GetByEmail(dto.Email);
         if (exists != null)
             throw new BadRequestException("User already exists");
 

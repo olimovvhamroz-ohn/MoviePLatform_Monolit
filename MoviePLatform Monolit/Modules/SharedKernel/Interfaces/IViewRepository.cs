@@ -1,6 +1,4 @@
-﻿using EngagementService.Domain.Entities;
-
-namespace EngagementService.Domain.Interfaces;
+﻿
 
 public interface IViewRepository
 {

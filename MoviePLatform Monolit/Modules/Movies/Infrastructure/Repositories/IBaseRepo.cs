@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MoviePLatform_Monolit.Movie.Entity;
 
 namespace MoviePLatform_Monolit.Movie.Repositories;
 

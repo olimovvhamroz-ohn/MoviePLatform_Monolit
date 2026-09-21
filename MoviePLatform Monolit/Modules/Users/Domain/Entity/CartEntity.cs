@@ -1,6 +1,6 @@
-﻿using MoviePLatform_Monolit.Movie.Entity;
+﻿using MoviePLatform_Monolit.Entity;
 
-namespace MoviePLatform_Monolit.Entity;
+namespace MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 
 public class CartEntity:BaseEntity
 {

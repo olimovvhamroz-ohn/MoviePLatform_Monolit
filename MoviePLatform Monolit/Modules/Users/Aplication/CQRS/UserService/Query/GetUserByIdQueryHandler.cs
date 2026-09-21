@@ -25,12 +25,6 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserRes
 
         var user = await _repository.GetById(request.Id);
 
-        if (user == null)
-        {
-            _logger.LogWarning("User not found: {Id}", request.Id);
-            return null!;
-        }
-
         _logger.LogInformation("User found: {Email}", user.Email);
 
         return _mapper.Map<UserResponse>(user);

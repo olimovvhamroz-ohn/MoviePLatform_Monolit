@@ -1,7 +1,4 @@
-﻿
-
-using EngagementService.Domain.Interfaces;
-using MediatR;
+﻿using MediatR;
 using UserService.Domain.Extensions;
 
 public record GetHistoryQuery(long UserId, int Page, int PageSize) : IRequest<List<ViewResponse>>;

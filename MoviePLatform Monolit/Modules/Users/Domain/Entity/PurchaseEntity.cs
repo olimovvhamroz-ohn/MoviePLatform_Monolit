@@ -1,6 +1,4 @@
-﻿using MoviePLatform_Monolit.Movie.Entity;
-
-namespace MoviePLatform_Monolit.Entity;
+﻿namespace MoviePLatform_Monolit.Entity;
 
 public class PurchaseEntity : BaseEntity
 {

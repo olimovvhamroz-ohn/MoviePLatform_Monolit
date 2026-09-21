@@ -2,7 +2,6 @@
 
 using AutoMapper;
 using MediatR;
-using MoviePLatform_Monolit.Movie.Repositories;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 using UserService.Domain.Extensions;
 
@@ -11,7 +10,7 @@ public record AddMovieToCart(int userId, int movieId) : IRequest<CartResponse>;
 public class AddMovieToCartCommand : IRequestHandler<AddMovieToCart, CartResponse>
 {
     private readonly ICartRepository _cartRepository;
-    private readonly IMovieRepository _movie; // ✅ вместо AppDbcontext
+    private readonly IMovieRepository _movie; 
     private readonly IMapper _mapper;
     private readonly ILogger<AddMovieToCartCommand> _logger;
 
@@ -47,6 +46,8 @@ public class AddMovieToCartCommand : IRequestHandler<AddMovieToCart, CartRespons
 
         await _cartRepository.AddMovieToCart(request.userId, request.movieId);
         var result = await _cartRepository.GetActiveCartByUserId(request.userId);
+        if (result == null)
+            throw new Exception("Failed to retrieve cart after adding movie");
         return _mapper.Map<CartResponse>(result);
     }
 }

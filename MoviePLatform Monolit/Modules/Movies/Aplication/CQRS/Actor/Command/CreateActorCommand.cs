@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using MediatR;
 using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
 using MoviePLatform_Monolit.Movie.DTO.REQUEST;
 using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
 using MoviePLatform_Monolit.Movie.Repositories;
+using UserService.Domain.Extensions;
 
 namespace MoviePLatform_Monolit.Movie.CQRS.Actor.Command;
 
@@ -25,7 +27,7 @@ public class CreateActorCommand:IRequestHandler<CreateCommand,ActorResponse>
     {
         _logger.LogInformation("Creating Actor {Name}", request.ActorRequest.Name);     
         var dublicate=await _actorRepository.FindByName(request.ActorRequest.Name);
-        if(dublicate !=null)throw new Exception("BadRequestExceptionActor already exists");
+        if(dublicate !=null)throw new BadRequestException("Actor already exists");
         var model=_mapper.Map<ActorEntity>(request.ActorRequest);
         var res=await _actorRepository.CreateAsync(model,cancellationToken);
         return _mapper.Map<ActorResponse>(res);

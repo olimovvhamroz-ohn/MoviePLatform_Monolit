@@ -1,12 +1,11 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
-using MoviePLatform_Monolit.Entity;
 
 public class UserRepository : BaseRepository<UserEntity>, IUserRepository
 {
     public UserRepository(ApplicationDbContext context) : base(context) { }
 
-    public async Task<UserEntity> GetByemail(string email)
+    public async Task<UserEntity> GetByEmail(string email)
     {
         return await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
     }

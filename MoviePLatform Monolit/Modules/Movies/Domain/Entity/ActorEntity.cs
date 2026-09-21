@@ -1,6 +1,6 @@
-﻿using MoviePLatform_Monolit.Movie.Entity;
+﻿using MoviePLatform_Monolit.Entity;
 
-namespace MoviePLatform_Monolit.Entity;
+namespace MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
 
 public class ActorEntity:BaseEntity
 {

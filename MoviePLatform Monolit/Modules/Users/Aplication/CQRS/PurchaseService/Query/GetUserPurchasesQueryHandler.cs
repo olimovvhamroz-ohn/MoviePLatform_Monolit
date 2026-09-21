@@ -16,17 +16,22 @@ public class GetUserPurchasesQueryHandler : IRequestHandler<GetUserPurchasesQuer
         _repository = repository;
         _mapper = mapper;
     }
-
-    public async Task<List<PurchaseResponse>> Handle(GetUserPurchasesQuery request, CancellationToken cancellationToken)
+    public async Task<List<PurchaseResponse>> Handle(
+        GetUserPurchasesQuery request,
+        CancellationToken cancellationToken)
     {
         var data = await _repository.GetUserPurchases(request.UserId);
+
+        
         var result = _mapper.Map<List<PurchaseResponse>>(data);
 
-        for (var i = 0; i < result.Count; i++)
+        for (int i = 0; i < data.Count; i++)
         {
-            var entity = data[i];
-            result[i].RentalStartDeadline = RentalPolicy.GetStartDeadline(entity.PurchasedAt);
-            result[i].ExpiresAt = RentalPolicy.GetExpiresAt(entity.FirstWatchedAt);
+            result[i].RentalStartDeadline =
+                RentalPolicy.GetStartDeadline(data[i].PurchasedAt);
+
+            result[i].ExpiresAt =
+                RentalPolicy.GetExpiresAt(data[i].FirstWatchedAt);
         }
 
         return result;

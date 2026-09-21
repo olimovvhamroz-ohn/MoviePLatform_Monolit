@@ -8,13 +8,13 @@ public record GetAllCategories: IRequest<List<CategoryResponse>>;
 
 public class GetAllCatecoriyQuery : IRequestHandler<GetAllCategories, List<CategoryResponse>>
 {
-    private readonly ICateoriyRepository _repository;
+    private readonly ICategoriyRepository _repository;
     private readonly IMapper _mapper;
     private readonly ILogger<GetAllCatecoriyQuery> _logger;
 
     public GetAllCatecoriyQuery(
         ILogger<GetAllCatecoriyQuery> logger, 
-        ICateoriyRepository repository, 
+        ICategoriyRepository repository, 
         IMapper mapper)
     {
         _repository = repository;

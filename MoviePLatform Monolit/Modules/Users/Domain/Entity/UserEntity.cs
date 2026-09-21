@@ -1,7 +1,5 @@
 ﻿using MoviePLatform_Monolit.Enums;
-using MoviePLatform_Monolit.Movie.Entity;
 
-namespace MoviePLatform_Monolit.Entity;
 
 public class UserEntity:BaseEntity
 {

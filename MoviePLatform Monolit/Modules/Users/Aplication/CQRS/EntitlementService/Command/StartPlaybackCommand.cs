@@ -1,7 +1,6 @@
 ﻿
 
 using MediatR;
-using MoviePLatform_Monolit.Movie.Repositories;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 using UserService.Domain.Extensions;
 

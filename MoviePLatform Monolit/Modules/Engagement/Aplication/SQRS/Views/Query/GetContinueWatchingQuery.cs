@@ -1,6 +1,5 @@
 ﻿
 
-using EngagementService.Domain.Interfaces;
 using MediatR;
 
 public record GetContinueWatchingQuery(long UserId) : IRequest<List<ViewResponse>>;

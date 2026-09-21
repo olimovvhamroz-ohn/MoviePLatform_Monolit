@@ -2,7 +2,6 @@
 using MoviePLatform_Monolit.Entity;
 using MoviePLatform_Monolit.Movie.Entity.Enums;
 
-namespace MoviePLatform_Monolit.Movie.Repositories;
 
 public interface IMovieRepository
 {
@@ -129,6 +128,7 @@ public class MovieRepository : IMovieRepository
 
     public async Task<MovieEntity> UpdateAsync(long id, MovieEntity input, CancellationToken cancellationToken = default)
     {
+        
         if (input == null) 
             throw new ArgumentNullException(nameof(input));
 

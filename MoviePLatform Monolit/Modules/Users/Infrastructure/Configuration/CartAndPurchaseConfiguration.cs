@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 
 public class CartConfiguration : IEntityTypeConfiguration<CartEntity>
 {

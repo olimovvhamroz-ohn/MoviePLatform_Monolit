@@ -1,5 +1,6 @@
 ﻿
 using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Users.Domain.Enums;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
 public static class EntitlementEvaluator

@@ -2,6 +2,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 using UserService.Domain.Extensions;
 
 public class CartRepository : ICartRepository
@@ -55,8 +56,11 @@ public class CartRepository : ICartRepository
         var cart = await _context.Carts
             .Include(x => x.CartItems)
             .FirstOrDefaultAsync(x => x.UserId == userId && !x.IsCheckedOut);
-
+        if (cart == null)
+            throw new NotFoundException("Active cart not found");
         var cartItem = cart.CartItems.FirstOrDefault(x => x.MovieId == movieId);
+        if (cartItem == null)
+            throw new NotFoundException("Movie not found in cart");
         cart.CartItems.Remove(cartItem);
         await _context.SaveChangesAsync();
     }
