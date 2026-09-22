@@ -20,13 +20,13 @@ public class UpdateFavoriteGenresCommandHandler : IRequestHandler<UpdateFavorite
 
     public async Task<UserResponse> Handle(UpdateFavoriteGenresCommand request, CancellationToken cancellationToken)
     {
-        var user = await _repository.GetById(request.UserId); // бросит NotFoundException, если нет
+        var user = await _repository.GetByIdAsync(request.UserId,cancellationToken); // бросит NotFoundException, если нет
 
         await _repository.SetFavoriteCategoriesAsync(request.UserId, request.Dto.CategoryIds);
 
         _logger.LogInformation("User {UserId} updated favorite genres: {Ids}", request.UserId, string.Join(",", request.Dto.CategoryIds));
 
-        var updated = await _repository.GetById(request.UserId);
+        var updated = await _repository.GetByIdAsync(request.UserId,cancellationToken);
         return _mapper.Map<UserResponse>(updated);
     }
 }

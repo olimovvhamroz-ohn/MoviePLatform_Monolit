@@ -2,6 +2,7 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
+using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
 using MoviePLatform_Monolit.Movie.Repositories;
 using UserService.Domain.Extensions;

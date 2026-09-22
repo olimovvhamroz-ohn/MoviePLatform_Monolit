@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using MoviePLatform_Monolit.Modules.Movies.Aplication.CQRS.Review.Command;
 using MoviePLatform_Monolit.Modules.Movies.Aplication.CQRS.Review.Query;
-using MoviePLatform_Monolit.Movie.CQRS.Reviews.Command;
 using MoviePLatform_Monolit.Movie.DTO.REQUEST;
 using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
 
@@ -74,10 +74,9 @@ public class ReviewsController : ControllerBase
         if (!long.TryParse(userId, out var id))
             return Unauthorized();
 
-        // TODO: нужна отдельная UpdateReviewCommand с проверкой автора/reviewId
-        var command = new AddReviewCommand(id, request.MovieId, new ReviewResponse
+        var command = new UpdateReviewCommand(reviewId,id, new ReviewRequest()
         {
-            UserId = id,
+            MovieId = request.MovieId,
             Rating = request.Rating,
             Comment = request.Comment
         });
@@ -90,7 +89,11 @@ public class ReviewsController : ControllerBase
     [HttpDelete("{reviewId}")]
     public async Task<ActionResult<ApiResponse>> DeleteReview(int reviewId)
     {
-        // TODO: реализовать DeleteReviewCommand
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier) ?.Value;
+       if(!long.TryParse(userId,out var id)) return Unauthorized();
+        var command=new DeleteReviewCommand(reviewId,id);
+        await _mediator.Send(command);
+
         return Ok(ApiResponse.SuccessResponse("Review deleted successfully"));
     }
 }

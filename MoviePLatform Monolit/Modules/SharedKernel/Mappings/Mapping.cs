@@ -20,7 +20,7 @@ public class Mapping : Profile
         
         CreateMap<ReviewEntity,ReviewResponse>();
         CreateMap<ReviewRequest, ReviewEntity>();
-//CreateMap<ReviewResponse, ReviewEntity>();
+CreateMap<ReviewResponse, ReviewEntity>();
 
         CreateMap<ActorRequest, ActorEntity>();
         CreateMap<ActorEntity, ActorResponse>();

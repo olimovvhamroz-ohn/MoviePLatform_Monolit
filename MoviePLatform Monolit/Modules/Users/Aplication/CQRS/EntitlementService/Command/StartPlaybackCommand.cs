@@ -27,7 +27,7 @@ public class StartPlaybackCommandHandler : IRequestHandler<StartPlaybackCommand,
         if (request.UserId <= 0 || request.MovieId <= 0)
             throw new BadRequestException("Invalid userId or movieId");
 
-        var user = await _userRepository.GetById(request.UserId);
+        var user = await _userRepository.GetByIdAsync(request.UserId,cancellationToken);
 
         var movie = await _movieRepository.GetByIdAsync(request.MovieId, cancellationToken);
         if (movie == null)

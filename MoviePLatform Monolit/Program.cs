@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.OpenApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 using MoviePLatform_Monolit.Movie.Repositories;
 using Scalar.AspNetCore;
 using Serilog;

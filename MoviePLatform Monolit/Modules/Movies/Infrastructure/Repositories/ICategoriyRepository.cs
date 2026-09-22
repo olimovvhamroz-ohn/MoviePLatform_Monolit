@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Movie.Repositories;
 
@@ -9,7 +10,7 @@ public interface ICategoriyRepository : IBaseRepo<CategoryEntity>
     
 }
 
-public class CategoryRepository : BaseRepository<CategoryEntity>, ICategoriyRepository
+public class CategoryRepository : Modules.Movies.Infrastructure.Repositories.BaseRepository<CategoryEntity>, ICategoriyRepository
 {
     
     

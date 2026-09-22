@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 public class UserRepository : BaseRepository<UserEntity>, IUserRepository
 {

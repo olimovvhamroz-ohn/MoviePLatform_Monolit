@@ -7,4 +7,5 @@ public interface IWatchlistRepository
     Task<WatchlistEntity> MarkWatched(long userId, long movieId);
     Task<bool> Exists(long userId, long movieId);
     Task<WatchlistEntity> Delete(long userId, long movieId);
+    Task<int>CountByUserId(long userId);
 }

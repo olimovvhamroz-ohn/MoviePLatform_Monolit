@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Entity;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
+using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 
 namespace MoviePLatform_Monolit.Movie.Repositories;
@@ -10,7 +11,7 @@ public interface IActorRepository : IBaseRepo<ActorEntity>
     Task<ActorEntity>GetByName(string name);
     Task<ActorEntity?> FindByName(string name);
 }
-public class ActorRepository : BaseRepository<ActorEntity>, IActorRepository
+public class ActorRepository : Modules.Movies.Infrastructure.Repositories.BaseRepository<ActorEntity>, IActorRepository
 {
     public ActorRepository(ApplicationDbContext _context) : base(_context){}
 

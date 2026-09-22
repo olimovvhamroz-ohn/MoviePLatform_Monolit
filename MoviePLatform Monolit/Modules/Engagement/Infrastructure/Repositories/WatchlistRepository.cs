@@ -56,4 +56,9 @@ public class WatchlistRepository : IWatchlistRepository
         await _context.SaveChangesAsync();
         return entity;
     }
+
+    public async Task<int> CountByUserId(long userId)
+    {
+        return await _context.Watchlists.CountAsync(x => x.UserId == userId);
+    }
 }

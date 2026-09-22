@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Entity;
 
-namespace MoviePLatform_Monolit.Movie.Repositories;
+namespace MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 public interface IReviewRepository:IBaseRepo<ReviewEntity>
 {
@@ -29,11 +29,11 @@ public class ReviewRepository:BaseRepository<ReviewEntity>,IReviewRepository
         var topMovieIds=await _context.Reviews
             .GroupBy(r=>r.MovieId)
             .Select(g=>new{MovieId=g.Key,Avg=g.Average(t=>t.Rating)})
-         .OrderByDescending(x => x.Avg)
-                    .Skip(skip)
-                    .Take(pageSize)
-                    .Select(x => x.MovieId)
-                    .ToListAsync();
+            .OrderByDescending(x => x.Avg)
+            .Skip(skip)
+            .Take(pageSize)
+            .Select(x => x.MovieId)
+            .ToListAsync();
         return await _context.Movies
             .Include(m => m.Category)
             .Where(m => topMovieIds.Contains(m.Id))

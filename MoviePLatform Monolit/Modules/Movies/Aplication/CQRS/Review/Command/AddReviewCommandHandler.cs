@@ -2,10 +2,10 @@
 using AutoMapper;
 using MediatR;
 using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
-using MoviePLatform_Monolit.Movie.Repositories;
 
-namespace MoviePLatform_Monolit.Movie.CQRS.Reviews.Command;
+namespace MoviePLatform_Monolit.Modules.Movies.Aplication.CQRS.Review.Command;
 
 public record AddReviewCommand( long UserId,long MovieId,ReviewResponse Dto) : IRequest<ReviewResponse>;
 public class AddReviewCommandHandler : IRequestHandler<AddReviewCommand, ReviewResponse>
@@ -31,7 +31,7 @@ public class AddReviewCommandHandler : IRequestHandler<AddReviewCommand, ReviewR
     {
        
         await _movieRepository.GetByIdAsync(request.MovieId, cancellationToken);
-        await _userRepository.GetById(request.UserId);
+        await _userRepository.GetByIdAsync(request.UserId,cancellationToken);
 
         
         var entity = _mapper.Map<ReviewEntity>(request.Dto);

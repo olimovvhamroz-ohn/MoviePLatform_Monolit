@@ -43,4 +43,10 @@
       <Folder Include="Modules\SharedKernel\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Modules\SharedKernel\Mappings\Mapping.cs">
+        <Link>BuildHost-netcore\Mapping.cs</Link>
+      </Compile>
+    </ItemGroup>
+
 </Project>

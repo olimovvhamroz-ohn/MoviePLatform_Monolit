@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using MoviePLatform_Monolit.Modules.Engagement.Aplication.SQRS.Watchlist.Query;
 
 namespace MoviePLatform_Monolit.Modules.Engagement.Domain.Controllers;
 
@@ -84,14 +85,20 @@ public class WatchlistController : ControllerBase
         return Ok(ApiResponse<WatchlistResponse>.SuccessResponse(result, "Marked as watched"));
     }
 
-    [HttpGet("count")]
-    public async Task<ActionResult<ApiResponse<int>>> GetWatchlistCount()
-    {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (!long.TryParse(userId, out var id))
-            return Unauthorized();
-
-        // TODO: реализовать GetWatchlistCountQuery
-        return Ok(ApiResponse<int>.SuccessResponse(0, "Watchlist count retrieved"));
-    }
+   [HttpGet("count")]
+   public async Task<ActionResult<ApiResponse<int>>> GetWatchlistCount()
+   {
+       var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+   
+       if (!long.TryParse(userId, out var id))
+           return Unauthorized();
+   
+       var query = new GetCountByUserId(id);
+   
+       var result = await _mediator.Send(query);
+   
+       return Ok(ApiResponse<int>.SuccessResponse(
+           result,
+           "Watchlist count retrieved"));
+   }
 }

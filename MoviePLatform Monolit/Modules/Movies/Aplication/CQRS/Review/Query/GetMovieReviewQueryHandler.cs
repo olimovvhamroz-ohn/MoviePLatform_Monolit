@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
+using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
 using MoviePLatform_Monolit.Movie.Repositories;
 using UserService.Domain.Extensions;
@@ -19,6 +20,7 @@ public class GetMovieReviewQueryHandler:IRequestHandler<GetMovieReviewsQuery ,Li
         _mapper = mapper;
     }
 
+    
     public async Task<List<ReviewResponse>> Handle(GetMovieReviewsQuery request, CancellationToken cancellationToken)
     {
         if (request.Page <= 0 || request.PageSize <= 0)

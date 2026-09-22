@@ -23,7 +23,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserRes
     {
         _logger.LogInformation("Getting user by id: {Id}", request.Id);
 
-        var user = await _repository.GetById(request.Id);
+        var user = await _repository.GetByIdAsync(request.Id,cancellationToken);
 
         _logger.LogInformation("User found: {Email}", user.Email);
 
