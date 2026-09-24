@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MoviePLatform Monolit")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+97a7461195cd3e3ce8ca265d5eb8a640c28401de")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+48e0e190575513d45e077e81d7560ed07e3ccb35")]
 [assembly: System.Reflection.AssemblyProductAttribute("MoviePLatform Monolit")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MoviePLatform Monolit")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

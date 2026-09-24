@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using MoviePLatform_Monolit.Modules.Users.Aplication.CQRS.UserService.command;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
@@ -92,10 +93,15 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<ApiResponse>> DeleteUser(int id)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
         if (userId != id.ToString() && !User.IsInRole("Admin"))
             return Forbid();
 
-        // TODO: реализовать DeleteUserCommand
-        return Ok(ApiResponse.SuccessResponse("User account deleted successfully"));
+        var command = new DeleteUserCommand(id);
+
+        await _mediator.Send(command);
+
+        return Ok(ApiResponse.SuccessResponse(
+            "User account deleted successfully"));
     }
 }
