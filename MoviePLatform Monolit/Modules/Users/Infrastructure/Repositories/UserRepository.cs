@@ -6,7 +6,7 @@ public class UserRepository : BaseRepository<UserEntity>, IUserRepository
 {
     public UserRepository(ApplicationDbContext context) : base(context) { }
 
-    public async Task<UserEntity> GetByEmail(string email)
+    public async Task<UserEntity?> GetByEmail(string email)
     {
         return await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
     }

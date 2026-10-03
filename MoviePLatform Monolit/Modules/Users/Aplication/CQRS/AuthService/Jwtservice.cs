@@ -30,10 +30,11 @@ public class Jwtservice : IJwtService
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:SecretKey"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var minutes = _config.GetValue<int?>("Jwt:ExpiresInMinutes") ?? 60;
 
         var token = new JwtSecurityToken(
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(3),
+            expires: DateTime.UtcNow.AddMinutes(minutes),
             signingCredentials: creds
         );
 

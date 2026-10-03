@@ -43,6 +43,7 @@ public class CreatePurchaseCommandHandler : IRequestHandler<CreatePurchaseComman
         var model = _mapper.Map<PurchaseEntity>(dto);
         model.MovieId = movie.Id;
         model.PurchasedAt = DateTime.UtcNow;
+        model.PurchasePrice = 0;
 
         var created = await _repository.CreatePurchase(model);
 

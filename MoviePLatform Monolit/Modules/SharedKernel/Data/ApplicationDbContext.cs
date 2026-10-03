@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Commerce.Domain.Entity;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
 using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 
@@ -21,7 +22,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<CartEntity> Carts => Set<CartEntity>();
     public DbSet<CartItemEntity> CartItems => Set<CartItemEntity>();
     public DbSet<PurchaseEntity> Purchases => Set<PurchaseEntity>();
-
+    public DbSet<OrderEntity> Orders => Set<OrderEntity>();
+    public DbSet<OrderItemEntity> OrderItems => Set<OrderItemEntity>();
+    public DbSet<PaymentEntity> Payments => Set<PaymentEntity>();
     public DbSet<ReviewEntity> Reviews => Set<ReviewEntity>();
     public DbSet<ViewEntity> Views => Set<ViewEntity>();
     public DbSet<WatchlistEntity> Watchlists => Set<WatchlistEntity>();

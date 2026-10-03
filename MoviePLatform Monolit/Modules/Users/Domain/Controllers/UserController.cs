@@ -20,7 +20,7 @@ public class UsersController : ControllerBase
         _mediator = mediator;
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<ActionResult<ApiResponse<List<UserResponse>>>> GetAllUsers()
     {

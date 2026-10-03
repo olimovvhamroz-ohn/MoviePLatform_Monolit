@@ -34,15 +34,13 @@ public class PurchasesController : ControllerBase
             result, "User purchases retrieved"));
     }
 
+    // Харидро танҳо Admin ройгон медиҳад. Корбарон тавассути /api/cart/checkout мехаранд.
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<PurchaseResponse>>> CreatePurchase(
         [FromBody] PurchaseRequest request)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (!int.TryParse(userId, out var id))
-            return Unauthorized();
-
-        var command = new CreatePurchaseCommand(new PurchaseRequest { UserId = id, MovieId = request.MovieId });
+        var command = new CreatePurchaseCommand(new PurchaseRequest { UserId = request.UserId, MovieId = request.MovieId });
         var result = await _mediator.Send(command);
 
         return CreatedAtAction(nameof(GetUserPurchases), null,

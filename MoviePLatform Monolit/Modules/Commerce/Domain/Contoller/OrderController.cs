@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.Security.Claims;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.REQUEST;
@@ -29,7 +30,7 @@ public class OrdersController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("sub")?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             
             if (!int.TryParse(userId, out var id))
                 return Unauthorized();
@@ -52,7 +53,7 @@ public class OrdersController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("sub")?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             
             if (!int.TryParse(userId, out var id))
                 return Unauthorized();
@@ -78,7 +79,7 @@ public class OrdersController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("sub")?.Value;
+            var userId =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             
             if (!int.TryParse(userId, out var id))
                 return Unauthorized();
@@ -131,7 +132,7 @@ public class OrdersController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("sub")?.Value;
+            var userId =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             
             if (!int.TryParse(userId, out var id))
                 return Unauthorized();
@@ -155,7 +156,7 @@ public class OrdersController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("sub")?.Value;
+            var userId =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             
             if (!int.TryParse(userId, out var id))
                 return Unauthorized();

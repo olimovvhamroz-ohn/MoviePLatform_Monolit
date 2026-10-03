@@ -21,29 +21,6 @@ namespace MoviePLatform_Monolit.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Entity.CartEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<bool>("IsCheckedOut")
-                        .HasColumnType("boolean");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("\"IsCheckedOut\" = false");
-
-                    b.ToTable("carts", "commerce");
-                });
-
             modelBuilder.Entity("MoviePLatform_Monolit.Entity.CartItemEntity", b =>
                 {
                     b.Property<long>("Id")
@@ -218,6 +195,106 @@ namespace MoviePLatform_Monolit.Migrations
                     b.ToTable("Studios");
                 });
 
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.OrderEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("orders", "commerce");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.OrderItemEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("MovieId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("order_items", "commerce");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.PaymentEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TransactionId")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.HasIndex("TransactionId")
+                        .IsUnique()
+                        .HasFilter("\"TransactionId\" IS NOT NULL");
+
+                    b.ToTable("payments", "commerce");
+                });
+
             modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.ActorEntity", b =>
                 {
                     b.Property<long>("Id")
@@ -236,6 +313,29 @@ namespace MoviePLatform_Monolit.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Actors");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Users.Domain.Entity.CartEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<bool>("IsCheckedOut")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("\"IsCheckedOut\" = false");
+
+                    b.ToTable("carts", "commerce");
                 });
 
             modelBuilder.Entity("UserEntity", b =>
@@ -383,7 +483,7 @@ namespace MoviePLatform_Monolit.Migrations
 
             modelBuilder.Entity("MoviePLatform_Monolit.Entity.CartItemEntity", b =>
                 {
-                    b.HasOne("MoviePLatform_Monolit.Entity.CartEntity", "Cart")
+                    b.HasOne("MoviePLatform_Monolit.Modules.Users.Domain.Entity.CartEntity", "Cart")
                         .WithMany("CartItems")
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -414,6 +514,28 @@ namespace MoviePLatform_Monolit.Migrations
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.OrderItemEntity", b =>
+                {
+                    b.HasOne("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.OrderEntity", "Order")
+                        .WithMany("Items")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.PaymentEntity", b =>
+                {
+                    b.HasOne("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.OrderEntity", "Order")
+                        .WithOne("Payment")
+                        .HasForeignKey("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.PaymentEntity", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("UserFavoriteCategoryEntity", b =>
@@ -464,11 +586,6 @@ namespace MoviePLatform_Monolit.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Entity.CartEntity", b =>
-                {
-                    b.Navigation("CartItems");
-                });
-
             modelBuilder.Entity("MoviePLatform_Monolit.Entity.CategoryEntity", b =>
                 {
                     b.Navigation("Movies");
@@ -482,6 +599,18 @@ namespace MoviePLatform_Monolit.Migrations
             modelBuilder.Entity("MoviePLatform_Monolit.Entity.StudioEntity", b =>
                 {
                     b.Navigation("Movies");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.OrderEntity", b =>
+                {
+                    b.Navigation("Items");
+
+                    b.Navigation("Payment");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Users.Domain.Entity.CartEntity", b =>
+                {
+                    b.Navigation("CartItems");
                 });
 
             modelBuilder.Entity("UserEntity", b =>

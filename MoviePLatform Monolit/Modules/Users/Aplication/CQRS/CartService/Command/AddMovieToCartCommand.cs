@@ -37,9 +37,8 @@ public class AddMovieToCartCommand : IRequestHandler<AddMovieToCart, CartRespons
         if (!movieExists)
             throw new NotFoundException($"Movie {request.movieId} not found");
 
-        var cart = await _cartRepository.GetActiveCartByUserId(request.userId);
-        if (cart == null)
-            throw new NotFoundException("Cart not found");
+         var cart = await _cartRepository.GetActiveCartByUserId(request.userId)
+                           ?? await _cartRepository.CreateCart(request.userId);
 
         if (cart.CartItems.Any(x => x.MovieId == request.movieId))
             throw new BadRequestException("Movie already exists in cart");

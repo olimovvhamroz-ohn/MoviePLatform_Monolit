@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.OpenApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using MoviePLatform_Monolit.Modules.Commerce.Aplication.SQRS.Payments;
 using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 using MoviePLatform_Monolit.Movie.Repositories;
 using Scalar.AspNetCore;
@@ -37,6 +38,8 @@ builder.Services.AddScoped<IActorRepository, ActorRepository>();
 builder.Services.AddScoped<IStudioRepository, StudioRepository>();
 builder.Services.AddScoped<ICategoriyRepository, CategoryRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IPaymentGeteway, FakePaymentGateway>();
+
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -139,7 +142,8 @@ internal sealed class BearerSecuritySchemeTransformer(
 
         // 2. Bearer-ро ба ҳар endpoint ҳамчун security requirement медиҳем
         foreach (var operation in document.Paths.Values
-                     .SelectMany(path => path.Operations))
+                     .Where(path => path.Operations != null)
+                     .SelectMany(path => path.Operations!))
         {
             operation.Value.Security ??= [];
 

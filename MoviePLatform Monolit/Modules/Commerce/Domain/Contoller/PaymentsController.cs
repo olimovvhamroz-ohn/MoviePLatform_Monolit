@@ -1,11 +1,11 @@
-﻿using MediatR;
+﻿using System.Security.Claims;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.REQUEST;
 using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.RESPONSE;
 
-
-namespace MoviePLatform_Monolit.Modules.Commerce.Domain.Controllers;
+namespace MoviePLatform_Monolit.Modules.Commerce.Domain.Contoller;
 
 [ApiController]
 [Route("api/payments")]
@@ -28,7 +28,7 @@ public class PaymentsController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("sub")?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             
             if (!int.TryParse(userId, out var id))
                 return Unauthorized();
@@ -65,7 +65,7 @@ public class PaymentsController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("sub")?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             
             if (!int.TryParse(userId, out var id))
                 return Unauthorized();
@@ -90,7 +90,7 @@ public class PaymentsController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("sub")?.Value;
+            var userId =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             
             if (!int.TryParse(userId, out var id))
                 return Unauthorized();
@@ -114,7 +114,7 @@ public class PaymentsController : ControllerBase
     {
         try
         {
-            var userId = User.FindFirst("sub")?.Value;
+            var userId =User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             
             if (!int.TryParse(userId, out var id))
                 return Unauthorized();
@@ -191,8 +191,7 @@ public class PaymentsController : ControllerBase
     [HttpGet("admin/statistics")]
     public async Task<ActionResult<ApiResponse<object>>> GetPaymentStatistics()
     {
-        try
-        {
+       
             var stats = new
             {
                 TotalPayments = 0,
@@ -206,10 +205,6 @@ public class PaymentsController : ControllerBase
 
             return Ok(ApiResponse<object>.SuccessResponse(
                 stats, "Payment statistics retrieved"));
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ApiResponse<object>.ErrorResponse($"Error: {ex.Message}"));
-        }
+        
     }
 }
