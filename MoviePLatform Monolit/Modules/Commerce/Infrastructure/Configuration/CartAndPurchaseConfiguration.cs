@@ -10,7 +10,6 @@ public class CartConfiguration : IEntityTypeConfiguration<CartEntity>
         builder.ToTable("carts", "commerce");
         builder.HasKey(c => c.Id);
 
-        // Сохтани индекси уникалӣ бо номи сутуни PascalCase дар катича
         builder.HasIndex(c => c.UserId)
             .IsUnique()
             .HasFilter("\"IsCheckedOut\" = false");

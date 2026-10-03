@@ -10,7 +10,8 @@ using UserService.Domain.Extensions;
 namespace MoviePLatform_Monolit.Movie.CQRS.Actor.Command;
 
 public record CreateCommand(ActorRequest ActorRequest) : IRequest<ActorResponse>;
-public class CreateActorCommand:IRequestHandler<CreateCommand,ActorResponse>
+
+public class CreateActorCommand : IRequestHandler<CreateCommand, ActorResponse>
 {
     private readonly IMapper _mapper;
     private readonly IActorRepository _actorRepository;
@@ -25,11 +26,16 @@ public class CreateActorCommand:IRequestHandler<CreateCommand,ActorResponse>
 
     public async Task<ActorResponse> Handle(CreateCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Creating Actor {Name}", request.ActorRequest.Name);     
-        var dublicate=await _actorRepository.FindByName(request.ActorRequest.Name);
-        if(dublicate !=null)throw new BadRequestException("Actor already exists");
-        var model=_mapper.Map<ActorEntity>(request.ActorRequest);
-        var res=await _actorRepository.CreateAsync(model,cancellationToken);
+        _logger.LogInformation("Creating Actor {Name}", request.ActorRequest.Name);
+        
+        var dublicate = await _actorRepository.FindByName(request.ActorRequest.Name);
+        
+        if (dublicate != null) throw new BadRequestException("Actor already exists");
+        
+        var model = _mapper.Map<ActorEntity>(request.ActorRequest);
+        
+        var res = await _actorRepository.CreateAsync(model, cancellationToken);
+        
         return _mapper.Map<ActorResponse>(res);
     }
 }

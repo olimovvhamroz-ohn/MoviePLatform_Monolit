@@ -33,7 +33,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Modules\Commerce\Aplication\SQRS\" />
       <Folder Include="Modules\Movies\Aplication\" />
       <Folder Include="Modules\Movies\Infrastructure\" />
       <Folder Include="Modules\Users\Aplication\" />
