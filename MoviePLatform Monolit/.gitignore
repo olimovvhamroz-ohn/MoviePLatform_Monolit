@@ -1,0 +1,9 @@
+﻿bin/
+obj/
+.idea/
+.vs/
+*.user
+.env
+secrets.json
+*.log
+tog.txt
