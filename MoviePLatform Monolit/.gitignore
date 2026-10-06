@@ -6,4 +6,4 @@ obj/
 .env
 secrets.json
 *.log
-tog.txt
+logs-log-*.txt

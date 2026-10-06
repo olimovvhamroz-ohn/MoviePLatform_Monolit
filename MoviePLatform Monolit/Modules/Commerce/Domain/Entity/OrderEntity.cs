@@ -1,11 +1,6 @@
 ﻿using MoviePLatform_Monolit.Modules.Commerce.Domain.Enum;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Domain.Entity;
-
-
-/// <summary>
-/// Заказ (покупка фильмов)
-/// </summary>
 public class OrderEntity
 {
     public long Id { get; set; }

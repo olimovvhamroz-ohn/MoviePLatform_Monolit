@@ -221,7 +221,9 @@ namespace MoviePLatform_Monolit.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("\"Status\" = 1");
 
                     b.ToTable("orders", "commerce");
                 });

@@ -24,12 +24,15 @@ public class CartRepository : ICartRepository
     public async Task<CartEntity> CreateCart(long userId)
     {
         var cart = new CartEntity { UserId = userId };
+        
         await _context.Carts.AddAsync(cart);
         await _context.SaveChangesAsync();
         return cart;
     }
-
+    
     public async Task AddMovieToCart(int userId, int movieId)
+        
+        
     {
         var movieExists = await _context.Movies.AnyAsync(x => x.Id == movieId);
         if (!movieExists) throw new NotFoundException($"Movie with id {movieId} not found");

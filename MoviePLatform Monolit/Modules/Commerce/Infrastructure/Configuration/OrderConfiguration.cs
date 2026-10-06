@@ -15,8 +15,9 @@ public class OrderConfiguration : IEntityTypeConfiguration<OrderEntity>
         builder.Property(o => o.TotalPrice).HasColumnType("numeric(10,2)");
         builder.Property(o => o.Notes).HasMaxLength(500);
 
-        builder.HasIndex(o => o.UserId);
-
+        builder.HasIndex(o => o.UserId)
+            .IsUnique()
+            .HasFilter("\"Status\" = 1");
         // Як заказ → якчанд элемент
         builder.HasMany(o => o.Items)
             .WithOne(i => i.Order)

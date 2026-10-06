@@ -11,36 +11,22 @@ namespace MoviePLatform_Monolit.Modules.Users.Domain.Controllers;
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
-    private readonly IMediator _mediator;
     private readonly IAuthService _authService;
     private readonly IUserRepository _userRepository;
     private readonly IJwtService _jwtService;
 
-    public AuthController(IMediator mediator, IAuthService authService, IUserRepository userRepository, IJwtService jwtService)
+    public AuthController( IAuthService authService, IUserRepository userRepository, IJwtService jwtService)
     {
-        _mediator = mediator;
         _authService = authService;
         _userRepository = userRepository;
         _jwtService = jwtService;
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<ApiResponse<UserResponse>>> Register(
-        [FromBody] RegisterUserRequest request)
+    public async Task<ActionResult<ApiResponse<LoginResponse>>> Register([FromBody] RegisterUserRequest request)
     {
-        var command = new CreateUserCommand(new UserRequest
-        {
-            Name = request.Name,
-            Phone = request.Phone,
-            Email = request.Email,
-            Password = request.Password,
-            DateOfBirth = request.DateOfBirth
-            
-        });     
-        var result = await _mediator.Send(command);
-
-        return CreatedAtAction("GetUserById", "Users", new { id = result.Id },
-            ApiResponse<UserResponse>.SuccessResponse(result, "User registered successfully", 201));
+        var result = await _authService.Register(request);
+        return Ok(ApiResponse<LoginResponse>.SuccessResponse(result, "User registered successfully", 201));
     }
 
     [HttpPost("login")]

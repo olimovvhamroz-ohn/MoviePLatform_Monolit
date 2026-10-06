@@ -34,18 +34,8 @@
         <PackageReference Include="Serilog.Sinks.File" Version="8.0.0-nblumhardt-02322" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Modules\Movies\Aplication\" />
-      <Folder Include="Modules\Movies\Infrastructure\" />
-      <Folder Include="Modules\Users\Aplication\" />
-      <Folder Include="Modules\Users\Infrastructure\" />
-      <Folder Include="Modules\SharedKernel\" />
-    </ItemGroup>
+   
 
-    <ItemGroup>
-      <Compile Update="Modules\SharedKernel\Mappings\Mapping.cs">
-        <Link>BuildHost-netcore\Mapping.cs</Link>
-      </Compile>
-    </ItemGroup>
+  
 
 </Project>

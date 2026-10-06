@@ -30,12 +30,5 @@ public class UserRepository : BaseRepository<UserEntity>, IUserRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<List<string>> GetEmailsByCategoryAsync(long categoryId)
-    {
-        return await _context.UserFavoriteCategories
-            .Where(x => x.CategoryId == categoryId && !string.IsNullOrEmpty(x.User.Email))
-            .Select(x => x.User.Email)
-            .Distinct()
-            .ToListAsync();
-    }
+  
 }
