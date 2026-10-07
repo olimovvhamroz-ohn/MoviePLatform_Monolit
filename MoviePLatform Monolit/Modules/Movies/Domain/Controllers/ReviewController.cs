@@ -7,7 +7,6 @@ using MoviePLatform_Monolit.Modules.Movies.Aplication.CQRS.Review.Query;
 using MoviePLatform_Monolit.Movie.DTO.REQUEST;
 using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
 
-namespace MoviePLatform_Monolit.Modules.Movies.Domain.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

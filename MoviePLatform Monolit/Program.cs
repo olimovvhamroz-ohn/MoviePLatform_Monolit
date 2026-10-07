@@ -7,7 +7,10 @@ using Microsoft.AspNetCore.OpenApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.Payments;
+using MoviePLatform_Monolit.Modules.Commerce.Infrastructure.Repositories;
 using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
+using MoviePLatform_Monolit.Modules.SharedKernel.Interfaces;
 using MoviePLatform_Monolit.Movie.Repositories;
 using Scalar.AspNetCore;
 using Serilog;
@@ -23,9 +26,12 @@ builder.Services.AddStackExchangeRedisCache(options =>
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
-    .WriteTo.File("tog.txt")
+    .WriteTo.File("logs-log-.txt", rollingInterval: RollingInterval.Day)
     .Enrich.FromLogContext()
     .CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(Log.Logger);
 
 // 1. Database Context (PostgreSQL)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -35,14 +41,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 builder.Services.AddScoped<IActorRepository, ActorRepository>();
 builder.Services.AddScoped<IStudioRepository, StudioRepository>();
-builder.Services.AddScoped<ICategoriyRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IPaymentGateway, FakePaymentGateway>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, Jwtservice>();
 builder.Services.AddScoped<IPasswordHasher<UserEntity>, PasswordHasher<UserEntity>>();
-builder.Services.AddScoped<PasswordHasher<UserEntity>>();
+
 
 builder.Services.AddScoped<IEmailService, EmailService>();
 
@@ -139,7 +147,8 @@ internal sealed class BearerSecuritySchemeTransformer(
 
         // 2. Bearer-ро ба ҳар endpoint ҳамчун security requirement медиҳем
         foreach (var operation in document.Paths.Values
-                     .SelectMany(path => path.Operations))
+                     .Where(path => path.Operations != null)
+                     .SelectMany(path => path.Operations!))
         {
             operation.Value.Security ??= [];
 
