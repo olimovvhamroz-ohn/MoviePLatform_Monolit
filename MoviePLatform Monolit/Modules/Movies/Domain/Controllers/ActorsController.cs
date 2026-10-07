@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Actor.Command;
 using MoviePLatform_Monolit.Movie.CQRS.Actor.Command;
 using MoviePLatform_Monolit.Movie.CQRS.Actor.Query;
 using MoviePLatform_Monolit.Movie.DTO.REQUEST;

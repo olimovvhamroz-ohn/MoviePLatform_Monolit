@@ -4,7 +4,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
 using MoviePLatform_Monolit.Movie.Repositories;
 
-namespace MoviePLatform_Monolit.Movie.CQRS.Actor.Command;
+namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Actor.Command;
 public record DeleteCommand(int id) : IRequest<ActorResponse>;
 public class DeleteActorCommand:IRequestHandler<DeleteCommand,ActorResponse>
 {
