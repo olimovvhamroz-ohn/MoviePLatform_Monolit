@@ -23,38 +23,35 @@ public class BaseRepository<T>:IBaseRepo<T> where T:BaseEntity
     {
         return await _context.Set<T>().AsNoTracking().ToListAsync(cancellationToken);
     }
-
-    public async Task<T> GetByIdAsync(long id,CancellationToken cancellationToken = default)
+    public async Task<T> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        if(id<=0) throw new ArgumentException("ID must be greater than zero.", nameof(id));
-        var res = await _context.Set<T>().FirstOrDefaultAsync(x => x.Id == id,cancellationToken);
-         if (res == null)
-         throw new NotFoundException($"Id {id} not found");       
-         return res; 
+        if (id <= 0) throw new BadRequestException("ID must be greater than zero");
+        var res = await _context.Set<T>().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        if (res == null)
+            throw new NotFoundException($"Id {id} not found");
+        return res;
     }
 
-    public async Task<T> CreateAsync(T entity,CancellationToken cancellationToken=default)
+    public async Task<T> CreateAsync(T entity, CancellationToken cancellationToken = default)
     {
-        if (entity==null) throw new Exception("BadrequestEx Entitiy can not be null");
-        await _context.Set<T>().AddAsync(entity,cancellationToken);
+        if (entity == null) throw new BadRequestException("Entity can not be null");
+        await _context.Set<T>().AddAsync(entity, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
         return entity;
-        
-        
     }
 
-    public async Task<T> UpdateAsync(T entity,CancellationToken cancellationToken = default)
+    public async Task<T> UpdateAsync(T entity, CancellationToken cancellationToken = default)
     {
-        if(entity==null) throw new Exception("BadrequestEx= entity cannot be null");
+        if (entity == null) throw new BadRequestException("Entity can not be null");
         _context.Set<T>().Update(entity);
         await _context.SaveChangesAsync(cancellationToken);
         return entity;
     }
 
-    public async Task<T> DeleteAsync(long id,CancellationToken cancellationToken = default)
+    public async Task<T> DeleteAsync(long id, CancellationToken cancellationToken = default)
     {
-        if(id<=0)throw new Exception("BadRequest : id can not 'id>=0'");
-        var entity=await GetByIdAsync(id,cancellationToken);
+        if (id <= 0) throw new BadRequestException("ID must be greater than zero");
+        var entity = await GetByIdAsync(id, cancellationToken);
         _context.Set<T>().Remove(entity);
         await _context.SaveChangesAsync(cancellationToken);
         return entity;

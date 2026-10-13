@@ -1,5 +1,4 @@
 ﻿namespace MoviePLatform_Monolit.Modules.Commerce.Domain.Entity;
-/// Элемент заказа (фильм в заказе)
 public class OrderItemEntity
 {
     

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using MoviePLatform_Monolit.Modules.Users.Aplication.CQRS.UserService.command;
+using MoviePLatform_Monolit.Modules.Users.Application.CQRS.UserService.command;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
@@ -20,7 +20,7 @@ public class UsersController : ControllerBase
         _mediator = mediator;
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<ActionResult<ApiResponse<List<UserResponse>>>> GetAllUsers()
     {

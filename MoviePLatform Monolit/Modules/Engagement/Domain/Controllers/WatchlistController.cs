@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿
+using System.Security.Claims;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using MoviePLatform_Monolit.Modules.Engagement.Aplication.SQRS.Watchlist.Query;
+using MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Watchlist.Query;
 
 namespace MoviePLatform_Monolit.Modules.Engagement.Domain.Controllers;
 
