@@ -2,6 +2,8 @@
 using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.SharedKernel.Interfaces;
 
+namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.Query;
+
 public record GetUserOrdersQuery(long UserId, int PageNumber = 1, int PageSize = 10)
     : IRequest<List<OrderResponse>>;
 
@@ -19,6 +21,7 @@ public class GetUserOrdersQueryHandler : IRequestHandler<GetUserOrdersQuery, Lis
         CancellationToken cancellationToken)
     {
         var pageNumber = Math.Max(request.PageNumber, 1);
+        
         var pageSize = Math.Clamp(request.PageSize, 1, MaxPageSize);
 
         var orders = await _repository.GetUserOrders(
