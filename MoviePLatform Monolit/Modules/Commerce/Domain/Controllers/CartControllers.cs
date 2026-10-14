@@ -2,49 +2,50 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MoviePLatform_Monolit.Modules.Users.Application.CQRS.CartService.Command;
+using MoviePLatform_Monolit.Modules.Users.Application.CQRS.CartService.Query;
 using MoviePLatform_Monolit.Modules.Users.Domain.DTO.REQUEST;
-using MoviePLatform_Monolit.Users.DTO.REQUEST;
+using MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
-
 namespace MoviePLatform_Monolit.Modules.Commerce.Domain.Controllers;
 
 [ApiController]
 [Route("api/cart")]
 [Authorize]
-public class CartController : ControllerBase
+public class CartController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-    public CartController(IMediator mediator) => _mediator = mediator;
-
-    // userId танҳо аз токен гирифта мешавад
-    private bool TryGetUserId(out int userId)
-        => int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out userId) && userId > 0;
+    private bool TryGetUserId(out long userId)
+        => long.TryParse(User.FindFirst(ClaimTypes.NameIdentifier) ?.Value, out userId)&& userId > 0;
 
     [HttpGet]
     public async Task<ActionResult<CartResponse>> GetCart()
     {
         if (!TryGetUserId(out var userId)) return Unauthorized();
-        return Ok(await _mediator.Send(new GetActiveCartByUserId(userId)));
+        
+        return Ok(await mediator.Send(new GetActiveCartByUserId(userId)));
     }
 
     [HttpPost("items/{movieId}")]
-    public async Task<ActionResult<CartResponse>> AddMovie(int movieId)
+    public async Task<ActionResult<CartResponse>> AddMovieToCart(int movieId)
     {
         if (!TryGetUserId(out var userId)) return Unauthorized();
-        return Ok(await _mediator.Send(new AddMovieToCart(userId, movieId)));
+        
+        return Ok(await mediator.Send(new AddMovieToCart(userId, movieId)));
     }
 
     [HttpDelete("items/{movieId}")]
     public async Task<ActionResult<CartResponse>> RemoveMovie(int movieId)
     {
         if (!TryGetUserId(out var userId)) return Unauthorized();
-        return Ok(await _mediator.Send(new RemoveMovieFromCartCommand(userId, movieId)));
+        
+        return Ok(await mediator.Send(new RemoveMovieFromCartCommand(userId, movieId)));
     }
 
     [HttpPost("checkout")]
     public async Task<ActionResult<CartResponse>> Checkout([FromBody] CheckoutRequest? request = null)
     {
         if (!TryGetUserId(out var userId)) return Unauthorized();
-        return Ok(await _mediator.Send(new CheckoutCartCommand(userId, request?.PaymentToken)));
+        
+        return Ok(await mediator.Send(new CheckoutCartCommand(userId, request?.PaymentToken)));
     }
 }

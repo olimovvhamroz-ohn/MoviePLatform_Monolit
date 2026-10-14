@@ -1,6 +1,6 @@
 ﻿using MoviePLatform_Monolit.Movie.Entity.Enums;
 
-namespace MoviePLatform_Monolit.Movie.DTO.REQUEST;
+namespace MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
 
 public class MovieRequest
 {

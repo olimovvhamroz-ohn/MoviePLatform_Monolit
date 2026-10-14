@@ -2,6 +2,7 @@
 using MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Users.Domain.Enums;
 
+namespace MoviePLatform_Monolit.Modules.Users.Application.CQRS.EntitlementService;
 
 public static class EntitlementEvaluator
 {

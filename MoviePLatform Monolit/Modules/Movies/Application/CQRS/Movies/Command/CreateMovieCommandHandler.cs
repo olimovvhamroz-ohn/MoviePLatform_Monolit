@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
 using MoviePLatform_Monolit.Movie.DTO.REQUEST;
 using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
 

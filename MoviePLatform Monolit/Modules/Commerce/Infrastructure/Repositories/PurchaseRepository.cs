@@ -2,45 +2,48 @@
 
 using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
 
-public class PurchaseRepository : IPurchaseRepository
+public class PurchaseRepository(ApplicationDbContext context) : IPurchaseRepository
 {
-    protected readonly ApplicationDbContext _context;
-
-    public PurchaseRepository(ApplicationDbContext con)
-    {
-        _context = con;
-    }
+    
 
     public async Task<bool> HasUserPurchasedMovie(long userId, long movieId)
     {
-        return await _context.Purchases
+        return await context.Purchases
             .AnyAsync(x => x.UserId == userId && x.MovieId == movieId);
     }
 
     public async Task<PurchaseEntity> CreatePurchase(PurchaseEntity create)
     {
-        await _context.Purchases.AddAsync(create);
-        await _context.SaveChangesAsync();
+        await context.Purchases.AddAsync(create);
+        await context.SaveChangesAsync();
         return create;
     }
 
-    public async Task<List<PurchaseEntity>> GetUserPurchases(int id)
+    public async Task<List<PurchaseEntity>> GetUserPurchases(long id)
     {
-        return await _context.Purchases
+        return await context.Purchases
             .Where(x => x.UserId == id)
             .ToListAsync();
     }
     public async Task<PurchaseEntity?> GetByUserAndMovie(long userId, long movieId)
     {
-        return await _context.Purchases
+        return await context.Purchases
             .FirstOrDefaultAsync(x => x.UserId == userId && x.MovieId == movieId);
     }
+
+    public async Task<PurchaseEntity?> GetPurchaseById(long purchaseId,long userId)
+    {
+        return await context.Purchases.FirstOrDefaultAsync(x=>x.Id == purchaseId && x.UserId ==userId);
+    }
+    
     
     public async Task<PurchaseEntity> UpdatePurchase(PurchaseEntity entity)
     {
-        _context.Purchases.Update(entity);
-        await _context.SaveChangesAsync();
+        context.Purchases.Update(entity);
+        await context.SaveChangesAsync();
         return entity;
     }
 }

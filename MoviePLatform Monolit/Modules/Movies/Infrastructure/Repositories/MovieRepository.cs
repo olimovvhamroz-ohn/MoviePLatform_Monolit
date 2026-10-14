@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Movie.Entity.Enums;
 
 

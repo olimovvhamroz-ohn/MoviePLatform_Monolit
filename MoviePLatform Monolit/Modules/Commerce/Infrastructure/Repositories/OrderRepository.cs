@@ -1,4 +1,5 @@
-﻿using MoviePLatform_Monolit.Modules.SharedKernel.Interfaces;
+﻿using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.SharedKernel.Interfaces;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;

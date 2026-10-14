@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using MoviePLatform_Monolit.Modules.Command.Data;
 
 public class ViewRepository : IViewRepository
 {

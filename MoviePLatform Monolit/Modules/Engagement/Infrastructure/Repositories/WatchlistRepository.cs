@@ -1,6 +1,7 @@
 ﻿
 
 using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using UserService.Domain.Extensions;
 
 public class WatchlistRepository : IWatchlistRepository

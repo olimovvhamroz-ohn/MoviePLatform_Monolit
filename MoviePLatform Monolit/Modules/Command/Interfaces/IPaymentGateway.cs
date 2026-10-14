@@ -3,5 +3,5 @@
 public interface IPaymentGateway
 {
    
-        Task<bool> PayAsync(int userId, decimal amount);
+        Task<bool> PayAsync(long userId, decimal amount);
 } 

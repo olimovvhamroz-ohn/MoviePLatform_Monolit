@@ -4,6 +4,7 @@ using MoviePLatform_Monolit.Users.DTO.REQUEST;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 using UserService.Domain.Extensions;
 
+namespace MoviePLatform_Monolit.Modules.Users.Application.CQRS.AuthService;
 
 public interface IAuthService
 {

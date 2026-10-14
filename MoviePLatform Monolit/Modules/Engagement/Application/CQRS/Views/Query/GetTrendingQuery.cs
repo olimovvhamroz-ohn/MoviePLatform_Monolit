@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Command.Data;
 
 public record GetTrendingQuery(int Days, int Take) : IRequest<List<TrendingMovieResponse>>;
 

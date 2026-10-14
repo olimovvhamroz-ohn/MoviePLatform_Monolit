@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using UserService.Domain.Extensions;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;

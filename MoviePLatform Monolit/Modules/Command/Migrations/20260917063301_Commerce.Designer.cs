@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -11,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MoviePLatform_Monolit.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260912080929_ChangeDateOfBirthToDate")]
-    partial class ChangeDateOfBirthToDate
+    [Migration("20260917063301_Commerce")]
+    partial class Commerce
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,26 +24,6 @@ namespace MoviePLatform_Monolit.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("MoviePLatform_Monolit.Entity.ActorEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Biography")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Actors");
-                });
 
             modelBuilder.Entity("MoviePLatform_Monolit.Entity.CartEntity", b =>
                 {
@@ -239,6 +220,26 @@ namespace MoviePLatform_Monolit.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Studios");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.ActorEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Biography")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Actors");
                 });
 
             modelBuilder.Entity("UserEntity", b =>
@@ -454,7 +455,7 @@ namespace MoviePLatform_Monolit.Migrations
 
             modelBuilder.Entity("movie_actors", b =>
                 {
-                    b.HasOne("MoviePLatform_Monolit.Entity.ActorEntity", null)
+                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.ActorEntity", null)
                         .WithMany()
                         .HasForeignKey("actor_id")
                         .OnDelete(DeleteBehavior.Cascade)

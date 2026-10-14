@@ -2,6 +2,7 @@
 
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using UserService.Domain.Extensions;
 
 public record CreateWatchlistCommand(long UserId, long MovieId) : IRequest<WatchlistResponse>;
