@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using MediatR;
 using MoviePLatform_Monolit.Entity;
-using MoviePLatform_Monolit.Movie.DTO.REQUEST;
-using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
 using MoviePLatform_Monolit.Movie.Repositories;
 
-namespace MoviePLatform_Monolit.Movie.CQRS.Studios.Command;
+namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Studios.Command;
 public record CreateStudioCommand(StudioRequest request) : IRequest<StudioResponse>;
 
 public class CreateStudioCommandHandler : IRequestHandler<CreateStudioCommand, StudioResponse>

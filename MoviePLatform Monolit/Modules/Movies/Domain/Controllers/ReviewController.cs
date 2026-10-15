@@ -1,12 +1,14 @@
-﻿using MediatR;
+﻿using System.Security.Claims;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using MoviePLatform_Monolit.Modules.Movies.Aplication.CQRS.Review.Command;
-using MoviePLatform_Monolit.Modules.Movies.Aplication.CQRS.Review.Query;
-using MoviePLatform_Monolit.Movie.DTO.REQUEST;
-using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Review.Command;
+using MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Review.Query;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 
+namespace MoviePLatform_Monolit.Modules.Movies.Domain.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -89,7 +91,7 @@ public class ReviewsController : ControllerBase
     public async Task<ActionResult<ApiResponse>> DeleteReview(int reviewId)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier) ?.Value;
-       if(!long.TryParse(userId,out var id)) return Unauthorized();
+        if(!long.TryParse(userId,out var id)) return Unauthorized();
         var command=new DeleteReviewCommand(reviewId,id);
         await _mediator.Send(command);
 

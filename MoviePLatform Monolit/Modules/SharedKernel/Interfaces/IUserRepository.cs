@@ -1,9 +1,0 @@
-﻿
-
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
-
-public interface IUserRepository : IBaseRepo<UserEntity>
-{
-    Task<UserEntity?> GetByEmail(string email);
-    Task SetFavoriteCategoriesAsync(long userId, List<long> categoryIds);
-}

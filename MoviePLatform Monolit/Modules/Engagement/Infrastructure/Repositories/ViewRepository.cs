@@ -1,19 +1,17 @@
-﻿
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Entities;
 
-public class ViewRepository : IViewRepository
+namespace MoviePLatform_Monolit.Modules.Engagement.Infrastructure.Repositories;
+
+public class ViewRepository(ApplicationDbContext context) : IViewRepository
 {
-    private readonly ApplicationDbContext _context;
-
-    public ViewRepository(ApplicationDbContext context)
-    {
-        _context = context;
-    }
+    
 
     public async Task<ViewEntity> RecordView(long userId, long movieId, int positionSeconds, bool isCompleted)
     {
-        var existing = await _context.Views
+        var existing = await context.Views
             .FirstOrDefaultAsync(x => x.UserId == userId && x.MovieId == movieId);
 
         if (existing == null)
@@ -28,7 +26,7 @@ public class ViewRepository : IViewRepository
                 LastWatchedAt = DateTime.UtcNow,
                 ViewCount = 1
             };
-            await _context.Views.AddAsync(existing);
+            await context.Views.AddAsync(existing);
         }
         else
         {
@@ -38,14 +36,14 @@ public class ViewRepository : IViewRepository
             existing.ViewCount += 1;
         }
 
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
         return existing;
     }
 
     public async Task<List<ViewEntity>> GetHistory(long userId, int page, int pageSize)
     {
         var skip = (page - 1) * pageSize;
-        return await _context.Views
+        return await context.Views
             .Include(x => x.Movie)
             .Where(x => x.UserId == userId)
             .OrderByDescending(x => x.LastWatchedAt)
@@ -56,7 +54,7 @@ public class ViewRepository : IViewRepository
 
     public async Task<List<ViewEntity>> GetContinueWatching(long userId)
     {
-        return await _context.Views
+        return await context.Views
             .Include(x => x.Movie)
             .Where(x => x.UserId == userId && !x.IsCompleted && x.PositionSeconds > 0)
             .OrderByDescending(x => x.LastWatchedAt)
@@ -64,26 +62,26 @@ public class ViewRepository : IViewRepository
     }
     
    
-   public async Task<List<(long MovieId, int Views)>> GetTrending(int days, int take)
-   {
-       var since = DateTime.UtcNow.AddDays(-days);
+    public async Task<List<(long MovieId, int Views)>> GetTrending(int days, int take)
+    {
+        var since = DateTime.UtcNow.AddDays(-days);
 
-       var result = await _context.Views
-           .Where(x => x.LastWatchedAt >= since)
-           .GroupBy(x => x.MovieId)
-           .Select(g => new
-           {
-               MovieId = g.Key,
-               Views = g.Count()
-           })
-           .OrderByDescending(x => x.Views)
-           .Take(take)
-           .ToListAsync();
+        var result = await context.Views
+            .Where(x => x.LastWatchedAt >= since)
+            .GroupBy(x => x.MovieId)
+            .Select(g => new
+            {
+                MovieId = g.Key,
+                Views = g.Count()
+            })
+            .OrderByDescending(x => x.Views)
+            .Take(take)
+            .ToListAsync();
 
-       return result
-           .Select(x => (x.MovieId, x.Views))
-           .ToList();
-   }
+        return result
+            .Select(x => (x.MovieId, x.Views))
+            .ToList();
+    }
    
    
    

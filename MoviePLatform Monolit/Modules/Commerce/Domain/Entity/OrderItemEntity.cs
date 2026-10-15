@@ -1,7 +1,6 @@
 ﻿namespace MoviePLatform_Monolit.Modules.Commerce.Domain.Entity;
 public class OrderItemEntity
 {
-    
     public long Id { get; set; }
     public long OrderId { get; set; }
     public long MovieId { get; set; }

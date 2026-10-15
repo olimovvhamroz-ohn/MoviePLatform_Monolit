@@ -1,4 +1,4 @@
-﻿namespace MoviePLatform_Monolit.Movie.DTO.RESPONSE;
+﻿namespace MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 
 public class ReviewResponse
 {

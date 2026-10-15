@@ -1,5 +1,7 @@
 ﻿
 
+namespace MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
+
 public class ViewResponse
 {
     public long Id { get; set; }
@@ -12,4 +14,3 @@ public class ViewResponse
     public int ViewCount { get; set; }
     public DateTime LastWatchedAt { get; set; }
 }
-

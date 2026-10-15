@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using MoviePLatform_Monolit.Entity;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
+
+namespace MoviePLatform_Monolit.Modules.Movies.Infrastructure.Configuration;
 
 public class MovieConfiguration : IEntityTypeConfiguration<MovieEntity>
 {

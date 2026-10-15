@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
+
+namespace MoviePLatform_Monolit.Modules.Commerce.Infrastructure.Configuration;
 
 public class CartConfiguration : IEntityTypeConfiguration<CartEntity>
 {
@@ -15,5 +16,3 @@ public class CartConfiguration : IEntityTypeConfiguration<CartEntity>
             .HasFilter("\"IsCheckedOut\" = false");
     }
 }
-
-

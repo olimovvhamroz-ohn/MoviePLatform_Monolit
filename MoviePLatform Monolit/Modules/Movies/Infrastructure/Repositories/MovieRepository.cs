@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MoviePLatform_Monolit.Entity;
-using MoviePLatform_Monolit.Movie.Entity.Enums;
+using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
+using MoviePLatform_Monolit.Modules.Movies.Domain.Enums;
 
+namespace MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 public interface IMovieRepository
 {
@@ -15,21 +17,16 @@ public interface IMovieRepository
     Task<bool> ExistsAsync(long movieId, CancellationToken cancellationToken = default);
 }
 
-public class MovieRepository : IMovieRepository
+public class MovieRepository(ApplicationDbContext context) : IMovieRepository
 {
-    private readonly ApplicationDbContext _context;
-
-    public MovieRepository(ApplicationDbContext context)
-    {
-        _context = context;
-    }
+   
 
     public async Task<List<MovieEntity>> GetMovieByNameAsync(string name, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(name))
             return new List<MovieEntity>();
 
-        return await _context.Movies
+        return await context.Movies
             .AsNoTracking()
             .Include(x => x.Category)
             .Include(x => x.Reviews)
@@ -47,7 +44,7 @@ public class MovieRepository : IMovieRepository
 
         var skip = (page - 1) * pageSize;
 
-        return await _context.Movies
+        return await context.Movies
             .AsNoTracking()
             .Include(x => x.Category)
             .Include(x => x.Reviews)
@@ -61,7 +58,7 @@ public class MovieRepository : IMovieRepository
 
     public async Task<List<MovieEntity>> GetMovieByFilterAsync(long? categoryId, int? year, decimal? maxPrice, AgeRating? ageRating, CancellationToken cancellationToken = default)
     {
-        var query = _context.Movies
+        var query = context.Movies
             .AsNoTracking()
             .Include(x => x.Category)
             .Include(x => x.Reviews)
@@ -74,7 +71,7 @@ public class MovieRepository : IMovieRepository
             query = query.Where(x => x.CategoryId == categoryId.Value);
 
         if (year.HasValue) 
-            query = query.Where(x => x.Year == year.Value); // Ислоҳ: Баробарии сол
+            query = query.Where(x => x.Year == year.Value); 
 
         if (maxPrice.HasValue) 
             query = query.Where(x => x.Price <= maxPrice.Value);
@@ -90,7 +87,7 @@ public class MovieRepository : IMovieRepository
         if (id <= 0)
             throw new ArgumentException("ID must be greater than zero.", nameof(id));
 
-        var movie = await _context.Movies
+        var movie = await context.Movies
             .Include(x => x.Category)
             .Include(x => x.Reviews)
             .Include(x => x.Actors)
@@ -109,19 +106,19 @@ public class MovieRepository : IMovieRepository
         if (movie == null) 
             throw new ArgumentNullException(nameof(movie), "Movie entity cannot be null.");
 
-        var isDuplicate = await _context.Movies.AnyAsync(
+        var isDuplicate = await context.Movies.AnyAsync(
             x => x.Title.ToLower() == movie.Title.ToLower() && x.Year == movie.Year, 
             cancellationToken);
 
         if (isDuplicate)
             throw new InvalidOperationException($"Movie with title '{movie.Title}' and year {movie.Year} already exists.");
 
-        var categoryExists = await _context.Categories.AnyAsync(x => x.Id == movie.CategoryId, cancellationToken);
+        var categoryExists = await context.Categories.AnyAsync(x => x.Id == movie.CategoryId, cancellationToken);
         if (!categoryExists)
             throw new KeyNotFoundException($"Category with ID {movie.CategoryId} does not exist.");
 
-        await _context.Movies.AddAsync(movie, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        await context.Movies.AddAsync(movie, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
 
         return movie;
     }
@@ -143,7 +140,7 @@ public class MovieRepository : IMovieRepository
         entity.StudioId = input.StudioId;
         entity.AgeRating = input.AgeRating;
 
-        await _context.SaveChangesAsync(cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
         return entity;
     }
 
@@ -151,15 +148,15 @@ public class MovieRepository : IMovieRepository
     {
         var movie = await GetByIdAsync(id, cancellationToken);
 
-        _context.Movies.Remove(movie);
-        await _context.SaveChangesAsync(cancellationToken);
+        context.Movies.Remove(movie);
+        await context.SaveChangesAsync(cancellationToken);
 
         return movie;
     }
 
     public async Task<bool> ExistsAsync(long movieId, CancellationToken cancellationToken = default)
     {
-        return await _context.Movies
+        return await context.Movies
             .AsNoTracking()
             .AnyAsync(m => m.Id == movieId, cancellationToken);
     }

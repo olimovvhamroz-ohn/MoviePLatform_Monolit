@@ -1,11 +1,13 @@
-﻿using MediatR;
+﻿using System.Security.Claims;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseService.Command;
+using MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseService.Query;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
-namespace MoviePLatform_Monolit.Modules.Users.Domain.Controllers;
+namespace MoviePLatform_Monolit.Modules.Commerce.Domain.Controllers;
 
 [ApiController]
 [Route("api/purchases")]
@@ -34,13 +36,16 @@ public class PurchasesController : ControllerBase
             result, "User purchases retrieved"));
     }
 
-    // Харидро танҳо Admin ройгон медиҳад. Корбарон тавассути /api/cart/checkout мехаранд.
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<PurchaseResponse>>> CreatePurchase(
         [FromBody] PurchaseRequest request)
     {
-        var command = new CreatePurchaseCommand(new PurchaseRequest { UserId = request.UserId, MovieId = request.MovieId });
+        var command = new CreatePurchaseCommand(
+            new PurchaseRequest {
+             UserId = request.UserId,
+             MovieId = request.MovieId });
+        
         var result = await _mediator.Send(command);
 
         return CreatedAtAction(nameof(GetUserPurchases), null,
@@ -59,17 +64,21 @@ public class PurchasesController : ControllerBase
         return Ok(ApiResponse<bool>.SuccessResponse(
             result, result ? "User has purchased this movie" : "User has not purchased this movie"));
     }
-
-    [HttpGet("{purchaseId}")]
-    public async Task<ActionResult<ApiResponse<PurchaseResponse>>> GetPurchaseById(int purchaseId)
+    [HttpGet("get-by-ID/{purchaseId}")]
+    public async Task<ActionResult<ApiResponse<PurchaseResponse>>> GetUserPurchasedById(long purchaseId)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (!int.TryParse(userId, out var id))
-            return Unauthorized();
 
-        // TODO: реализовать GetPurchaseByIdQuery с проверкой владельца
+        if (!long.TryParse(userId, out var id))
+        {
+            return Unauthorized();
+        }
+
+        var query = new GetPurchaseByIdQuery(id, purchaseId);
+        var result = await _mediator.Send(query);
+
         return Ok(ApiResponse<PurchaseResponse>.SuccessResponse(
-            new PurchaseResponse(), "Purchase retrieved"));
+            result, "Purchase retrieved"));
     }
 
     [Authorize(Roles = "Admin")]
@@ -78,7 +87,8 @@ public class PurchasesController : ControllerBase
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
     {
-        // TODO: реализовать GetAllPurchasesQuery
+        var query = new  GetAllPurchasesQuery(pageNumber,pageSize); 
+        await _mediator.Send(query);
         return Ok(ApiResponse<List<PurchaseResponse>>.SuccessResponse(
             new List<PurchaseResponse>(), "All purchases retrieved"));
     }

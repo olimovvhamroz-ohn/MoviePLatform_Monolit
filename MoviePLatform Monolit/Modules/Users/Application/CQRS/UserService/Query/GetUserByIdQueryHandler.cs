@@ -2,6 +2,7 @@
 
 using AutoMapper;
 using MediatR;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
 public record GetUserByIdQuery(int Id) : IRequest<UserResponse>;

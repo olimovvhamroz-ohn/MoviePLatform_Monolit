@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
-using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
-using MoviePLatform_Monolit.Movie.Repositories;
 
-namespace MoviePLatform_Monolit.Movie.CQRS.Categories.Command;
+namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Categories.Command;
 public record DeleteCategoriy(int id) : IRequest<CategoryResponse>;
 
 public class DeleteCategoriyCommandHandler : IRequestHandler<DeleteCategoriy, CategoryResponse>

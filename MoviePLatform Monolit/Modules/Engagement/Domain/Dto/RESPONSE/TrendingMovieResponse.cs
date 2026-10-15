@@ -1,5 +1,7 @@
 ﻿
 
+namespace MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
+
 public class TrendingMovieResponse
 {
     public long MovieId { get; set; }

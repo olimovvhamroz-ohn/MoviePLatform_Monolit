@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using MoviePLatform_Monolit.Enums;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
-using UserService.Domain.Extensions;
 
+namespace MoviePLatform_Monolit.Modules.Users.Application.CQRS.AuthService;
 
 public interface IAuthService
 {

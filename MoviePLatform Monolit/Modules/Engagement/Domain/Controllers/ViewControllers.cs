@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Views.Command;
+using MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Views.Query;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.REQUEST;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Engagement.Domain.Controllers;
 

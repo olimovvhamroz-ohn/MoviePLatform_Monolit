@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
 
 namespace MoviePLatform_Monolit.Modules.Users.Application.CQRS.UserService.command;
 

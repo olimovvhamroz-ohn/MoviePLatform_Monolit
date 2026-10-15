@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
-using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Movie.Repositories;
 
-namespace MoviePLatform_Monolit.Movie.CQRS.Studios.Command;
+namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Studios.Command;
 
 public record DeleteStudioCommand(int Id) : IRequest<StudioResponse>;
 

@@ -28,5 +28,5 @@ public class EntitlementController(IMediator mediator) : ControllerBase
     {
         if (!TryGetUserId(out var userId)) return Unauthorized();
         return Ok(await mediator.Send(new StartPlaybackCommand(userId, movieId)));
-    }
-}
+    
+    

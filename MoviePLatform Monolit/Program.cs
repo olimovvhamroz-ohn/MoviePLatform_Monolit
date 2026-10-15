@@ -7,10 +7,16 @@ using Microsoft.AspNetCore.OpenApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using MoviePLatform_Monolit.Modules.Command.Mappings;
+using MoviePLatform_Monolit.Modules.Command.Middleware;
 using MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.Payments;
 using MoviePLatform_Monolit.Modules.Commerce.Infrastructure.Repositories;
+using MoviePLatform_Monolit.Modules.Engagement.Infrastructure.Repositories;
 using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
-using MoviePLatform_Monolit.Modules.SharedKernel.Interfaces;
+using MoviePLatform_Monolit.Modules.Users.Application.CQRS.AuthService;
+using MoviePLatform_Monolit.Modules.Users.Infrastructure.Repositories;
 using MoviePLatform_Monolit.Movie.Repositories;
 using Scalar.AspNetCore;
 using Serilog;
@@ -23,6 +29,9 @@ builder.Services.AddStackExchangeRedisCache(options =>
 
     options.InstanceName = "MoviePlatform:";
 });
+
+Log.Logger.Information("App started");
+Console.WriteLine("qwertyuio");
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
@@ -110,8 +119,6 @@ app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
-
 app.MapControllers();
 
 app.Run();
@@ -127,7 +134,7 @@ internal sealed class BearerSecuritySchemeTransformer(
         var authenticationSchemes =
             await authenticationSchemeProvider.GetAllSchemesAsync();
 
-        if (!authenticationSchemes.Any(x => x.Name == "Bearer"))
+        if (authenticationSchemes.All(x => x.Name != "Bearer"))
             return;
 
         // 1. Ба OpenAPI мегӯем, ки Bearer JWT вуҷуд дорад

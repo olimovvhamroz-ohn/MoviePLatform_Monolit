@@ -1,5 +1,7 @@
 ﻿
 
+namespace MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
+
 public class WatchlistResponse
 {
     public long Id { get; set; }

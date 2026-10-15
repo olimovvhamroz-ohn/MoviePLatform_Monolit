@@ -1,8 +1,8 @@
 ﻿using MoviePLatform_Monolit.Entity;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
-using MoviePLatform_Monolit.Movie.Entity.Enums;
+using MoviePLatform_Monolit.Modules.Movies.Domain.Enums;
 
-namespace MoviePLatform_Monolit.Movie.DTO.RESPONSE;
+namespace MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 
 public class MovieResponse
 {

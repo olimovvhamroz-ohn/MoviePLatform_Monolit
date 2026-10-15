@@ -1,7 +1,10 @@
-﻿
+﻿using MediatR;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
-using MediatR;
-using UserService.Domain.Extensions;
+namespace MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Views.Command;
 
 public record RecordViewCommand(
     long UserId, 
@@ -30,7 +33,6 @@ public class RecordViewCommandHandler : IRequestHandler<RecordViewCommand, ViewR
         if (request.PositionSeconds < 0)
             throw new BadRequestException("PositionSeconds cannot be negative.");
 
-        // Тафтиши мавҷудияти филм тавассути IMovieRepository
         var movie = await _movieRepository.GetByIdAsync(request.MovieId, cancellationToken);
 
         _logger.LogInformation(
