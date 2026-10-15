@@ -1,6 +1,6 @@
 ﻿using MediatR;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.RESPONSE;
-using MoviePLatform_Monolit.Modules.SharedKernel.Interfaces;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.Query;
 

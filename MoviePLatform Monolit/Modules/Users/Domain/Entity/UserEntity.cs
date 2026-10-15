@@ -1,4 +1,5 @@
 ﻿using MoviePLatform_Monolit.Enums;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Entities;
 
 
 public class UserEntity:BaseEntity

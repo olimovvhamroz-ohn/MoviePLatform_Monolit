@@ -1,11 +1,12 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Modules.Command.Data;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
 
-public class UserRepository : BaseRepository<UserEntity>, IUserRepository
+namespace MoviePLatform_Monolit.Modules.Users.Infrastructure.Repositories;
+
+public class UserRepository(ApplicationDbContext context) : BaseRepository<UserEntity>(context), IUserRepository
 {
-    public UserRepository(ApplicationDbContext context) : base(context) { }
+    private readonly ApplicationDbContext _context = context;
 
     public async Task<UserEntity?> GetByEmail(string email)
     {

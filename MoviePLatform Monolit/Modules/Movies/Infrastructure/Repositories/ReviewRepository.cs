@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MoviePLatform_Monolit.Entity;
+﻿
+using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
@@ -9,9 +11,9 @@ public interface IReviewRepository:IBaseRepo<ReviewEntity>
     Task<List<MovieEntity>> GetTopMovie(int page, int pageSize);
     Task<List<ReviewEntity>> GetMovieReviews(long movieId,int page, int pageSize);
 }
-public class ReviewRepository:BaseRepository<ReviewEntity>,IReviewRepository
+public class ReviewRepository (ApplicationDbContext context):BaseRepository<ReviewEntity>(context),IReviewRepository
 {
-    public ReviewRepository (ApplicationDbContext context):base(context){}
+    private readonly ApplicationDbContext _context = context;
 
     public async Task<List<ReviewEntity>> GetMovieReviews(long movieId, int page, int pageSize)
     {

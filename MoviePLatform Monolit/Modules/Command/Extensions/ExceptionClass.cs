@@ -1,4 +1,4 @@
-namespace UserService.Domain.Extensions;
+namespace MoviePLatform_Monolit.Modules.Command.Extensions;
 
 public class NotFoundException:Exception
 {

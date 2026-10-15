@@ -2,32 +2,24 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
-using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
-using UserService.Domain.Extensions;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
+
+namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Movies.Query;
 
 public record GetMoviesPaginationQuery(
     int Page,
     int PageSize) : IRequest<List<MovieResponse>>;
 
-public class GetMoviesPaginationQueryHandler
+public class GetMoviesPaginationQueryHandler(
+    IMovieRepository repository,
+    IMapper mapper,
+    ILogger<GetMoviesPaginationQueryHandler> logger,
+    IDistributedCache cache)
     : IRequestHandler<GetMoviesPaginationQuery, List<MovieResponse>>
 {
-    private readonly IMovieRepository _repository;
-    private readonly IMapper _mapper;
-    private readonly ILogger<GetMoviesPaginationQueryHandler> _logger;
-    private readonly IDistributedCache _cache;
-
-    public GetMoviesPaginationQueryHandler(
-        IMovieRepository repository,
-        IMapper mapper,
-        ILogger<GetMoviesPaginationQueryHandler> logger,
-        IDistributedCache cache)
-    {
-        _repository = repository;
-        _mapper = mapper;
-        _logger = logger;
-        _cache = cache;
-    }
+   
 
     public async Task<List<MovieResponse>> Handle(
         GetMoviesPaginationQuery request,
@@ -42,14 +34,13 @@ public class GetMoviesPaginationQueryHandler
         var key =
             $"movie:page:{request.Page}:size:{request.PageSize}";
 
-        // 1. Check Redis
-        var cachedMovies = await _cache.GetStringAsync(
+        var cachedMovies = await cache.GetStringAsync(
             key,
             cancellationToken);
 
         if (!string.IsNullOrEmpty(cachedMovies))
         {
-            _logger.LogInformation(
+            logger.LogInformation(
                 "Movies page {Page} size {PageSize} found in Redis",
                 request.Page,
                 request.PageSize);
@@ -58,25 +49,24 @@ public class GetMoviesPaginationQueryHandler
                 cachedMovies)!;
         }
 
-        // 2. Redis empty → PostgreSQL
-        _logger.LogInformation(
+        logger.LogInformation(
             "Getting movies page {Page} size {PageSize} from database",
             request.Page,
             request.PageSize);
 
-        var movies = await _repository.PaginationAsync(
+        var movies = await repository.PaginationAsync(
             request.Page,
             request.PageSize,
             cancellationToken);
 
         // 3. Entity → Response
-        var response = _mapper.Map<List<MovieResponse>>(movies);
+        var response = mapper.Map<List<MovieResponse>>(movies);
 
         // 4. Response → JSON
         var json = JsonSerializer.Serialize(response);
 
         // 5. Save to Redis
-        await _cache.SetStringAsync(
+        await cache.SetStringAsync(
             key,
             json,
             new DistributedCacheEntryOptions

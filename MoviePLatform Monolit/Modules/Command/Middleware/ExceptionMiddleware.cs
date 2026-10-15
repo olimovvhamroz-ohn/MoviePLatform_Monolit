@@ -1,8 +1,9 @@
 ﻿using System.Net.Mime;
 using System.Text.Json;
 using FluentValidation;
-using UserService.Domain.Extensions;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 
+namespace MoviePLatform_Monolit.Modules.Command.Middleware;
 
 public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
 {

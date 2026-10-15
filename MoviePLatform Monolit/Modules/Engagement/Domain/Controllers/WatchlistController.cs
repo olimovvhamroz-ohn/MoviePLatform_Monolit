@@ -3,7 +3,10 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Watchlist.Command;
 using MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Watchlist.Query;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.REQUEST;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Engagement.Domain.Controllers;
 

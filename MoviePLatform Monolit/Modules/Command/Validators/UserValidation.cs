@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
 
+namespace MoviePLatform_Monolit.Modules.Command.Validators;
 
 public class UserValidation : AbstractValidator<UserRequest>
 {

@@ -18,13 +18,12 @@ public class OrderConfiguration : IEntityTypeConfiguration<OrderEntity>
         builder.HasIndex(o => o.UserId)
             .IsUnique()
             .HasFilter("\"Status\" = 1");
-        // Як заказ → якчанд элемент
+
         builder.HasMany(o => o.Items)
             .WithOne(i => i.Order)
             .HasForeignKey(i => i.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Як заказ → як платёж
         builder.HasOne(o => o.Payment)
             .WithOne(p => p.Order)
             .HasForeignKey<PaymentEntity>(p => p.OrderId)
@@ -55,7 +54,6 @@ public class PaymentConfiguration : IEntityTypeConfiguration<PaymentEntity>
         builder.Property(p => p.Amount).HasColumnType("numeric(10,2)");
         builder.Property(p => p.TransactionId).HasMaxLength(100);
 
-        // TransactionId-и шлюз такрор намешавад (агар пур бошад)
         builder.HasIndex(p => p.TransactionId)
             .IsUnique()
             .HasFilter("\"TransactionId\" IS NOT NULL");

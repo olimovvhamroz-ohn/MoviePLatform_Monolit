@@ -2,7 +2,6 @@
 
 public enum OrderStatus
 {
-    //Статусы заказов
     Pending = 1,
     Processing = 2,
     Completed = 3,

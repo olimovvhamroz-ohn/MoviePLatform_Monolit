@@ -1,22 +1,17 @@
 ﻿
-public class RequestLoggingMiddleware
-{
-    private readonly RequestDelegate _next;
-    private readonly ILogger<RequestLoggingMiddleware> _logger;
+namespace MoviePLatform_Monolit.Modules.Command.Middleware;
 
-    public RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggingMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger;
-    }
+public class RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggingMiddleware> logger)
+{
+   
 
     public async Task InvokeAsync(HttpContext context)
     {
         var sw = System.Diagnostics.Stopwatch.StartNew();
-        await _next(context);
+        await next(context);
         sw.Stop();
 
-        _logger.LogInformation("{Method} {Path} → {Status} ({Ms}ms)",
+        logger.LogInformation("{Method} {Path} → {Status} ({Ms}ms)",
             context.Request.Method,
             context.Request.Path,
             context.Response.StatusCode,

@@ -2,10 +2,10 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
-using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
-using MoviePLatform_Monolit.Movie.Repositories;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
-namespace MoviePLatform_Monolit.Movie.CQRS.Actor.Query;
+namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Actor.Query;
 
 public record GetByIdActorQuery(int ActorId) : IRequest<ActorResponse>;                                         
 

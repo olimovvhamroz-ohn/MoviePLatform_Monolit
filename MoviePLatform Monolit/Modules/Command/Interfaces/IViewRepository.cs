@@ -1,5 +1,9 @@
 ﻿
 
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Entities;
+
+namespace MoviePLatform_Monolit.Modules.Command.Interfaces;
+
 public interface IViewRepository
 {
     Task<ViewEntity> RecordView(long userId, long movieId, int positionSeconds, bool isCompleted);

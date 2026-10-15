@@ -1,21 +1,17 @@
-﻿
+﻿using MediatR;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
 
-using MediatR;
+namespace MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Watchlist.Query;
 
 public record GetWatchlistByUserIdQuery(long UserId) : IRequest<List<WatchlistResponse>>;
 
-public class GetWatchlistByUserIdQueryHandler : IRequestHandler<GetWatchlistByUserIdQuery, List<WatchlistResponse>>
+public class GetWatchlistByUserIdQueryHandler(IWatchlistRepository repository) : IRequestHandler<GetWatchlistByUserIdQuery, List<WatchlistResponse>>
 {
-    private readonly IWatchlistRepository _repository;
-
-    public GetWatchlistByUserIdQueryHandler(IWatchlistRepository repository)
-    {
-        _repository = repository;
-    }
-
+    
     public async Task<List<WatchlistResponse>> Handle(GetWatchlistByUserIdQuery request, CancellationToken cancellationToken)
     {
-        var items = await _repository.GetByUserId(request.UserId);
+        var items = await repository.GetByUserId(request.UserId);
         return items.Select(x => new WatchlistResponse
         {
             Id = x.Id,

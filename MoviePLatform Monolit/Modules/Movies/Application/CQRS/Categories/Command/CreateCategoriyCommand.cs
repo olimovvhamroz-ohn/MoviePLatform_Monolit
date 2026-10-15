@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using MediatR;
 using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
 using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
-using MoviePLatform_Monolit.Movie.DTO.REQUEST;
-using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
-using MoviePLatform_Monolit.Movie.Repositories;
 
-namespace MoviePLatform_Monolit.Movie.CQRS.Categories.Command;
+namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Categories.Command;
 public record CreateCategoryCommand(CategoryRequest Request):IRequest<CategoryResponse>;
 
 public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, CategoryResponse>

@@ -1,44 +1,34 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
-using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
-using MoviePLatform_Monolit.Movie.Repositories;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Actor.Command;
-public record DeleteCommand(int id) : IRequest<ActorResponse>;
-public class DeleteActorCommand:IRequestHandler<DeleteCommand,ActorResponse>
-{
-    private readonly IMapper _mapper;
-    private readonly ILogger<DeleteActorCommand> _logger;
-    private readonly IActorRepository _actorRepository;
-    private readonly IDistributedCache _cache;
 
-    public DeleteActorCommand(
-        IMapper mapper,
-        ILogger<DeleteActorCommand> logger,
-        IActorRepository actorRepository,
-        IDistributedCache cache)
-    {
-        _actorRepository = actorRepository;
-        _mapper = mapper;
-        _logger = logger;
-        _cache = cache;
-    }
+public record DeleteCommand(int Id) : IRequest<ActorResponse>;
+
+public class DeleteActorCommand(
+    IMapper mapper,
+    ILogger<DeleteActorCommand> logger,
+    IActorRepository actorRepository,
+    IDistributedCache cache) : IRequestHandler<DeleteCommand, ActorResponse>
+{
     public async Task<ActorResponse> Handle(
         DeleteCommand request,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation(
+        logger.LogInformation(
             "Starting delete actor with id {Id}",
-            request.id);
+            request.Id);
 
-        var deletedActor = await _actorRepository.DeleteAsync(request.id);
+        var deletedActor = await actorRepository.DeleteAsync(request.Id);
 
-        await _cache.RemoveAsync(
-            $"actor:{request.id}",
+        await cache.RemoveAsync(
+            $"actor:{request.Id}",
             cancellationToken);
-        await _cache.RemoveAsync($"actor:{deletedActor.Name}", cancellationToken);
+        await cache.RemoveAsync($"actor:{deletedActor.Name}", cancellationToken);
 
-        return _mapper.Map<ActorResponse>(deletedActor);
+        return mapper.Map<ActorResponse>(deletedActor);
     }
 }

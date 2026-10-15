@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Entity;
 using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Modules.Commerce.Domain.Entity;
 using MoviePLatform_Monolit.Modules.Commerce.Domain.Enum;
 using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
-using UserService.Domain.Extensions;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Infrastructure.Repositories;
 

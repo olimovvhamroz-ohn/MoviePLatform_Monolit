@@ -1,4 +1,4 @@
-﻿namespace MoviePLatform_Monolit.Movie.Entity.Enums;
+﻿namespace MoviePLatform_Monolit.Modules.Movies.Domain.Enums;
 
 public enum AgeRating
 {

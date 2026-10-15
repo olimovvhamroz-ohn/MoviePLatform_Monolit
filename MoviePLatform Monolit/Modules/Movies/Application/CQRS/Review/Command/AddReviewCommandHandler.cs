@@ -2,8 +2,10 @@
 using AutoMapper;
 using MediatR;
 using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
 using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
-using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Aplication.CQRS.Review.Command;
 

@@ -1,25 +1,20 @@
-﻿
+﻿using MediatR;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
 
-using MediatR;
+namespace MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Watchlist.Command;
 
 public record MarkWatchedCommand(long UserId, long MovieId) : IRequest<WatchlistResponse>;
 
-public class MarkWatchedCommandHandler : IRequestHandler<MarkWatchedCommand, WatchlistResponse>
+public class MarkWatchedCommandHandler (IWatchlistRepository repository, ILogger<MarkWatchedCommandHandler> logger): IRequestHandler<MarkWatchedCommand, WatchlistResponse>
 {
-    private readonly IWatchlistRepository _repository;
-    private readonly ILogger<MarkWatchedCommandHandler> _logger;
-
-    public MarkWatchedCommandHandler(IWatchlistRepository repository, ILogger<MarkWatchedCommandHandler> logger)
-    {
-        _repository = repository;
-        _logger = logger;
-    }
+   
 
     public async Task<WatchlistResponse> Handle(MarkWatchedCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Marking watched: user {UserId}, movie {MovieId}", request.UserId, request.MovieId);
+        logger.LogInformation("Marking watched: user {UserId}, movie {MovieId}", request.UserId, request.MovieId);
 
-        var updated = await _repository.MarkWatched(request.UserId, request.MovieId);
+        var updated = await repository.MarkWatched(request.UserId, request.MovieId);
         return new WatchlistResponse
         {
             Id = updated.Id,

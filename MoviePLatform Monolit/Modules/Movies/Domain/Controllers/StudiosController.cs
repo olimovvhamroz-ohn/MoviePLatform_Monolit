@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MoviePLatform_Monolit.Movie.CQRS.Studios.Command;
-using MoviePLatform_Monolit.Movie.CQRS.Studios.Query;
-using MoviePLatform_Monolit.Movie.DTO.REQUEST;
-using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Studios.Command;
+using MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Studios.Query;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 
 
 namespace MoviePLatform_Monolit.Modules.Movies.Domain.Controllers;

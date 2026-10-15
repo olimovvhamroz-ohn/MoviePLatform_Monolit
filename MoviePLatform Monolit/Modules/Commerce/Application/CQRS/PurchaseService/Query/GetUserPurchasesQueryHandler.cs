@@ -1,30 +1,23 @@
-﻿
-
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
 using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
+namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseService.Query;
+
 public record GetUserPurchasesQuery(long UserId) : IRequest<List<PurchaseResponse>>;
 
-public class GetUserPurchasesQueryHandler : IRequestHandler<GetUserPurchasesQuery, List<PurchaseResponse>>
+public class GetUserPurchasesQueryHandler(IPurchaseRepository repository, IMapper mapper) : IRequestHandler<GetUserPurchasesQuery, List<PurchaseResponse>>
 {
-    private readonly IPurchaseRepository _repository;
-    private readonly IMapper _mapper;
-
-    public GetUserPurchasesQueryHandler(IPurchaseRepository repository, IMapper mapper)
-    {
-        _repository = repository;
-        _mapper = mapper;
-    }
+    
     public async Task<List<PurchaseResponse>> Handle(
         GetUserPurchasesQuery request,
         CancellationToken cancellationToken)
     {
-        var data = await _repository.GetUserPurchases(request.UserId);
+        var data = await repository.GetUserPurchases(request.UserId);
 
         
-        var result = _mapper.Map<List<PurchaseResponse>>(data);
+        var result = mapper.Map<List<PurchaseResponse>>(data);
 
         for (int i = 0; i < data.Count; i++)
         {

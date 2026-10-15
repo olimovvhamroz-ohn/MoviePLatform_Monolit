@@ -1,11 +1,11 @@
 ﻿using System.Security.Authentication;
 using AutoMapper;
 using MediatR;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
-using MoviePLatform_Monolit.Movie.DTO.REQUEST;
-using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
 
-namespace MoviePLatform_Monolit.Modules.Movies.Aplication.CQRS.Review.Command;
+namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Review.Command;
 
 public record UpdateReviewCommand(long ReviewId, long UserId, ReviewRequest Request) : IRequest<ReviewResponse>;
 

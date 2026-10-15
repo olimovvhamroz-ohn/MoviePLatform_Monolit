@@ -1,6 +1,6 @@
 ﻿using MoviePLatform_Monolit.Modules.Commerce.Domain.Entity;
 
-namespace MoviePLatform_Monolit.Modules.SharedKernel.Interfaces;
+namespace MoviePLatform_Monolit.Modules.Command.Interfaces;
 
 
 public interface IOrderRepository

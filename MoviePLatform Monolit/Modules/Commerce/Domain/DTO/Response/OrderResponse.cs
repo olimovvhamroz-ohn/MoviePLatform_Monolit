@@ -1,7 +1,4 @@
 ﻿namespace MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.RESPONSE;
-
-
-
 public class OrderResponse
 {
     public long Id { get; set; }

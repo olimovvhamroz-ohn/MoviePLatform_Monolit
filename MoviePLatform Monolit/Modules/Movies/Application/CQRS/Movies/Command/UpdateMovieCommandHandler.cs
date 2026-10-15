@@ -3,9 +3,9 @@ using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using MoviePLatform_Monolit.Entity;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
 using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
-using MoviePLatform_Monolit.Movie.DTO.REQUEST;
-using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Movies.Command;
 

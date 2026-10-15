@@ -1,6 +1,6 @@
 ﻿
 
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
+namespace MoviePLatform_Monolit.Modules.Command.Interfaces;
 
 public interface IUserRepository : IBaseRepo<UserEntity>
 {

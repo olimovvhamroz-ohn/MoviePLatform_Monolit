@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using AutoMapper;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 

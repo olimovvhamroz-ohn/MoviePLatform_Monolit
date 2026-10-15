@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Entity;
 using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
@@ -10,11 +12,9 @@ public interface ICategoryRepository : IBaseRepo<CategoryEntity>
     
 }
 
-public class CategoryRepository : Modules.Movies.Infrastructure.Repositories.BaseRepository<CategoryEntity>, ICategoryRepository
+public class CategoryRepository(ApplicationDbContext context) : BaseRepository<CategoryEntity>(context), ICategoryRepository
 {
-    
-    
-    public CategoryRepository(ApplicationDbContext context) : base(context) { }
+    private readonly ApplicationDbContext _context = context;
 
     public async Task<bool> ExistsByNameAsync(string title, CancellationToken cancellationToken = default)
     {

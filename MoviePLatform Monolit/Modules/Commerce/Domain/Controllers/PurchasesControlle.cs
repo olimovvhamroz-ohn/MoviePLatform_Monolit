@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseService.Command;
 using MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseService.Query;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
@@ -86,7 +87,8 @@ public class PurchasesController : ControllerBase
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
     {
-        // TODO: реализовать GetAllPurchasesQuery
+        var query = new  GetAllPurchasesQuery(pageNumber,pageSize); 
+        await _mediator.Send(query);
         return Ok(ApiResponse<List<PurchaseResponse>>.SuccessResponse(
             new List<PurchaseResponse>(), "All purchases retrieved"));
     }

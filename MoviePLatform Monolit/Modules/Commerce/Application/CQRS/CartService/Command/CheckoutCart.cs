@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Command.Interfaces;
-using MoviePLatform_Monolit.Modules.SharedKernel.Interfaces;
 using MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
-using UserService.Domain.Extensions;
 
-namespace MoviePLatform_Monolit.Modules.Users.Application.CQRS.CartService.Command;
+namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.CartService.Command;
 
 public record CheckoutCartCommand(long UserId, string? PaymentToken = null) : IRequest<CartResponse>;
 

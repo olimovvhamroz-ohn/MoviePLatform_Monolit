@@ -1,23 +1,17 @@
-﻿using MoviePLatform_Monolit.Modules.Command.Data;
-using MoviePLatform_Monolit.Modules.SharedKernel.Interfaces;
-
-namespace MoviePLatform_Monolit.Modules.Commerce.Infrastructure.Repositories;
+﻿using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Commerce.Domain.Entity;
 
-public class OrderRepository : IOrderRepository
+namespace MoviePLatform_Monolit.Modules.Commerce.Infrastructure.Repositories;
+
+public class OrderRepository(ApplicationDbContext context) : IOrderRepository
 {
-    private readonly ApplicationDbContext _context;
-
-    public OrderRepository(ApplicationDbContext context)
-    {
-        _context = context;
-    }
-
+    
     public async Task<List<OrderEntity>> GetUserOrders(long userId, int pageNumber, int pageSize,
         CancellationToken cancellationToken = default)
     {
-        return await _context.Orders
+        return await context.Orders
             .AsNoTracking()
             .Include(o => o.Items)
             .Where(o => o.UserId == userId)

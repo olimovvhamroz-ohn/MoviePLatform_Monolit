@@ -3,7 +3,10 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Modules.Command.Data;
-using UserService.Domain.Extensions;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Entities;
 
 public record CreateWatchlistCommand(long UserId, long MovieId) : IRequest<WatchlistResponse>;
 

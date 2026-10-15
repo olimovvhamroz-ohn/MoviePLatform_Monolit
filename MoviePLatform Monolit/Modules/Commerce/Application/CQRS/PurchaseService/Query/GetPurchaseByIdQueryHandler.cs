@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using MediatR;
-using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
-using UserService.Domain.Extensions;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseService.Query;
 
@@ -18,8 +17,8 @@ public class GetPurchaseByIdQueryHandler(IPurchaseRepository repository,IMapper 
         if (result == null)
         {
             throw new NotFoundException("Purchase ID not Found");
-        };
-          return mapper.Map<PurchaseResponse>(result);
+        }; 
+        return mapper.Map<PurchaseResponse>(result);
          
     }
 }

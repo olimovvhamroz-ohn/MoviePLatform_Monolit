@@ -1,7 +1,8 @@
-﻿using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
-using MoviePLatform_Monolit.Movie.Entity.Enums;
+﻿using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Entities;
+using MoviePLatform_Monolit.Modules.Movies.Domain.Enums;
 
-namespace MoviePLatform_Monolit.Entity;
+namespace MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
 
 public class MovieEntity : BaseEntity
 {

@@ -1,7 +1,6 @@
-﻿using MoviePLatform_Monolit.Modules.SharedKernel.Interfaces;
+﻿using MoviePLatform_Monolit.Modules.Command.Interfaces;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.Payments;
-
 
 public class FakePaymentGateway:IPaymentGateway
 {

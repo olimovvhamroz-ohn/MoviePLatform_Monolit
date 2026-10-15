@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
 
+namespace MoviePLatform_Monolit.Modules.Command.Validators;
+
 public class PurchaseValidation : AbstractValidator<PurchaseRequest>
 {
     public PurchaseValidation()

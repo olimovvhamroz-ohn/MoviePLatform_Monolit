@@ -1,13 +1,17 @@
 ﻿using AutoMapper;
 using MoviePLatform_Monolit.Entity;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.REQUEST;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Entities;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
 using MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
-using MoviePLatform_Monolit.Movie.DTO.REQUEST;
-using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
+
+namespace MoviePLatform_Monolit.Modules.Command.Mappings;
 
 public class Mapping : Profile
 {

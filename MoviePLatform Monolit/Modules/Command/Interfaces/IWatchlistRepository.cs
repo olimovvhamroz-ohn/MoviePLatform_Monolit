@@ -1,4 +1,7 @@
 ﻿
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Entities;
+
+namespace MoviePLatform_Monolit.Modules.Command.Interfaces;
 
 public interface IWatchlistRepository
 {

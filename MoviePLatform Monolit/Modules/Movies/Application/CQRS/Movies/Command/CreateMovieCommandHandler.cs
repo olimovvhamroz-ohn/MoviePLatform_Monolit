@@ -2,10 +2,11 @@
 using MediatR;
 using MoviePLatform_Monolit.Entity;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
-using MoviePLatform_Monolit.Movie.DTO.REQUEST;
-using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
+using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
-namespace MoviePLatform_Monolit.Movie.CQRS.Movies.Command;
+namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Movies.Command;
 
 
 public record CreateMovieCommand(MovieRequest Dto) : IRequest<MovieResponse>;

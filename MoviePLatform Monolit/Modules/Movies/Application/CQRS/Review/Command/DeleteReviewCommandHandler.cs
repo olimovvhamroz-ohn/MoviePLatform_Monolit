@@ -1,8 +1,8 @@
 ﻿using MediatR;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
-using UserService.Domain.Extensions;
 
-namespace MoviePLatform_Monolit.Modules.Movies.Aplication.CQRS.Review.Command;
+namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Review.Command;
 
 public record DeleteReviewCommand(long ReviewId, long UserId):IRequest<Unit>;
 public class DeleteReviewCommandHandler:IRequestHandler<DeleteReviewCommand,Unit>

@@ -1,21 +1,17 @@
-﻿
+﻿using MediatR;
+using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
 
-using MediatR;
+namespace MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Views.Query;
 
-public record GetContinueWatchingQuery(long UserId) : IRequest<List<ViewResponse>>;
+public  record GetContinueWatchingQuery(long UserId) : IRequest<List<ViewResponse>>;
 
-public class GetContinueWatchingQueryHandler : IRequestHandler<GetContinueWatchingQuery, List<ViewResponse>>
+public class GetContinueWatchingQueryHandler(IViewRepository repository) : IRequestHandler<GetContinueWatchingQuery, List<ViewResponse>>
 {
-    private readonly IViewRepository _repository;
-
-    public GetContinueWatchingQueryHandler(IViewRepository repository)
-    {
-        _repository = repository;
-    }
-
+    
     public async Task<List<ViewResponse>> Handle(GetContinueWatchingQuery request, CancellationToken cancellationToken)
     {
-        var items = await _repository.GetContinueWatching(request.UserId);
+        var items = await repository.GetContinueWatching(request.UserId);
         return items.Select(x => new ViewResponse
         {
             Id = x.Id,

@@ -2,8 +2,11 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
-using MoviePLatform_Monolit.Movie.DTO.RESPONSE;
-using MoviePLatform_Monolit.Movie.Entity.Enums;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Domain.Enums;
+using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
+
+namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Movies.Query;
 
 public record GetMoviesByFilterQuery(
     long? CategoryId,
