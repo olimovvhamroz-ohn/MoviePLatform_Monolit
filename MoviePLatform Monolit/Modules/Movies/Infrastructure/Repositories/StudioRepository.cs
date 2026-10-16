@@ -1,10 +1,8 @@
-﻿using MoviePLatform_Monolit.Entity;
-using MoviePLatform_Monolit.Modules.Command.Data;
+﻿using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
-namespace MoviePLatform_Monolit.Movie.Repositories;
+namespace MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 
 public interface IStudioRepository : IBaseRepo<StudioEntity> { }

@@ -10,22 +10,15 @@ namespace MoviePLatform_Monolit.Modules.Movies.Domain.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CategoriesController : ControllerBase
+public class CategoriesController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public CategoriesController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
- 
+    
     [HttpGet]
     public async Task<ActionResult<ApiResponse<List<CategoryResponse>>>> GetAllCategories()
     {
         
             var query = new GetAllCategories();
-            var result = await _mediator.Send(query);
+            var result = await mediator.Send(query);
             
             return Ok(ApiResponse<List<CategoryResponse>>.SuccessResponse(
                 result, $"Retrieved {result.Count} categories"));
@@ -37,7 +30,7 @@ public class CategoriesController : ControllerBase
     {
       
             var query = new GetCategoryByIdQuery(id);
-            var result = await _mediator.Send(query);
+            var result = await mediator.Send(query);
             
             return Ok(ApiResponse<CategoryResponse>.SuccessResponse(result, "Category retrieved"));
        
@@ -51,7 +44,7 @@ public class CategoriesController : ControllerBase
     {
        
             var command = new CreateCategoryCommand(request) ;
-            var result = await _mediator.Send(command);
+            var result = await mediator.Send(command);
             
             return CreatedAtAction(nameof(GetCategoryById), new { id = result.Id },
                 ApiResponse<CategoryResponse>.SuccessResponse(result, "Category created", 201));
@@ -65,7 +58,7 @@ public class CategoriesController : ControllerBase
     {
         
             var command = new DeleteCategoriy(id) ;
-            await _mediator.Send(command);
+            await mediator.Send(command);
             
             return Ok(ApiResponse.SuccessResponse("Category deleted successfully"));
        

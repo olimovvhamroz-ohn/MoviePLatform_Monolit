@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using MoviePLatform_Monolit.Entity;
 using MoviePLatform_Monolit.Modules.Commerce.Domain.Entity;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Entities;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;

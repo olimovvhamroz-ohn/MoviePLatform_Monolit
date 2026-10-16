@@ -6,6 +6,7 @@ using MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Views.Command;
 using MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Views.Query;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.REQUEST;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Engagement.Domain.Controllers;
 

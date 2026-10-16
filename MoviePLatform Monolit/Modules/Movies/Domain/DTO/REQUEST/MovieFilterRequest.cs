@@ -1,7 +1,6 @@
 ﻿using MoviePLatform_Monolit.Modules.Movies.Domain.Enums;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
-
 public class MovieFilterRequest
 {
     public long? CategoryId { get; set; }

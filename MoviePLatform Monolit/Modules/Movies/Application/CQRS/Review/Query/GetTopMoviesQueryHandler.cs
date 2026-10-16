@@ -12,26 +12,12 @@ public record GetTopMoviesQuery(
     int Page,
     int PageSize) : IRequest<List<MovieResponse>>;
 
-public class GetTopMoviesQueryHandler
-    : IRequestHandler<GetTopMoviesQuery, List<MovieResponse>>
+public class GetTopMoviesQueryHandler(
+    IReviewRepository reviewRepository,
+    IMapper mapper,
+    ILogger<GetTopMoviesQueryHandler> logger,
+    IDistributedCache cache) : IRequestHandler<GetTopMoviesQuery, List<MovieResponse>>
 {
-    private readonly IReviewRepository _reviewRepository;
-    private readonly IMapper _mapper;
-    private readonly ILogger<GetTopMoviesQueryHandler> _logger;
-    private readonly IDistributedCache _cache;
-
-    public GetTopMoviesQueryHandler(
-        IReviewRepository reviewRepository,
-        IMapper mapper,
-        ILogger<GetTopMoviesQueryHandler> logger,
-        IDistributedCache cache)
-    {
-        _reviewRepository = reviewRepository;
-        _mapper = mapper;
-        _logger = logger;
-        _cache = cache;
-    }
-
     public async Task<List<MovieResponse>> Handle(
         GetTopMoviesQuery request,
         CancellationToken cancellationToken)
@@ -46,13 +32,13 @@ public class GetTopMoviesQueryHandler
             $"movie:top:page:{request.Page}:size:{request.PageSize}";
 
         // 1. Redis
-        var cachedMovies = await _cache.GetStringAsync(
+        var cachedMovies = await cache.GetStringAsync(
             key,
             cancellationToken);
 
         if (!string.IsNullOrEmpty(cachedMovies))
         {
-            _logger.LogInformation(
+            logger.LogInformation(
                 "Top movies page {Page} size {PageSize} found in Redis",
                 request.Page,
                 request.PageSize);
@@ -62,23 +48,23 @@ public class GetTopMoviesQueryHandler
         }
 
         // 2. PostgreSQL
-        _logger.LogInformation(
+        logger.LogInformation(
             "Getting top movies page {Page} size {PageSize} from database",
             request.Page,
             request.PageSize);
 
-        var movies = await _reviewRepository.GetTopMovie(
+        var movies = await reviewRepository.GetTopMovie(
             request.Page,
             request.PageSize);
 
         // 3. Map
-        var response = _mapper.Map<List<MovieResponse>>(movies);
+        var response = mapper.Map<List<MovieResponse>>(movies);
 
         // 4. Serialize
         var json = JsonSerializer.Serialize(response);
 
         // 5. Redis
-        await _cache.SetStringAsync(
+        await cache.SetStringAsync(
             key,
             json,
             new DistributedCacheEntryOptions

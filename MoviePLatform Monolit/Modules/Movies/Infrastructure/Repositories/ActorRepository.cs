@@ -15,7 +15,7 @@ public class ActorRepository(ApplicationDbContext context) : BaseRepository<Acto
   
     public async Task<ActorEntity> GetByName(string name)
     {
-        if (name==null) throw new Exception("badrequest=name cannot  be null ");
+        if (name==null) throw new Exception("name cannot  be null ");
         
         var actor = await context.Actors.Include(x => x.Movies)
             .FirstOrDefaultAsync(x => x.Name.ToLower() == name.ToLower());

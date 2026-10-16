@@ -1,33 +1,25 @@
-﻿
-
-using AutoMapper;
+﻿using AutoMapper;
 using MediatR;
 using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
+namespace MoviePLatform_Monolit.Modules.Users.Application.CQRS.UserService.Query;
+
 public record GetAllUsersQuery : IRequest<List<UserResponse>>;
 
-public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, List<UserResponse>>
+public class GetAllUsersQueryHandler(
+    IMapper mapper,
+    ILogger<GetAllUsersQueryHandler> logger,
+    IUserRepository repository) : IRequestHandler<GetAllUsersQuery, List<UserResponse>>
 {
-    private readonly IUserRepository _repository;
-    private readonly IMapper _mapper;
-    private readonly ILogger<GetAllUsersQueryHandler> _logger;
-
-    public GetAllUsersQueryHandler(IMapper mapper, ILogger<GetAllUsersQueryHandler> logger, IUserRepository repository)
-    {
-        _repository = repository;
-        _mapper = mapper;
-        _logger = logger;
-    }
-
     public async Task<List<UserResponse>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Getting all users");
+        logger.LogInformation("Getting all users");
 
-        var users = await _repository.GetAllAsync();
+        var users = await repository.GetAllAsync();
 
-        _logger.LogInformation("Total users: {Count}", users.Count);
+        logger.LogInformation("Total users: {Count}", users.Count);
 
-        return _mapper.Map<List<UserResponse>>(users);
+        return mapper.Map<List<UserResponse>>(users);
     }
 }

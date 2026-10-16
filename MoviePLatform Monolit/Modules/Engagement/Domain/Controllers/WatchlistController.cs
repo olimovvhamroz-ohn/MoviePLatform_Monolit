@@ -7,6 +7,7 @@ using MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Watchlist.Comman
 using MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Watchlist.Query;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.REQUEST;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Engagement.Domain.Controllers;
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.Query;
 using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Domain.Controllers;
 

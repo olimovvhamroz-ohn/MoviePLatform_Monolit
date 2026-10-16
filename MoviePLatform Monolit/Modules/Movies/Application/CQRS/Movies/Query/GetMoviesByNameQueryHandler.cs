@@ -10,26 +10,13 @@ namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Movies.Query;
 public record GetMoviesByNameQuery(string Title)
     : IRequest<List<MovieResponse>>;
 
-public class GetMoviesByNameQueryHandler
+public class GetMoviesByNameQueryHandler(
+    IMovieRepository repository,
+    IMapper mapper,
+    ILogger<GetMoviesByNameQueryHandler> logger,
+    IDistributedCache cache)
     : IRequestHandler<GetMoviesByNameQuery, List<MovieResponse>>
 {
-    private readonly IMovieRepository _repository;
-    private readonly IMapper _mapper;
-    private readonly ILogger<GetMoviesByNameQueryHandler> _logger;
-    private readonly IDistributedCache _cache;
-
-    public GetMoviesByNameQueryHandler(
-        IMovieRepository repository,
-        IMapper mapper,
-        ILogger<GetMoviesByNameQueryHandler> logger,
-        IDistributedCache cache)
-    {
-        _repository = repository;
-        _mapper = mapper;
-        _logger = logger;
-        _cache = cache;
-    }
-
     public async Task<List<MovieResponse>> Handle(
         GetMoviesByNameQuery request,
         CancellationToken cancellationToken)
@@ -37,13 +24,13 @@ public class GetMoviesByNameQueryHandler
         var key = $"movie:name:{request.Title}";
 
         // 1. Check Redis
-        var cachedMovies = await _cache.GetStringAsync(
+        var cachedMovies = await cache.GetStringAsync(
             key,
             cancellationToken);
 
         if (!string.IsNullOrEmpty(cachedMovies))
         {
-            _logger.LogInformation(
+            logger.LogInformation(
                 "Movies with title {Title} found in Redis",
                 request.Title);
 
@@ -52,22 +39,22 @@ public class GetMoviesByNameQueryHandler
         }
 
         // 2. If not in Redis → PostgreSQL
-        _logger.LogInformation(
+        logger.LogInformation(
             "Searching movies by title {Title} in database",
             request.Title);
 
-        var movies = await _repository.GetMovieByNameAsync(
+        var movies = await repository.GetMovieByNameAsync(
             request.Title,
             cancellationToken);
 
         // 3. Entity → Response
-        var response = _mapper.Map<List<MovieResponse>>(movies);
+        var response = mapper.Map<List<MovieResponse>>(movies);
 
         // 4. Response → JSON
         var json = JsonSerializer.Serialize(response);
 
         // 5. Save to Redis
-        await _cache.SetStringAsync(
+        await cache.SetStringAsync(
             key,
             json,
             new DistributedCacheEntryOptions

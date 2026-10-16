@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using MoviePLatform_Monolit.Modules.Users.Application.Policies;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseService.Query;

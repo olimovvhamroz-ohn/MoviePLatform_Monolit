@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 
-namespace MoviePLatform_Monolit.Users.Configuration;
+namespace MoviePLatform_Monolit.Modules.Users.Infrastructure.Configuration;
 
 public class UserConfiguration:IEntityTypeConfiguration<UserEntity>
 {

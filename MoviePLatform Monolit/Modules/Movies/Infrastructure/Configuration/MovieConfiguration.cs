@@ -20,7 +20,6 @@ public class MovieConfiguration : IEntityTypeConfiguration<MovieEntity>
             .HasForeignKey(r => r.MovieId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Единственная и правильная настройка связи Многие-ко-Многим
         builder.HasMany(m => m.Actors)
             .WithMany(a => a.Movies)
             .UsingEntity(

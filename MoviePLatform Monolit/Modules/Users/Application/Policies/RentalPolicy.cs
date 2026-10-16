@@ -1,4 +1,6 @@
-﻿public static class RentalPolicy
+﻿namespace MoviePLatform_Monolit.Modules.Users.Application.Policies;
+
+public static class RentalPolicy
 {
     public static readonly TimeSpan StartWindow = TimeSpan.FromDays(30);
 

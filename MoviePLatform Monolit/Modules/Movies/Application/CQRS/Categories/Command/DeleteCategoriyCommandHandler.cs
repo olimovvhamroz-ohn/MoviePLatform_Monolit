@@ -5,34 +5,25 @@ using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Categories.Command;
-public record DeleteCategoriy(int id) : IRequest<CategoryResponse>;
+public record DeleteCategoriy(int Id) : IRequest<CategoryResponse>;
 
-public class DeleteCategoriyCommandHandler : IRequestHandler<DeleteCategoriy, CategoryResponse>
+public class DeleteCategoriyCommandHandler(
+    ILogger<DeleteCategoriyCommandHandler> logger,
+    ICategoryRepository repository,
+    IMapper mapper,IDistributedCache cache) : IRequestHandler<DeleteCategoriy, CategoryResponse>
 {
-    private readonly ICategoryRepository _repository;
-    private readonly IMapper _mapper;
-    private readonly ILogger<DeleteCategoriyCommandHandler> _logger;
-    private readonly IDistributedCache _cache;
-
-    public DeleteCategoriyCommandHandler(ILogger<DeleteCategoriyCommandHandler> logger, ICategoryRepository repository,
-        IMapper mapper,IDistributedCache cache)
-    {
-        _repository = repository;
-        _mapper = mapper;
-        _logger = logger;
-        _cache = cache;
-    }
 
     public async Task<CategoryResponse> Handle(DeleteCategoriy request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Deleting category with id: {Id}", request.id);
-        var deleted = await _repository.DeleteAsync(request.id,cancellationToken);
+        logger.LogInformation("Deleting category with id: {Id}", request.Id);
+        var deleted = await repository.DeleteAsync(request.Id,cancellationToken);
         
-        await _cache.RemoveAsync(
-            $"category:{request.id}",
+        await cache.RemoveAsync(
+            $"category:{request.Id}",
             cancellationToken);
 
-        _logger.LogInformation("Category deleted with id: {Id}", request.id);
-        return _mapper.Map<CategoryResponse>(deleted);
+        logger.LogInformation("Category deleted with id: {Id}", request.Id);
+        
+        return mapper.Map<CategoryResponse>(deleted);
     }
 }

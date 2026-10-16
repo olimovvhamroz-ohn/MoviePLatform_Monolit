@@ -16,8 +16,9 @@ using MoviePLatform_Monolit.Modules.Commerce.Infrastructure.Repositories;
 using MoviePLatform_Monolit.Modules.Engagement.Infrastructure.Repositories;
 using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 using MoviePLatform_Monolit.Modules.Users.Application.CQRS.AuthService;
+using MoviePLatform_Monolit.Modules.Users.Application.CQRS.SmsService;
+using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 using MoviePLatform_Monolit.Modules.Users.Infrastructure.Repositories;
-using MoviePLatform_Monolit.Movie.Repositories;
 using Scalar.AspNetCore;
 using Serilog;
 

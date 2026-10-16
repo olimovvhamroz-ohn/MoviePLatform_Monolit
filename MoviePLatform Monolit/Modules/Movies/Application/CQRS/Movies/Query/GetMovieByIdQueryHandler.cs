@@ -9,40 +9,26 @@ namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Movies.Query;
 
 public record GetMovieByIdQuery(long Id) : IRequest<MovieResponse>;
 
-public class GetMovieByIdQueryHandler
-    : IRequestHandler<GetMovieByIdQuery, MovieResponse>
+public class GetMovieByIdQueryHandler(
+    IMovieRepository repository,
+    IMapper mapper,
+    ILogger<GetMovieByIdQueryHandler> logger,
+    IDistributedCache cache) : IRequestHandler<GetMovieByIdQuery, MovieResponse>
 {
-    private readonly IMovieRepository _repository;
-    private readonly IMapper _mapper;
-    private readonly ILogger<GetMovieByIdQueryHandler> _logger;
-    private readonly IDistributedCache _cache;
-
-    public GetMovieByIdQueryHandler(
-        IMovieRepository repository,
-        IMapper mapper,
-        ILogger<GetMovieByIdQueryHandler> logger,
-        IDistributedCache cache)
-    {
-        _repository = repository;
-        _mapper = mapper;
-        _logger = logger;
-        _cache = cache;
-    }
-
     public async Task<MovieResponse> Handle(
         GetMovieByIdQuery request,
         CancellationToken cancellationToken)
     {
         var key = $"movie:{request.Id}";
 
-        // 1. Check Redis
-        var cachedMovie = await _cache.GetStringAsync(
+        // 1. Check 
+        var cachedMovie = await cache.GetStringAsync(
             key,
             cancellationToken);
 
         if (!string.IsNullOrEmpty(cachedMovie))
         {
-            _logger.LogInformation(
+            logger.LogInformation(
                 "Movie {MovieId} found in Redis cache",
                 request.Id);
 
@@ -51,22 +37,22 @@ public class GetMovieByIdQueryHandler
         }
 
         // 2. If not in Redis → PostgreSQL
-        _logger.LogInformation(
+        logger.LogInformation(
             "Getting movie by id {MovieId} from database",
             request.Id);
 
-        var movie = await _repository.GetByIdAsync(
+        var movie = await repository.GetByIdAsync(
             request.Id,
             cancellationToken);
 
         // 3. Map Entity → Response
-        var response = _mapper.Map<MovieResponse>(movie);
+        var response = mapper.Map<MovieResponse>(movie);
 
         // 4. Serialize Response → JSON
         var json = JsonSerializer.Serialize(response);
 
         // 5. Save to Redis
-        await _cache.SetStringAsync(
+        await cache.SetStringAsync(
             key,
             json,
             new DistributedCacheEntryOptions
@@ -76,7 +62,7 @@ public class GetMovieByIdQueryHandler
             },
             cancellationToken);
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "Movie {MovieId} loaded from database and saved to Redis",
             request.Id);
 
