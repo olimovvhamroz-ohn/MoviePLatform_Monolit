@@ -1,4 +1,5 @@
-﻿
+﻿namespace MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
+
 /// <summary>
 /// Универсальный класс для обёртки API ответов
 /// </summary>
@@ -83,5 +84,3 @@ public class PaginatedResponse<T>
     public bool HasNextPage => PageNumber < TotalPages;
     public bool HasPreviousPage => PageNumber > 1;
 }
-
-

@@ -1,4 +1,4 @@
-﻿namespace MoviePLatform_Monolit.Enums;
+﻿namespace MoviePLatform_Monolit.Modules.Users.Domain.Enums;
 
 public enum Role
 {

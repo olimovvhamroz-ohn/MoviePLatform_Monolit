@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 
 namespace MoviePLatform_Monolit.Modules.Users.Infrastructure.Repositories;
 

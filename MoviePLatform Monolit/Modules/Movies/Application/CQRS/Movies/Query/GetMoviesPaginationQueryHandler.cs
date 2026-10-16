@@ -19,8 +19,6 @@ public class GetMoviesPaginationQueryHandler(
     IDistributedCache cache)
     : IRequestHandler<GetMoviesPaginationQuery, List<MovieResponse>>
 {
-   
-
     public async Task<List<MovieResponse>> Handle(
         GetMoviesPaginationQuery request,
         CancellationToken cancellationToken)

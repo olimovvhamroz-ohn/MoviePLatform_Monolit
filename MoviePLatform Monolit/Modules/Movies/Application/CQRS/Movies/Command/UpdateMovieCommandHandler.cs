@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
-using MoviePLatform_Monolit.Entity;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
@@ -13,49 +12,33 @@ public record UpdateMovieCommand(
     long Id,
     MovieRequest Input) : IRequest<MovieResponse>;
 
-public class UpdateMovieCommandHandler
+public class UpdateMovieCommandHandler(
+    IMovieRepository repository,
+    IMapper mapper,
+    ILogger<UpdateMovieCommandHandler> logger,
+    IDistributedCache cache)
     : IRequestHandler<UpdateMovieCommand, MovieResponse>
 {
-    private readonly IMovieRepository _repository;
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly IMapper _mapper;
-    private readonly ILogger<UpdateMovieCommandHandler> _logger;
-    private readonly IDistributedCache _cache;
-
-    public UpdateMovieCommandHandler(
-        IMovieRepository repository,
-        ICategoryRepository categoryRepository,
-        IMapper mapper,
-        ILogger<UpdateMovieCommandHandler> logger,
-        IDistributedCache cache)
-    {
-        _categoryRepository = categoryRepository;
-        _mapper = mapper;
-        _logger = logger;
-        _repository = repository;
-        _cache = cache;
-    }
-
     public async Task<MovieResponse> Handle(
         UpdateMovieCommand request,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation(
+        logger.LogInformation(
             "Updating movie {Id} via CQRS",
             request.Id);
 
-        var entity = _mapper.Map<MovieEntity>(request.Input);
+        var entity = mapper.Map<MovieEntity>(request.Input);
 
-        var res = await _repository.UpdateAsync(
+        var res = await repository.UpdateAsync(
             request.Id,
             entity,
             cancellationToken);
 
         // Remove old cache
-        await _cache.RemoveAsync(
+        await cache.RemoveAsync(
             $"movie:{request.Id}",
             cancellationToken);
 
-        return _mapper.Map<MovieResponse>(res);
+        return mapper.Map<MovieResponse>(res);
     }
 }

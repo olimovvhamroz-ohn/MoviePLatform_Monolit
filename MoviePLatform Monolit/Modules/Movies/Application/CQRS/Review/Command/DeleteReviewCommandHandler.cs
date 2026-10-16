@@ -4,27 +4,23 @@ using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Review.Command;
 
-public record DeleteReviewCommand(long ReviewId, long UserId):IRequest<Unit>;
-public class DeleteReviewCommandHandler:IRequestHandler<DeleteReviewCommand,Unit>
+public record DeleteReviewCommand(long ReviewId, long UserId) : IRequest<Unit>;
+
+public class DeleteReviewCommandHandler(IReviewRepository review) : IRequestHandler<DeleteReviewCommand, Unit>
 {
-    private readonly IReviewRepository _review;
-
-    public DeleteReviewCommandHandler(IReviewRepository review)
+    
+    public async Task<Unit> Handle(DeleteReviewCommand request, CancellationToken cancellationToken)
     {
-        _review = review;
-    }
-
-    public async  Task<Unit> Handle(DeleteReviewCommand request, CancellationToken cancellationToken)
-    {
-        var review = await _review.GetByIdAsync(
+        var result = await review.GetByIdAsync(
             request.ReviewId,
             cancellationToken);
-        if (review.UserId != request.UserId)
+        
+        if (result.UserId != request.UserId)
         {
             throw new UnauthorizedException(" иҷозат надорed");
         }
 
-        await _review.DeleteAsync(request.ReviewId, cancellationToken);
+        await review.DeleteAsync(request.ReviewId, cancellationToken);
         return Unit.Value;
     }
 }

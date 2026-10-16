@@ -2,7 +2,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MoviePLatform_Monolit.Modules.Movies.Aplication.CQRS.Review.Command;
 using MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Review.Command;
 using MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Review.Query;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
@@ -12,21 +11,16 @@ namespace MoviePLatform_Monolit.Modules.Movies.Domain.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ReviewsController : ControllerBase
+public class ReviewsController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public ReviewsController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
+   
+    
     [HttpGet("top-movies")]
     public async Task<ActionResult<ApiResponse<List<MovieResponse>>>> GetTopMovies(
         [FromQuery] int count = 10)
     {
         var query = new GetTopMoviesQuery(1, count);
-        var result = await _mediator.Send(query);
+        var result = await mediator.Send(query);
 
         return Ok(ApiResponse<List<MovieResponse>>.SuccessResponse(
             result, $"Retrieved top {count} movies"));
@@ -39,7 +33,7 @@ public class ReviewsController : ControllerBase
         [FromQuery] int pageSize = 10)
     {
         var query =new GetMovieReviewsQuery(movieId, pageNumber, pageSize);
-        var result = await _mediator.Send(query);
+        var result = await mediator.Send(query);
         
         return Ok(ApiResponse<List<ReviewResponse>>.SuccessResponse(result, "Reviews retrieved"));
     }
@@ -60,7 +54,7 @@ public class ReviewsController : ControllerBase
             Comment = request.Comment
         });
 
-        var result = await _mediator.Send(command);
+        var result = await mediator.Send(command);
         return CreatedAtAction(nameof(GetMovieReviews), new { movieId = request.MovieId },
             ApiResponse<ReviewResponse>.SuccessResponse(result, "Review added successfully", 201));
     }
@@ -82,7 +76,7 @@ public class ReviewsController : ControllerBase
             Comment = request.Comment
         });
 
-        var result = await _mediator.Send(command);
+        var result = await mediator.Send(command);
         return Ok(ApiResponse<ReviewResponse>.SuccessResponse(result, "Review updated successfully"));
     }
 
@@ -93,7 +87,7 @@ public class ReviewsController : ControllerBase
         var userId = User.FindFirst(ClaimTypes.NameIdentifier) ?.Value;
         if(!long.TryParse(userId,out var id)) return Unauthorized();
         var command=new DeleteReviewCommand(reviewId,id);
-        await _mediator.Send(command);
+        await mediator.Send(command);
 
         return Ok(ApiResponse.SuccessResponse("Review deleted successfully"));
     }

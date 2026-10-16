@@ -1,5 +1,5 @@
-﻿using MoviePLatform_Monolit.Entity;
-using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
+﻿using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
+using MoviePLatform_Monolit.Modules.Users.Application.Policies;
 using MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 using MoviePLatform_Monolit.Modules.Users.Domain.Enums;

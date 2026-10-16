@@ -9,22 +9,12 @@ namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Review.Command;
 
 public record UpdateReviewCommand(long ReviewId, long UserId, ReviewRequest Request) : IRequest<ReviewResponse>;
 
-public class UpdateReviewCommandHandler : IRequestHandler<UpdateReviewCommand, ReviewResponse>
+public class UpdateReviewCommandHandler(IReviewRepository reviewRepository,IMapper mapper) : IRequestHandler<UpdateReviewCommand, ReviewResponse>
 {
-    private readonly IReviewRepository _reviewRepository;
-    private readonly IMapper _mapper;
-   
-
-    public UpdateReviewCommandHandler(IReviewRepository reviewRepository,IMapper mapper)
-    {
-        _reviewRepository = reviewRepository;
-        _mapper=mapper;
-        
-    }
 
     public async Task<ReviewResponse> Handle(UpdateReviewCommand reviewCommand, CancellationToken cancellationToken)
     {
-        var review = await _reviewRepository.GetByIdAsync(reviewCommand.ReviewId,cancellationToken);
+        var review = await reviewRepository.GetByIdAsync(reviewCommand.ReviewId,cancellationToken);
         if (review.UserId != reviewCommand.UserId)
         {
             throw new AuthenticationException("error");
@@ -32,6 +22,6 @@ public class UpdateReviewCommandHandler : IRequestHandler<UpdateReviewCommand, R
 
         review.Comment = reviewCommand.Request.Comment;
         review.Rating= reviewCommand.Request.Rating;
-        var updateeview = await _reviewRepository.UpdateAsync(review, cancellationToken);
-        return _mapper.Map<ReviewResponse>(updateeview);    }
+        var updateeview = await reviewRepository.UpdateAsync(review, cancellationToken);
+        return mapper.Map<ReviewResponse>(updateeview);    }
 }

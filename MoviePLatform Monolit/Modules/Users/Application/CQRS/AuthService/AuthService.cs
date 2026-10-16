@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using MoviePLatform_Monolit.Enums;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using MoviePLatform_Monolit.Modules.Users.Application.CQRS.SmsService;
+using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
+using MoviePLatform_Monolit.Modules.Users.Domain.Enums;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
@@ -13,27 +15,15 @@ public interface IAuthService
     Task<LoginResponse> Register(RegisterUserRequest request);
 }
 
-public class AuthService : IAuthService
+public class AuthService(
+    IUserRepository repo,
+    IJwtService jwt,
+    IPasswordHasher<UserEntity> hasher,
+    IEmailService emailService) : IAuthService
 {
-    private readonly IUserRepository _repo;
-    private readonly IJwtService _jwt;
-    private readonly IPasswordHasher<UserEntity> _hasher;
-    private readonly IEmailService _emailService;
-
-    public AuthService(IUserRepository repo, IJwtService jwt,
-        IPasswordHasher<UserEntity> hasher,
-        IEmailService emailService)
-    {
-        _repo = repo; 
-        _jwt = jwt;
-        _hasher = hasher;
-        _emailService = emailService;
-
-    }
-
     public async Task<LoginResponse> Register(RegisterUserRequest request)
     {
-        var exists = await _repo.GetByEmail(request.Email);
+        var exists = await repo.GetByEmail(request.Email);
         if (exists != null)
             throw new BadRequestException("User already exists");
 
@@ -46,29 +36,29 @@ public class AuthService : IAuthService
             DateOfBirth = request.DateOfBirth
         };
 
-        user.PasswordHash = _hasher.HashPassword(user, request.Password);
+        user.PasswordHash = hasher.HashPassword(user, request.Password);
 
-        await _repo.CreateAsync(user);
-        
-        await _emailService.SendAsync(
+        await repo.CreateAsync(user);
+
+        await emailService.SendAsync(
             user.Email,
             "Welcome to MoviePlatform",
             "Your account has been successfully created.");
 
-        var token = _jwt.GenerateToken(user);
+        var token = jwt.GenerateToken(user);
         return new LoginResponse { Token = token };
     }
 
     public async Task<LoginResponse> Login(string email, string password)
     {
-        var user = await _repo.GetByEmail(email);
+        var user = await repo.GetByEmail(email);
         if (user == null) throw new NotFoundException("User not Found");
 
-        var result = _hasher.VerifyHashedPassword(user, user.PasswordHash, password);
+        var result = hasher.VerifyHashedPassword(user, user.PasswordHash, password);
         if (result != PasswordVerificationResult.Success)
             throw new UnauthorizedException("Wrong password");
 
-        var token = _jwt.GenerateToken(user);
+        var token = jwt.GenerateToken(user);
         return new LoginResponse { Token = token };
     }
 }

@@ -1,34 +1,27 @@
 ﻿using System.Net;
 using System.Net.Mail;
 
+namespace MoviePLatform_Monolit.Modules.Users.Application.CQRS.SmsService;
 
 public interface IEmailService
 {
     Task SendAsync(string toEmail, string subject, string body, CancellationToken ct = default);
 }
 
-public class EmailService : IEmailService
+public class EmailService(IConfiguration config, ILogger<EmailService> logger) : IEmailService
 {
-    private readonly IConfiguration _config;
-    private readonly ILogger<EmailService> _logger;
-
-    public EmailService(IConfiguration config, ILogger<EmailService> logger)
-    {
-        _config = config;
-        _logger = logger;
-    }
 
     public async Task SendAsync(string toEmail, string subject, string body, CancellationToken ct = default)
     {
-        var host = _config["Email:Smtp:Host"];
-        var portStr = _config["Email:Smtp:Port"];
-        var user = _config["Email:Smtp:User"];
-        var password = _config["Email:Smtp:Password"];
-        var from = _config["Email:Smtp:From"];
+        var host = config["Email:Smtp:Host"];
+        var portStr = config["Email:Smtp:Port"];
+        var user = config["Email:Smtp:User"];
+        var password = config["Email:Smtp:Password"];
+        var from = config["Email:Smtp:From"];
 
         if (string.IsNullOrWhiteSpace(host) || string.IsNullOrWhiteSpace(user))
         {
-            _logger.LogWarning("Email not sent to {Email}: Email:Smtp is not configured", toEmail);
+            logger.LogWarning("Email not sent to {Email}: Email:Smtp is not configured", toEmail);
             return;
         }
 
@@ -48,11 +41,11 @@ public class EmailService : IEmailService
         try
         {
             await client.SendMailAsync(message, ct);
-            _logger.LogInformation("Email sent to {Email}", toEmail);
+            logger.LogInformation("Email sent to {Email}", toEmail);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send email to {Email}", toEmail);
+            logger.LogError(ex, "Failed to send email to {Email}", toEmail);
         }
     }
 

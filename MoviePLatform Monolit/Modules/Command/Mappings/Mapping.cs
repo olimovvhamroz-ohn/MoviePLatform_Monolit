@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using MoviePLatform_Monolit.Entity;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.REQUEST;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Entities;

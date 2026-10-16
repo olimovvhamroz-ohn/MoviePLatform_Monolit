@@ -6,20 +6,12 @@ using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Review.Query;
 
-public  record GetMovieReviewsQuery(long MovieId, int Page, int PageSize)
+public record GetMovieReviewsQuery(long MovieId, int Page, int PageSize)
     : IRequest<List<ReviewResponse>>;
-public class GetMovieReviewQueryHandler:IRequestHandler<GetMovieReviewsQuery ,List<ReviewResponse>>
+
+public class GetMovieReviewQueryHandler(IReviewRepository repository, IMapper mapper)
+    : IRequestHandler<GetMovieReviewsQuery, List<ReviewResponse>>
 {
-    private readonly IReviewRepository _reviewRepository;
-    private readonly IMapper _mapper;
-
-    public GetMovieReviewQueryHandler(IReviewRepository repository, IMapper mapper)
-    {
-        _reviewRepository = repository;
-        _mapper = mapper;
-    }
-
-    
     public async Task<List<ReviewResponse>> Handle(GetMovieReviewsQuery request, CancellationToken cancellationToken)
     {
         if (request.Page <= 0 || request.PageSize <= 0)
@@ -27,10 +19,8 @@ public class GetMovieReviewQueryHandler:IRequestHandler<GetMovieReviewsQuery ,Li
             throw new BadRequestException(
                 "Page and pageSize must be greater than 0");
         }
-        var requestSend =await _reviewRepository.GetMovieReviews(request.MovieId, request.Page, request.PageSize);
-      return  _mapper.Map<List<ReviewResponse>>(requestSend);
-        
+
+        var requestSend = await repository.GetMovieReviews(request.MovieId, request.Page, request.PageSize);
+        return mapper.Map<List<ReviewResponse>>(requestSend);
     }
-    
-        
 }

@@ -3,7 +3,7 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
-using MoviePLatform_Monolit.Movie.Repositories;
+using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Studios.Query;
 
@@ -11,24 +11,14 @@ public record GetAllStudiosQuery
     : IRequest<List<StudioResponse>>;
 
 public class GetAllStudiosQueryHandler
+    (
+            IStudioRepository repository,
+            IMapper mapper,
+            IDistributedCache cache,
+            ILogger<GetAllStudiosQueryHandler> logger)
     : IRequestHandler<GetAllStudiosQuery, List<StudioResponse>>
 {
-    private readonly IStudioRepository _repository;
-    private readonly IMapper _mapper;
-    private readonly IDistributedCache _cache;
-    private readonly ILogger<GetAllStudiosQueryHandler> _logger;
-
-    public GetAllStudiosQueryHandler(
-        IStudioRepository repository,
-        IMapper mapper,
-        IDistributedCache cache,
-        ILogger<GetAllStudiosQueryHandler> logger)
-    {
-        _repository = repository;
-        _mapper = mapper;
-        _cache = cache;
-        _logger = logger;
-    }
+   
 
     public async Task<List<StudioResponse>> Handle(
         GetAllStudiosQuery request,
@@ -37,13 +27,13 @@ public class GetAllStudiosQueryHandler
         var key = "studio:all";
 
         // 1. Redis
-        var cachedStudios = await _cache.GetStringAsync(
+        var cachedStudios = await cache.GetStringAsync(
             key,
             cancellationToken);
 
         if (!string.IsNullOrEmpty(cachedStudios))
         {
-            _logger.LogInformation(
+            logger.LogInformation(
                 "Studios found in Redis cache");
 
             return JsonSerializer.Deserialize<List<StudioResponse>>(
@@ -51,20 +41,20 @@ public class GetAllStudiosQueryHandler
         }
 
         // 2. PostgreSQL
-        _logger.LogInformation(
+        logger.LogInformation(
             "Getting all studios from database");
 
-        var studios = await _repository.GetAllAsync(
+        var studios = await repository.GetAllAsync(
             cancellationToken);
 
         // 3. Map
-        var response = _mapper.Map<List<StudioResponse>>(studios);
+        var response = mapper.Map<List<StudioResponse>>(studios);
 
         // 4. Serialize
         var json = JsonSerializer.Serialize(response);
 
         // 5. Redis
-        await _cache.SetStringAsync(
+        await cache.SetStringAsync(
             key,
             json,
             new DistributedCacheEntryOptions

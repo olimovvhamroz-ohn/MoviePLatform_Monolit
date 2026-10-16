@@ -1,9 +1,7 @@
-﻿using MoviePLatform_Monolit.Entity;
-using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
+﻿using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Enums;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
-
 public class MovieResponse
 {
     public long Id  { get; set; }

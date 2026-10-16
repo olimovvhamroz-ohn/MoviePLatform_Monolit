@@ -14,26 +14,13 @@ public record GetMoviesByFilterQuery(
     decimal? MaxPrice,
     AgeRating? AgeRating) : IRequest<List<MovieResponse>>;
 
-public class GetMoviesByFilterQueryHandler
+public class GetMoviesByFilterQueryHandler(
+    IMovieRepository repository,
+    IMapper mapper,
+    IDistributedCache cache,
+    ILogger<GetMoviesByFilterQueryHandler> logger)
     : IRequestHandler<GetMoviesByFilterQuery, List<MovieResponse>>
 {
-    private readonly IMovieRepository _repository;
-    private readonly IMapper _mapper;
-    private readonly IDistributedCache _cache;
-    private readonly ILogger<GetMoviesByFilterQueryHandler> _logger;
-
-    public GetMoviesByFilterQueryHandler(
-        IMovieRepository repository,
-        IMapper mapper,
-        IDistributedCache cache,
-        ILogger<GetMoviesByFilterQueryHandler> logger)
-    {
-        _repository = repository;
-        _mapper = mapper;
-        _cache = cache;
-        _logger = logger;
-    }
-
     public async Task<List<MovieResponse>> Handle(
         GetMoviesByFilterQuery request,
         CancellationToken cancellationToken)
@@ -45,14 +32,14 @@ public class GetMoviesByFilterQueryHandler
             $"maxPrice={request.MaxPrice}:" +
             $"ageRating={request.AgeRating}";
 
-        // 1. Check Redis
-        var cachedMovies = await _cache.GetStringAsync(
+
+        var cachedMovies = await cache.GetStringAsync(
             key,
             cancellationToken);
 
         if (!string.IsNullOrEmpty(cachedMovies))
         {
-            _logger.LogInformation(
+            logger.LogInformation(
                 "Movies found in Redis cache for filter");
 
             return JsonSerializer.Deserialize<List<MovieResponse>>(
@@ -60,24 +47,22 @@ public class GetMoviesByFilterQueryHandler
         }
 
         // 2. If Redis is empty → PostgreSQL
-        _logger.LogInformation(
+        logger.LogInformation(
             "Getting movies from database by filter");
 
-        var movies = await _repository.GetMovieByFilterAsync(
+        var movies = await repository.GetMovieByFilterAsync(
             request.CategoryId,
             request.Year,
             request.MaxPrice,
             request.AgeRating,
             cancellationToken);
-
-        // 3. Entity → Response
-        var response = _mapper.Map<List<MovieResponse>>(movies);
-
-        // 4. Response → JSON
+        
+        var response = mapper.Map<List<MovieResponse>>(movies);
+        
         var json = JsonSerializer.Serialize(response);
 
         // 5. Save to Redis
-        await _cache.SetStringAsync(
+        await cache.SetStringAsync(
             key,
             json,
             new DistributedCacheEntryOptions
@@ -87,7 +72,7 @@ public class GetMoviesByFilterQueryHandler
             },
             cancellationToken);
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "Movies loaded from database and saved to Redis");
 
         return response;
