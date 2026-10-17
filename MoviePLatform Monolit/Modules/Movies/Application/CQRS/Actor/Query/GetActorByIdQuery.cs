@@ -1,63 +1,57 @@
 ﻿using System.Text.Json;
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Actor.Query;
 
-public record GetByIdActorQuery(int ActorId) : IRequest<ActorResponse>;                                         
+public record GetByIdActorQuery(int ActorId) : IRequest<ActorResponse>;
 
-public class GetActorByIdQueryHandler : IRequestHandler<GetByIdActorQuery, ActorResponse>
+public class GetActorByIdQueryHandler(
+    IMapper mapper,
+    ApplicationDbContext context,
+    ILogger<GetActorByIdQueryHandler> logger,
+    IDistributedCache cache) : IRequestHandler<GetByIdActorQuery, ActorResponse>
 {
-    private readonly IActorRepository _actorRepository;
-    private readonly IMapper _mapper;
-    private readonly ILogger<GetActorByIdQueryHandler> _logger;
-    private readonly IDistributedCache _cache;                                  
-
-    public GetActorByIdQueryHandler(IMapper mapper, IActorRepository actorRepository,
-        ILogger<GetActorByIdQueryHandler> logger, IDistributedCache cache)
-    {
-        _actorRepository = actorRepository;
-        _mapper = mapper;
-        _logger = logger;
-        _cache = cache;
-    }
-
     public async Task<ActorResponse> Handle(
         GetByIdActorQuery request,
         CancellationToken cancellationToken)
     {
-        // 1. Калиди Redis
+         if (request.ActorId <= 0) throw new BadRequestException("ID must be greater than zero");
         var cacheKey = $"actor:{request.ActorId}";
 
-        // 2. Аввал Redis-ро месанҷем
-        var cachedActor = await _cache.GetStringAsync(
+        var cachedActor = await cache.GetStringAsync(
             cacheKey,
             cancellationToken);
 
         // 3. Агар дар Redis бошад → дигар ба database намеравем
         if (!string.IsNullOrEmpty(cachedActor))
         {
-            _logger.LogInformation(
+            logger.LogInformation(
                 "Actor {ActorId} found in Redis cache",
                 request.ActorId);
 
             return JsonSerializer.Deserialize<ActorResponse>(cachedActor)!;
         }
 
-        // 4. Агар Redis надошта бошад → PostgreSQL
-        var actor = await _actorRepository.GetByIdAsync(request.ActorId);
+       
+        
+        var actor = await context.Actors.Include(x => x.Movies).
+            FirstOrDefaultAsync(x => x.Id == request.ActorId, cancellationToken);
+        
+        if (actor == null)
+            throw new NotFoundException($"Id {request.ActorId} not found");
 
-        // 5. Entity → Response
-        var actorResponse = _mapper.Map<ActorResponse>(actor);
+        var actorResponse = mapper.Map<ActorResponse>(actor);
 
-        // 6. Response → JSON
         var json = JsonSerializer.Serialize(actorResponse);
 
         // 7. Дар Redis нигоҳ медорем
-        await _cache.SetStringAsync(
+        await cache.SetStringAsync(
             cacheKey,
             json,
             new DistributedCacheEntryOptions
@@ -67,10 +61,10 @@ public class GetActorByIdQueryHandler : IRequestHandler<GetByIdActorQuery, Actor
             },
             cancellationToken);
 
-        _logger.LogInformation(
+        logger.LogInformation(
             "Actor {ActorId} loaded from database and saved to Redis",
             request.ActorId);
-        
+
 
         // 8. Натиҷа
         return actorResponse;
