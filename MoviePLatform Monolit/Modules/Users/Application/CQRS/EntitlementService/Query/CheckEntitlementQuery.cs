@@ -1,12 +1,10 @@
-﻿
-
-using MediatR;
+﻿using MediatR;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
-using MoviePLatform_Monolit.Modules.Users.Application.CQRS.EntitlementService;
 using MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
-using MoviePLatform_Monolit.Users.DTO.RESPONSE;
+
+namespace MoviePLatform_Monolit.Modules.Users.Application.CQRS.EntitlementService.Query;
 
 public record CheckEntitlementQuery(long UserId, long MovieId) : IRequest<MovieAccessResultResponse>;
 public class CheckEntitlementQueryHandler : IRequestHandler<CheckEntitlementQuery, MovieAccessResultResponse>

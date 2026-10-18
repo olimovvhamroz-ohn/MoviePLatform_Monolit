@@ -1,10 +1,10 @@
 ﻿using System.Text.Json;
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
-using MoviePLatform_Monolit.Modules.Command.Extensions;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Movies.Query;
 
@@ -13,7 +13,7 @@ public record GetMoviesPaginationQuery(
     int PageSize) : IRequest<List<MovieResponse>>;
 
 public class GetMoviesPaginationQueryHandler(
-    IMovieRepository repository,
+    ApplicationDbContext context,
     IMapper mapper,
     ILogger<GetMoviesPaginationQueryHandler> logger,
     IDistributedCache cache)
@@ -23,14 +23,13 @@ public class GetMoviesPaginationQueryHandler(
         GetMoviesPaginationQuery request,
         CancellationToken cancellationToken)
     {
-        if (request.Page <= 0 || request.PageSize <= 0)
-        {
-            throw new BadRequestException(
-                "Page and PageSize must be greater than 0");
-        }
+        var page = request.Page <= 0 ? 1 : request.Page;
+        var pageSize = request.PageSize <= 0 ? 10 : Math.Min(request.PageSize, 100);
+
+        var skip = (request.Page - 1) * request.PageSize;
 
         var key =
-            $"movie:page:{request.Page}:size:{request.PageSize}";
+            $"movie:page:{page}:size:{pageSize}";
 
         var cachedMovies = await cache.GetStringAsync(
             key,
@@ -52,18 +51,21 @@ public class GetMoviesPaginationQueryHandler(
             request.Page,
             request.PageSize);
 
-        var movies = await repository.PaginationAsync(
-            request.Page,
-            request.PageSize,
-            cancellationToken);
-
-        // 3. Entity → Response
+        var movies = await context.Movies
+            .AsNoTracking()
+            .Include(x => x.Category)
+            .Include(x => x.Reviews)
+            .Include(x => x.Actors)
+            .Include(x => x.Studio)
+            .AsSplitQuery()
+            .Skip(skip)
+            .Take(request.PageSize)
+            .ToListAsync(cancellationToken);
+        
         var response = mapper.Map<List<MovieResponse>>(movies);
-
-        // 4. Response → JSON
+        
         var json = JsonSerializer.Serialize(response);
-
-        // 5. Save to Redis
+        
         await cache.SetStringAsync(
             key,
             json,

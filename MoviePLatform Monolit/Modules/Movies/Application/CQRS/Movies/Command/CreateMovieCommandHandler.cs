@@ -1,25 +1,46 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Movies.Command;
 
-public record CreateMovieCommand(MovieRequest Dto) : IRequest<MovieResponse>;
+public record CreateMovieCommand(MovieRequest Request) : IRequest<MovieResponse>;
 
 public class CreateMovieCommandHandler(
-    IMovieRepository repo,
+    ApplicationDbContext context,
     IMapper mapper)
     : IRequestHandler<CreateMovieCommand, MovieResponse>
 {
-    public async Task<MovieResponse> Handle(CreateMovieCommand request, CancellationToken ct)
+    public async Task<MovieResponse> Handle(CreateMovieCommand request, CancellationToken cancellationToken)
     {
-        var entity = mapper.Map<MovieEntity>(request.Dto);
-        var created = await repo.CreateAsync(entity, ct);
+        if (string.IsNullOrWhiteSpace(request.Request.Title))
+            throw new BadRequestException("Title is required");
 
+        var title = request.Request.Title.Trim();
 
-        return mapper.Map<MovieResponse>(created);
+        var categoryExists = await context.Categories
+            .AnyAsync(x => x.Id == request.Request.CategoryId, cancellationToken);
+
+        if (!categoryExists)
+            throw new NotFoundException($"Category with id {request.Request.CategoryId} not found");
+
+        var isDuplicate = await context.Movies
+            .AnyAsync(x => x.Title.ToLower() == title.ToLower() && x.Year == request.Request.Year, cancellationToken);
+
+        if (isDuplicate)
+            throw new BadRequestException($"Movie '{title}' ({request.Request.Year}) already exists");
+
+        var entity = mapper.Map<MovieEntity>(request.Request);
+        entity.Title = title;
+
+        await context.Movies.AddAsync(entity, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
+
+        return mapper.Map<MovieResponse>(entity);
     }
 }

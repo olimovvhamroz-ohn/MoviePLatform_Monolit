@@ -1,22 +1,31 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Categories.Command;
-public record DeleteCategoriy(int Id) : IRequest<CategoryResponse>;
+public record DeleteCategoryCommand(int Id) : IRequest<CategoryResponse>;
 
 public class DeleteCategoriyCommandHandler(
     ILogger<DeleteCategoriyCommandHandler> logger,
-    ICategoryRepository repository,
-    IMapper mapper,IDistributedCache cache) : IRequestHandler<DeleteCategoriy, CategoryResponse>
+    ApplicationDbContext context ,
+    IMapper mapper,IDistributedCache cache) : IRequestHandler<DeleteCategoryCommand, CategoryResponse>
 {
 
-    public async Task<CategoryResponse> Handle(DeleteCategoriy request, CancellationToken cancellationToken)
+    public async Task<CategoryResponse> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
     {
+        if (request.Id <= 0) throw new BadRequestException("ID must be greater than zero");
+
         logger.LogInformation("Deleting category with id: {Id}", request.Id);
-        var deleted = await repository.DeleteAsync(request.Id,cancellationToken);
+        
+        var res = await context.Categories.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
+                  ?? throw new NotFoundException($"Category with id {request.Id} not found");
+        
+        context.Categories.Remove(res);
+        await context.SaveChangesAsync(cancellationToken);
         
         await cache.RemoveAsync(
             $"category:{request.Id}",
@@ -24,6 +33,6 @@ public class DeleteCategoriyCommandHandler(
 
         logger.LogInformation("Category deleted with id: {Id}", request.Id);
         
-        return mapper.Map<CategoryResponse>(deleted);
+        return mapper.Map<CategoryResponse>(res);
     }
 }

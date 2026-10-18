@@ -1,36 +1,35 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
-using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
+using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Movies.Command;
 
-public record DeleteMovieCommand(long Id) : IRequest<MovieResponse>;
+public record DeleteMovieCommand(long Id) : IRequest<bool>;
 
 public class DeleteMovieCommandHandler(
-    IMovieRepository repository,
-    IMapper mapper,
+    ApplicationDbContext context,
     ILogger<DeleteMovieCommandHandler> logger,
     IDistributedCache cache)
-    : IRequestHandler<DeleteMovieCommand, MovieResponse>
+    : IRequestHandler<DeleteMovieCommand, bool>
 {
-    public async Task<MovieResponse> Handle(
-        DeleteMovieCommand request,
-        CancellationToken cancellationToken)
+    public async Task<bool> Handle(DeleteMovieCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation(
-            "Deleting movie {Id} via CQRS",
-            request.Id);
+        if (request.Id <= 0)
+            throw new BadRequestException("ID must be greater than zero");
 
-        var res = await repository.DeleteAsync(
-            request.Id,
-            cancellationToken);
+        logger.LogInformation("Deleting movie {Id} via CQRS", request.Id);
 
-        await cache.RemoveAsync(
-            $"movie:{request.Id}",
-            cancellationToken);
+        var movie = await context.Movies
+                        .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
+                    ?? throw new NotFoundException($"Movie with ID {request.Id} was not found");
 
-        return mapper.Map<MovieResponse>(res);
+        context.Movies.Remove(movie);
+        await context.SaveChangesAsync(cancellationToken);
+
+        await cache.RemoveAsync($"movie:{request.Id}", cancellationToken);
+
+        return true;
     }
 }

@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MoviePLatform_Monolit.Modules.Users.Application.CQRS.EntitlementService.Command;
+using MoviePLatform_Monolit.Modules.Users.Application.CQRS.EntitlementService.Query;
 using MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Users.Domain.Controllers;

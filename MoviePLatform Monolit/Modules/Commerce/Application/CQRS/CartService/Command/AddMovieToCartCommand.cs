@@ -1,44 +1,49 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
-using MoviePLatform_Monolit.Modules.Command.Interfaces;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 using MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.CartService.Command;
 
 public record AddMovieToCart(long UserId, long MovieId) : IRequest<CartResponse>;
 
-public class AddMovieToCartCommand( 
-    ICartRepository cartRepository,
-    IMovieRepository movie,
+public class AddMovieToCartCommand(
+    ApplicationDbContext context,
     ILogger<AddMovieToCartCommand> logger,
-    IMapper mapper) 
-    : IRequestHandler<AddMovieToCart, CartResponse>
+    IMapper mapper) : IRequestHandler<AddMovieToCart, CartResponse>
 {
-  
-
     public async Task<CartResponse> Handle(AddMovieToCart request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Adding movie {MovieId} to cart for user {UserId}", request.MovieId, request.UserId);
-
         if (request.UserId <= 0 || request.MovieId <= 0)
             throw new BadRequestException("Invalid userId or movieId");
 
-        var movieExists = await movie.ExistsAsync(request.MovieId, cancellationToken);
+        logger.LogInformation("Adding movie {MovieId} to cart for user {UserId}", request.MovieId, request.UserId);
+
+        var movieExists = await context.Movies
+            .AnyAsync(x => x.Id == request.MovieId, cancellationToken);
+
         if (!movieExists)
             throw new NotFoundException($"Movie {request.MovieId} not found");
 
-        var cart = await cartRepository.GetActiveCartByUserId(request.UserId)
-                   ?? await cartRepository.CreateCart(request.UserId);
+        var cart = await context.Carts
+            .Include(x => x.CartItems)
+            .FirstOrDefaultAsync(x => x.UserId == request.UserId && !x.IsCheckedOut, cancellationToken);
+
+        if (cart == null)
+        {
+            cart = new CartEntity { UserId = request.UserId };
+            context.Carts.Add(cart);
+        }
 
         if (cart.CartItems.Any(x => x.MovieId == request.MovieId))
             throw new BadRequestException("Movie already exists in cart");
 
-        await cartRepository.AddMovieToCart(request.UserId, request.MovieId);
-        var result = await cartRepository.GetActiveCartByUserId(request.UserId);
-        if (result == null)
-            throw new Exception("Failed to retrieve cart after adding movie");
-        return mapper.Map<CartResponse>(result);
+        cart.CartItems.Add(new CartItemEntity { MovieId = request.MovieId });
+        await context.SaveChangesAsync(cancellationToken);
+
+        return mapper.Map<CartResponse>(cart);
     }
 }

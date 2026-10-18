@@ -1,33 +1,44 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Studios.Command;
 
-public record CreateStudioCommand(StudioRequest request) : IRequest<StudioResponse>;
+public record CreateStudioCommand(StudioRequest Request) : IRequest<StudioResponse>;
 
 public class CreateStudioCommandHandler(
-    IStudioRepository repository,
+    ApplicationDbContext context,
     IMapper mapper,
     ILogger<CreateStudioCommandHandler> logger)
     : IRequestHandler<CreateStudioCommand, StudioResponse>
 {
-    public async Task<StudioResponse> Handle(CreateStudioCommand req, CancellationToken cancellationToken)
+    public async Task<StudioResponse> Handle(CreateStudioCommand request, CancellationToken cancellationToken)
     {
-        var dto = req.request;
-        logger.LogInformation("Creating studio with name: {Name}", dto.Name);
+        if (string.IsNullOrWhiteSpace(request.Request.Name))
+            throw new BadRequestException("Name is required");
 
-        var all = await repository.GetAllAsync(cancellationToken);
-        if (all.Any(x => x.Name.ToLower() == dto.Name.ToLower()))
-            throw new Exception(" BadRequestExceptionStudio already exists");
+        var name = request.Request.Name.Trim();
 
-        var model = mapper.Map<StudioEntity>(dto);
-        var created = await repository.CreateAsync(model, cancellationToken);
+        logger.LogInformation("Creating studio with name: {Name}", name);
 
-        logger.LogInformation("Studio created successfully with id: {Id}", created.Id);
-        return mapper.Map<StudioResponse>(created);
+        var exists = await context.Studios
+            .AnyAsync(x => x.Name.ToLower() == name.ToLower(), cancellationToken);
+
+        if (exists)
+            throw new BadRequestException("Studio already exists");
+
+        var model = mapper.Map<StudioEntity>(request.Request);
+        model.Name = name;
+
+        await context.Studios.AddAsync(model, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
+
+        logger.LogInformation("Studio created successfully with id: {Id}", model.Id);
+        return mapper.Map<StudioResponse>(model);
     }
 }

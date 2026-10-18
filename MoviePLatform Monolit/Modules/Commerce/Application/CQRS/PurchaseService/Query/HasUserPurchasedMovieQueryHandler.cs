@@ -1,16 +1,17 @@
 ﻿using MediatR;
-using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseService.Query;
 
 public record HasUserPurchasedMovieQuery(long UserId, long MovieId) : IRequest<bool>;
 
-public class HasUserPurchasedMovieQueryHandler(IPurchaseRepository repository) : IRequestHandler<HasUserPurchasedMovieQuery, bool>
+public class HasUserPurchasedMovieQueryHandler(ApplicationDbContext context)
+    : IRequestHandler<HasUserPurchasedMovieQuery, bool>
 {
- 
-
-    public async Task<bool> Handle(HasUserPurchasedMovieQuery request, CancellationToken cancellationToken)
+    public Task<bool> Handle(HasUserPurchasedMovieQuery request, CancellationToken cancellationToken)
     {
-        return await repository.HasUserPurchasedMovie(request.UserId, request.MovieId);
+        return context.Purchases
+            .AnyAsync(x => x.UserId == request.UserId && x.MovieId == request.MovieId, cancellationToken);
     }
 }

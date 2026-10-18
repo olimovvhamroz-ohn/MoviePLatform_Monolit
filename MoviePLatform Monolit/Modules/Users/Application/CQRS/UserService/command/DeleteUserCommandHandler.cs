@@ -1,25 +1,25 @@
 ﻿using MediatR;
-using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 
 namespace MoviePLatform_Monolit.Modules.Users.Application.CQRS.UserService.command;
 
 public record DeleteUserCommand(long Id) : IRequest<Unit>;
-public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, Unit>
+
+public class DeleteUserCommandHandler(ApplicationDbContext context) : IRequestHandler<DeleteUserCommand, Unit>
 {
-    private readonly IUserRepository _userRepository;
-
-    public DeleteUserCommandHandler(IUserRepository userRepository)
+    public async Task<Unit> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
-        _userRepository = userRepository;
-    }
+        if (request.Id <= 0)
+            throw new BadRequestException("ID must be greater than zero");
 
-    public async Task<Unit> Handle(
-        DeleteUserCommand request,
-        CancellationToken cancellationToken)
-    {
-        await _userRepository.DeleteAsync(
-            request.Id,
-            cancellationToken);
+        var user = await context.Users
+                       .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
+                   ?? throw new NotFoundException($"User {request.Id} not found");
+
+        context.Users.Remove(user);
+        await context.SaveChangesAsync(cancellationToken);
 
         return Unit.Value;
     }

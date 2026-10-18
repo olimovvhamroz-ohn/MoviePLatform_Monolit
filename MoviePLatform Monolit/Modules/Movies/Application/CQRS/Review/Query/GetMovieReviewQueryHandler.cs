@@ -1,26 +1,37 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Review.Query;
 
 public record GetMovieReviewsQuery(long MovieId, int Page, int PageSize)
     : IRequest<List<ReviewResponse>>;
 
-public class GetMovieReviewQueryHandler(IReviewRepository repository, IMapper mapper)
+public class GetMovieReviewQueryHandler(ApplicationDbContext context, IMapper mapper)
     : IRequestHandler<GetMovieReviewsQuery, List<ReviewResponse>>
 {
     public async Task<List<ReviewResponse>> Handle(GetMovieReviewsQuery request, CancellationToken cancellationToken)
     {
-        if (request.Page <= 0 || request.PageSize <= 0)
-        {
-            throw new BadRequestException(
-                "Page and pageSize must be greater than 0");
-        }
+        if (request.MovieId <= 0)
+            throw new BadRequestException("Movie ID must be greater than zero");
 
-        var requestSend = await repository.GetMovieReviews(request.MovieId, request.Page, request.PageSize);
-        return mapper.Map<List<ReviewResponse>>(requestSend);
+        if (request.Page <= 0 || request.PageSize <= 0)
+            throw new BadRequestException("Page and pageSize must be greater than 0");
+
+        var pageSize = Math.Min(request.PageSize, 100);
+        var skip = (request.Page - 1) * pageSize;
+
+        var reviews = await context.Reviews
+            .AsNoTracking()
+            .Where(x => x.MovieId == request.MovieId)
+            .OrderByDescending(x => x.Id)
+            .Skip(skip)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return mapper.Map<List<ReviewResponse>>(reviews);
     }
 }

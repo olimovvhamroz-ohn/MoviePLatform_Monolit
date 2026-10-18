@@ -12,75 +12,66 @@ using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Modules.Command.Mappings;
 using MoviePLatform_Monolit.Modules.Command.Middleware;
 using MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.Payments;
-using MoviePLatform_Monolit.Modules.Commerce.Infrastructure.Repositories;
-using MoviePLatform_Monolit.Modules.Engagement.Infrastructure.Repositories;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 using MoviePLatform_Monolit.Modules.Users.Application.CQRS.AuthService;
 using MoviePLatform_Monolit.Modules.Users.Application.CQRS.SmsService;
 using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
-using MoviePLatform_Monolit.Modules.Users.Infrastructure.Repositories;
 using Scalar.AspNetCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration =
-        builder.Configuration["Redis:ConnectionString"];
 
-    options.InstanceName = "MoviePlatform:";
-});
-
-Log.Logger.Information("App started");
-Console.WriteLine("qwertyuio");
-
+// 1. Логирование. Настраивается первым, до любых записей в лог.
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
-    .WriteTo.File("logs-log-.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
     .Enrich.FromLogContext()
     .CreateLogger();
 
-builder.Logging.ClearProviders();
-builder.Logging.AddSerilog(Log.Logger);
+builder.Host.UseSerilog(Log.Logger);
 
-// 1. Database Context (PostgreSQL)
+// 2. Кэш (Redis). В разработке можно без Redis, в остальных средах он обязателен.
+var redisConnection = builder.Configuration["Redis:ConnectionString"];
+
+if (!string.IsNullOrWhiteSpace(redisConnection))
+{
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = redisConnection;
+        options.InstanceName = "MoviePlatform:";
+    });
+}
+else if (builder.Environment.IsDevelopment())
+{
+    // Только для разработки: локальный кэш в памяти
+    builder.Services.AddDistributedMemoryCache();
+}
+else
+{
+    throw new InvalidOperationException("Redis:ConnectionString is not configured");
+}
+// 3. База данных
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. Repositories & Application Services
-builder.Services.AddScoped<IMovieRepository, MovieRepository>();
-builder.Services.AddScoped<IActorRepository, ActorRepository>();
-builder.Services.AddScoped<IStudioRepository, StudioRepository>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+// 4. Сервисы приложения. Репозиториев нет: handler'ы работают с ApplicationDbContext.
 builder.Services.AddScoped<IPaymentGateway, FakePaymentGateway>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, Jwtservice>();
 builder.Services.AddScoped<IPasswordHasher<UserEntity>, PasswordHasher<UserEntity>>();
-
-
 builder.Services.AddScoped<IEmailService, EmailService>();
 
-builder.Services.AddScoped<ICartRepository, CartRepository>();
-builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
-
-builder.Services.AddScoped<IWatchlistRepository, WatchlistRepository>();
-builder.Services.AddScoped<IViewRepository, ViewRepository>();
-
-// 3. MediatR, AutoMapper & FluentValidation
+// 5. MediatR, AutoMapper, FluentValidation
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<Mapping>(), typeof(Program).Assembly);
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
-// 4. JWT Authentication & Authorization
+// 6. JWT
 var jwtSecret = builder.Configuration["Jwt:SecretKey"];
 if (string.IsNullOrEmpty(jwtSecret))
     throw new InvalidOperationException("JWT secret key is not configured");
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -95,7 +86,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// 5. Controllers & OpenAPI (Танҳо як маротиба)
+// 7. Контроллеры и OpenAPI
 builder.Services.AddControllers();
 builder.Services.AddOpenApi(options =>
 {
@@ -107,22 +98,30 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-
     app.MapScalarApiReference(options =>
     {
         options.AddPreferredSecuritySchemes("Bearer");
     });
 }
 
-// 7. Middlewares
+// 8. Middleware. Порядок важен.
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
+app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-app.Run();
+try
+{
+    app.Run();
+}
+finally
+{
+    Log.CloseAndFlush();
+}
+
 internal sealed class BearerSecuritySchemeTransformer(
     IAuthenticationSchemeProvider authenticationSchemeProvider)
     : IOpenApiDocumentTransformer
@@ -132,13 +131,11 @@ internal sealed class BearerSecuritySchemeTransformer(
         OpenApiDocumentTransformerContext context,
         CancellationToken cancellationToken)
     {
-        var authenticationSchemes =
-            await authenticationSchemeProvider.GetAllSchemesAsync();
+        var authenticationSchemes = await authenticationSchemeProvider.GetAllSchemesAsync();
 
         if (authenticationSchemes.All(x => x.Name != "Bearer"))
             return;
 
-        // 1. Ба OpenAPI мегӯем, ки Bearer JWT вуҷуд дорад
         document.Components ??= new OpenApiComponents();
 
         document.Components.SecuritySchemes =
@@ -153,7 +150,6 @@ internal sealed class BearerSecuritySchemeTransformer(
                 }
             };
 
-        // 2. Bearer-ро ба ҳар endpoint ҳамчун security requirement медиҳем
         foreach (var operation in document.Paths.Values
                      .Where(path => path.Operations != null)
                      .SelectMany(path => path.Operations!))

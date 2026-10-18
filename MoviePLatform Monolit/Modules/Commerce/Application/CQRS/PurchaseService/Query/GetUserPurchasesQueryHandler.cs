@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
-using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Users.Application.Policies;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
@@ -8,27 +9,23 @@ namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseServic
 
 public record GetUserPurchasesQuery(long UserId) : IRequest<List<PurchaseResponse>>;
 
-public class GetUserPurchasesQueryHandler(IPurchaseRepository repository, IMapper mapper) : IRequestHandler<GetUserPurchasesQuery, List<PurchaseResponse>>
+public class GetUserPurchasesQueryHandler(ApplicationDbContext context, IMapper mapper)
+    : IRequestHandler<GetUserPurchasesQuery, List<PurchaseResponse>>
 {
-    
-    public async Task<List<PurchaseResponse>> Handle(
-        GetUserPurchasesQuery request,
-        CancellationToken cancellationToken)
+    public async Task<List<PurchaseResponse>> Handle(GetUserPurchasesQuery request, CancellationToken cancellationToken)
     {
-        var data = await repository.GetUserPurchases(request.UserId);
+        var purchases = await context.Purchases
+            .AsNoTracking()
+            .Where(x => x.UserId == request.UserId)
+            .OrderByDescending(x => x.PurchasedAt)
+            .ToListAsync(cancellationToken);
 
-        
-        var result = mapper.Map<List<PurchaseResponse>>(data);
-
-        for (int i = 0; i < data.Count; i++)
+        return purchases.Select(p =>
         {
-            result[i].RentalStartDeadline =
-                RentalPolicy.GetStartDeadline(data[i].PurchasedAt);
-
-            result[i].ExpiresAt =
-                RentalPolicy.GetExpiresAt(data[i].FirstWatchedAt);
-        }
-
-        return result;
+            var dto = mapper.Map<PurchaseResponse>(p);
+            dto.RentalStartDeadline = RentalPolicy.GetStartDeadline(p.PurchasedAt);
+            dto.ExpiresAt = RentalPolicy.GetExpiresAt(p.FirstWatchedAt);
+            return dto;
+        }).ToList();
     }
 }

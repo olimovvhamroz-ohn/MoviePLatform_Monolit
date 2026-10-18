@@ -1,8 +1,6 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Users.Application.CQRS.AuthService;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
@@ -12,53 +10,33 @@ namespace MoviePLatform_Monolit.Modules.Users.Domain.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController : ControllerBase
+public class AuthController(IAuthService authService) : ControllerBase
 {
-    private readonly IAuthService _authService;
-    private readonly IUserRepository _userRepository;
-    private readonly IJwtService _jwtService;
-
-    public AuthController( IAuthService authService, IUserRepository userRepository, IJwtService jwtService)
-    {
-        _authService = authService;
-        _userRepository = userRepository;
-        _jwtService = jwtService;
-    }
-
     [HttpPost("register")]
     public async Task<ActionResult<ApiResponse<LoginResponse>>> Register([FromBody] RegisterUserRequest request)
     {
-        var result = await _authService.Register(request);
-        return Ok(ApiResponse<LoginResponse>.SuccessResponse(result, "User registered successfully", 201));
+        var result = await authService.Register(request);
+        return StatusCode(
+            StatusCodes.Status201Created,
+            ApiResponse<LoginResponse>.SuccessResponse(result, "User registered successfully"));
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<ApiResponse<LoginResponse>>> Login(
-        [FromBody] LoginRequest request)
+    public async Task<ActionResult<ApiResponse<LoginResponse>>> Login([FromBody] LoginRequest request)
     {
-        var loginResult = await _authService.Login(request.Email, request.Password);
-        return Ok(ApiResponse<LoginResponse>.SuccessResponse(loginResult, "Login successful"));
+        var result = await authService.Login(request.Email, request.Password);
+        return Ok(ApiResponse<LoginResponse>.SuccessResponse(result, "Login successful"));
     }
 
     [Authorize]
     [HttpPost("refresh-token")]
     public async Task<ActionResult<ApiResponse<LoginResponse>>> RefreshToken()
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!long.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId) || userId <= 0)
+            return Unauthorized(ApiResponse<LoginResponse>.ErrorResponse("Invalid token", statusCode: 401));
 
-        if (!long.TryParse(userId, out var id))
-            return Unauthorized(ApiResponse<LoginResponse>.ErrorResponse(
-                "Invalid token", statusCode: 401));
-
-        var user = await _userRepository.GetByIdAsync(id);
-        var newToken = _jwtService.GenerateToken(user);
-
-        var response = new LoginResponse
-        {
-            Token = newToken
-        };
-
-        return Ok(ApiResponse<LoginResponse>.SuccessResponse(response, "Token refreshed"));
+        var result = await authService.RefreshToken(userId);
+        return Ok(ApiResponse<LoginResponse>.SuccessResponse(result, "Token refreshed"));
     }
 
     [Authorize]

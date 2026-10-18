@@ -1,34 +1,47 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
+
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Categories.Command;
-public record CreateCategoryCommand(CategoryRequest Request):IRequest<CategoryResponse>;
 
-public class CreateCategoryCommandHandler(ILogger<CreateCategoryCommand> logger, ICategoryRepository repository,
-                                                 IMapper mapper) : IRequestHandler<CreateCategoryCommand, CategoryResponse>
+public record CreateCategoryCommand(CategoryRequest Request) : IRequest<CategoryResponse>;
+
+public class CreateCategoryCommandHandler(
+    ILogger<CreateCategoryCommand> logger,
+    ApplicationDbContext context,
+    IMapper mapper) : IRequestHandler<CreateCategoryCommand, CategoryResponse>
 {
-    
     public async Task<CategoryResponse> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Creating category with title: {Title}", request.Request.Title);
+        if (string.IsNullOrWhiteSpace(request.Request.Title))
+            throw new BadRequestException("Title is required");
 
+        var title = request.Request.Title.Trim();
 
-        var exit = await repository.ExistsByNameAsync(request.Request.Title,cancellationToken);
-        
-        if (exit)
+        logger.LogInformation("Creating category with title: {Title}", title);
+
+        var exists = await context.Categories
+            .AnyAsync(x => x.Title.ToLower() == title.ToLower(), cancellationToken);
+
+        if (exists)
         {
-            logger.LogWarning("Category already exists: {Title}", request.Request.Title);
-            throw new Exception(" BadRequestExceptioncategory already exists");
+            logger.LogWarning("Category already exists: {Title}", title);
+            throw new BadRequestException("Category already exists");
         }
 
         var model = mapper.Map<CategoryEntity>(request.Request);
-        var created = await repository.CreateAsync(model,cancellationToken);
+        model.Title = title;
 
-        logger.LogInformation("Category created successfully with id: {Id}", created.Id);
-        return mapper.Map<CategoryResponse>(created);
+        await context.Categories.AddAsync(model, cancellationToken);
+        await context.SaveChangesAsync(cancellationToken);
+
+        logger.LogInformation("Category created successfully with id: {Id}", model.Id);
+        return mapper.Map<CategoryResponse>(model);
     }
 }
