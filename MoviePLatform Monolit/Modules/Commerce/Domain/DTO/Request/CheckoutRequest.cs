@@ -1,4 +1,4 @@
-﻿namespace MoviePLatform_Monolit.Modules.Users.Domain.DTO.REQUEST;
+﻿namespace MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Request;
 
 public class CheckoutRequest
 {

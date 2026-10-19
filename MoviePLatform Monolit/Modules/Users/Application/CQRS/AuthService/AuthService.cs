@@ -36,7 +36,7 @@ public class AuthService(
             Email = email,
             Phone = request.Phone,
             Name = request.Name,
-            Role = Role.Client,
+            Role = Role.Admin,
             DateOfBirth = request.DateOfBirth
         };
 

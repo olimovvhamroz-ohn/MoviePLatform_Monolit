@@ -19,17 +19,17 @@ using Scalar.AspNetCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// 1. Логирование. Настраивается первым, до любых записей в лог.
+// 1. Логирование. 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
+    .WriteTo.Console()
     .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
     .Enrich.FromLogContext()
     .CreateLogger();
 
 builder.Host.UseSerilog(Log.Logger);
 
-// 2. Кэш (Redis). В разработке можно без Redis, в остальных средах он обязателен.
+// 2. Кэш (Redis). 
 var redisConnection = builder.Configuration["Redis:ConnectionString"];
 
 if (!string.IsNullOrWhiteSpace(redisConnection))
@@ -42,7 +42,7 @@ if (!string.IsNullOrWhiteSpace(redisConnection))
 }
 else if (builder.Environment.IsDevelopment())
 {
-    // Только для разработки: локальный кэш в памяти
+    // локальный кэш в памяти
     builder.Services.AddDistributedMemoryCache();
 }
 else
@@ -53,7 +53,7 @@ else
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 4. Сервисы приложения. Репозиториев нет: handler'ы работают с ApplicationDbContext.
+// 4. Сервисы приложения. 
 builder.Services.AddScoped<IPaymentGateway, FakePaymentGateway>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtService, Jwtservice>();

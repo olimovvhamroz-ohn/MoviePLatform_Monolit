@@ -1,28 +1,40 @@
 ﻿using MediatR;
-using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Views.Query;
 
-public  record GetContinueWatchingQuery(long UserId) : IRequest<List<ViewResponse>>;
+public record GetContinueWatchingQuery(long UserId, int Take = 20) : IRequest<List<ViewResponse>>;
 
-public class GetContinueWatchingQueryHandler(IViewRepository repository) : IRequestHandler<GetContinueWatchingQuery, List<ViewResponse>>
+public class GetContinueWatchingQueryHandler(ApplicationDbContext context)
+    : IRequestHandler<GetContinueWatchingQuery, List<ViewResponse>>
 {
-    
+    private const int MaxTake = 50;
+
     public async Task<List<ViewResponse>> Handle(GetContinueWatchingQuery request, CancellationToken cancellationToken)
     {
-        var items = await repository.GetContinueWatching(request.UserId);
-        return items.Select(x => new ViewResponse
-        {
-            Id = x.Id,
-            UserId = x.UserId,
-            MovieId = x.MovieId,
-            MovieTitle = x.Movie?.Title,
-            PosterUrl = x.Movie?.PosterUrl,
-            PositionSeconds = x.PositionSeconds,
-            IsCompleted = x.IsCompleted,
-            ViewCount = x.ViewCount,
-            LastWatchedAt = x.LastWatchedAt
-        }).ToList();
+        var take = Math.Clamp(request.Take, 1, MaxTake);
+
+        return await context.Views
+            .AsNoTracking()
+            .Where(x => x.UserId == request.UserId
+                        && !x.IsCompleted
+                        && x.PositionSeconds > 0)
+            .OrderByDescending(x => x.LastWatchedAt)
+            .Take(take)
+            .Select(x => new ViewResponse
+            {
+                Id = x.Id,
+                UserId = x.UserId,
+                MovieId = x.MovieId,
+                MovieTitle = x.Movie.Title,
+                PosterUrl = x.Movie.PosterUrl,
+                PositionSeconds = x.PositionSeconds,
+                IsCompleted = x.IsCompleted,
+                ViewCount = x.ViewCount,
+                LastWatchedAt = x.LastWatchedAt
+            })
+            .ToListAsync(cancellationToken);
     }
 }

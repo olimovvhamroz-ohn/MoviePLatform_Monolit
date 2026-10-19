@@ -1,53 +1,56 @@
-﻿
-
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
-using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Entities;
 
+namespace MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Watchlist.Command;
+
 public record CreateWatchlistCommand(long UserId, long MovieId) : IRequest<WatchlistResponse>;
 
-public class CreateWatchlistCommandHandler : IRequestHandler<CreateWatchlistCommand, WatchlistResponse>
+public class CreateWatchlistCommandHandler(
+    ApplicationDbContext context,
+    ILogger<CreateWatchlistCommandHandler> logger) : IRequestHandler<CreateWatchlistCommand, WatchlistResponse>
 {
-    private readonly IWatchlistRepository _repository;
-    private readonly ApplicationDbContext _db;
-    private readonly ILogger<CreateWatchlistCommandHandler> _logger;
-
-    public CreateWatchlistCommandHandler(IWatchlistRepository repository, ApplicationDbContext db, ILogger<CreateWatchlistCommandHandler> logger)
-    {
-        _repository = repository;
-        _db = db;
-        _logger = logger;
-    }
-
     public async Task<WatchlistResponse> Handle(CreateWatchlistCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Adding movie {MovieId} to watchlist for user {UserId}", request.MovieId, request.UserId);
+        if (request.UserId <= 0 || request.MovieId <= 0)
+            throw new BadRequestException("Invalid userId or movieId");
 
-        var movie = await _db.Movies.FirstOrDefaultAsync(m => m.Id == request.MovieId, cancellationToken);
-        if (movie == null)
-            throw new NotFoundException($"Movie {request.MovieId} not found");
+        logger.LogInformation("Adding movie {MovieId} to watchlist for user {UserId}", request.MovieId, request.UserId);
 
-        var exists = await _repository.Exists(request.UserId, request.MovieId);
+        var movie = await context.Movies
+            .AsNoTracking()
+            .Where(m => m.Id == request.MovieId)
+            .Select(m => new { m.Title, m.PosterUrl })
+            .FirstOrDefaultAsync(cancellationToken)
+            ?? throw new NotFoundException($"Movie {request.MovieId} not found");
+
+        var exists = await context.Watchlists
+            .AnyAsync(x => x.UserId == request.UserId && x.MovieId == request.MovieId, cancellationToken);
+
         if (exists)
             throw new BadRequestException("Movie is already in the watchlist");
 
-        var entity = new WatchlistEntity { UserId = request.UserId, MovieId = request.MovieId };
-        var created = await _repository.Create(entity);
+        var entity = new WatchlistEntity
+        {
+            UserId = request.UserId,
+            MovieId = request.MovieId
+        };
+
+        context.Watchlists.Add(entity);
+        await context.SaveChangesAsync(cancellationToken);
 
         return new WatchlistResponse
-            
         {
-            Id = created.Id,
-            UserId = created.UserId,
-            MovieId = created.MovieId,
+            Id = entity.Id,
+            UserId = entity.UserId,
+            MovieId = entity.MovieId,
             MovieTitle = movie.Title,
             PosterUrl = movie.PosterUrl,
-            IsWatched = created.IsWatched,
-            AddedAt = created.AddedAt
+            IsWatched = entity.IsWatched,
+            AddedAt = entity.AddedAt
         };
     }
 }

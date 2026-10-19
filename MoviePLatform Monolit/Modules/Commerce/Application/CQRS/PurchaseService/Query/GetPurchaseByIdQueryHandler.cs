@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
+using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Response;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseService.Query;

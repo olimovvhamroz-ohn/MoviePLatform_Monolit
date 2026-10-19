@@ -10,7 +10,7 @@ public class UserEntity:BaseEntity
     public string Phone { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
-    public Role Role { get; set; } = Role.Client;
+    public Role Role { get; set; } = Role.Admin;
     public DateTime? DateOfBirth { get; set; }
   
     public ICollection<UserFavoriteCategoryEntity> FavoriteCategories { get; set; } = new List<UserFavoriteCategoryEntity>();

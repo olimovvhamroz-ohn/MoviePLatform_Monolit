@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Response;
 using MoviePLatform_Monolit.Modules.Users.Application.Policies;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 

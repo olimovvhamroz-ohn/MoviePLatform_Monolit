@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseService.Command;
 using MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseService.Query;
+using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Request;
+using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Response;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;

@@ -1,6 +1,6 @@
 ﻿
 
-namespace MoviePLatform_Monolit.Users.DTO.RESPONSE;
+namespace MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Response;
 
 public class PurchaseResponse
 {
