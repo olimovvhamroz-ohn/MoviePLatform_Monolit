@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Request;
+using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Response;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.REQUEST;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Entities;
@@ -28,6 +30,7 @@ public class Mapping : Profile
         CreateMap<StudioEntity, StudioResponse>();
         CreateMap<UserEntity, UserResponse>();
         CreateMap<CartEntity, CartResponse>();
+        CreateMap<CartItemEntity, CartItemResponse>();
         CreateMap<PurchaseRequest, PurchaseEntity>();
         CreateMap<PurchaseEntity, PurchaseResponse>();
         CreateMap<WatchlistRequest, WatchlistEntity>();

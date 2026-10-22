@@ -1,33 +1,39 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
-using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Response;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseService.Query;
 
 public record GetAllPurchasesQuery(int Page, int PageSize) : IRequest<List<PurchaseResponse>>;
 
-public class GetAllPurchasesQueryHandler(IPurchaseRepository repository, ILogger<GetAllPurchasesQueryHandler> logger, IMapper mapper)
-    : IRequestHandler<GetAllPurchasesQuery, List<PurchaseResponse>>
+public class GetAllPurchasesQueryHandler(
+    ApplicationDbContext context,
+    ILogger<GetAllPurchasesQueryHandler> logger,
+    IMapper mapper) : IRequestHandler<GetAllPurchasesQuery, List<PurchaseResponse>>
 {
+    private const int MaxPageSize = 100;
+
     public async Task<List<PurchaseResponse>> Handle(GetAllPurchasesQuery request, CancellationToken cancellationToken)
     {
         if (request.Page <= 0 || request.PageSize <= 0)
-        {
-            throw new BadRequestException(
-                "Page and PageSize must be greater than 0");
-        }
+            throw new BadRequestException("Page and PageSize must be greater than 0");
 
-        logger.LogInformation(
-            "Getting purchase page {Page} size {PageSize} from database",
-            request.Page,
-            request.PageSize);
-        
-        var gaetAllPurchase = await repository.GetAllPurchases(request.Page, request.PageSize, cancellationToken);
-        
-        var gaetA = mapper.Map<List<PurchaseResponse>>(gaetAllPurchase);
-        
-        return gaetA;
+        var pageSize = Math.Min(request.PageSize, MaxPageSize);
+        var skip = (request.Page - 1) * pageSize;
+
+        logger.LogInformation("Getting purchase page {Page} size {PageSize}", request.Page, pageSize);
+
+        var purchases = await context.Purchases
+            .AsNoTracking()
+            .OrderByDescending(x => x.PurchasedAt)
+            .Skip(skip)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return mapper.Map<List<PurchaseResponse>>(purchases);
     }
 }

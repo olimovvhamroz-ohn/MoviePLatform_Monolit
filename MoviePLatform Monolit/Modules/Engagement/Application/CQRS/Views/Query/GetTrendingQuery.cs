@@ -1,35 +1,39 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Modules.Command.Data;
-using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Views.Query;
 
 public record GetTrendingQuery(int Days, int Take) : IRequest<List<TrendingMovieResponse>>;
 
-public class GetTrendingQueryHandler(IViewRepository repository, ApplicationDbContext db) : IRequestHandler<GetTrendingQuery, List<TrendingMovieResponse>>
+public class GetTrendingQueryHandler(ApplicationDbContext context)
+    : IRequestHandler<GetTrendingQuery, List<TrendingMovieResponse>>
 {
+    private const int MaxTake = 50;
+    private const int MaxDays = 365;
 
     public async Task<List<TrendingMovieResponse>> Handle(GetTrendingQuery request, CancellationToken cancellationToken)
     {
-        var days = request.Days <= 0 ? 7 : request.Days;
-        var take = request.Take <= 0 ? 10 : request.Take;
+        var days = Math.Clamp(request.Days <= 0 ? 7 : request.Days, 1, MaxDays);
+        var take = Math.Clamp(request.Take <= 0 ? 10 : request.Take, 1, MaxTake);
 
-        var trending = await repository.GetTrending(days, take);
-        var movieIds = trending.Select(x => x.MovieId).ToList();
+        var since = DateTime.UtcNow.AddDays(-days);
 
-        var movies = await db.Movies
-            .Where(m => movieIds.Contains(m.Id))
-            .ToDictionaryAsync(m => m.Id, cancellationToken);
-
-        return trending.Select(x => new TrendingMovieResponse
-        {
-            MovieId = x.MovieId,
-            MovieTitle = movies.TryGetValue(x.MovieId, out var m) ? m.Title : null,
-            PosterUrl = movies.TryGetValue(x.MovieId, out var m2) ? m2.PosterUrl : null,
-            Views = x.Views
-        }).ToList();
-  
+        return await context.Views
+            .AsNoTracking()
+            .Where(v => v.LastWatchedAt >= since)
+            .GroupBy(v => new { v.MovieId, v.Movie.Title, v.Movie.PosterUrl })
+            .Select(g => new TrendingMovieResponse
+            {
+                MovieId = g.Key.MovieId,
+                MovieTitle = g.Key.Title,
+                PosterUrl = g.Key.PosterUrl,
+                Views = g.Count()
+            })
+            .OrderByDescending(x => x.Views)
+            .ThenBy(x => x.MovieId)
+            .Take(take)
+            .ToListAsync(cancellationToken);
     }
 }

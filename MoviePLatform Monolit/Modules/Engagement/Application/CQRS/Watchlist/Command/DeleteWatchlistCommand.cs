@@ -1,27 +1,37 @@
 ﻿using MediatR;
-using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Engagement.Domain.Dto.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Watchlist.Command;
 
 public record DeleteWatchlistCommand(long UserId, long MovieId) : IRequest<WatchlistResponse>;
 
-public class DeleteWatchlistCommandHandler(IWatchlistRepository repository, ILogger<DeleteWatchlistCommandHandler> logger) : IRequestHandler<DeleteWatchlistCommand, WatchlistResponse>
+public class DeleteWatchlistCommandHandler(
+    ApplicationDbContext context,
+    ILogger<DeleteWatchlistCommandHandler> logger) : IRequestHandler<DeleteWatchlistCommand, WatchlistResponse>
 {
-   
-
     public async Task<WatchlistResponse> Handle(DeleteWatchlistCommand request, CancellationToken cancellationToken)
     {
         logger.LogInformation("Removing movie {MovieId} from watchlist for user {UserId}", request.MovieId, request.UserId);
 
-        var deleted = await repository.Delete(request.UserId, request.MovieId);
-        return new WatchlistResponse
+        var entity = await context.Watchlists
+                         .FirstOrDefaultAsync(x => x.UserId == request.UserId && x.MovieId == request.MovieId, cancellationToken)
+                     ?? throw new NotFoundException("Watchlist entry not found");
+
+        var response = new WatchlistResponse
         {
-            Id = deleted.Id,
-            UserId = deleted.UserId,
-            MovieId = deleted.MovieId,
-            IsWatched = deleted.IsWatched,
-            AddedAt = deleted.AddedAt
+            Id = entity.Id,
+            UserId = entity.UserId,
+            MovieId = entity.MovieId,
+            IsWatched = entity.IsWatched,
+            AddedAt = entity.AddedAt
         };
+
+        context.Watchlists.Remove(entity);
+        await context.SaveChangesAsync(cancellationToken);
+
+        return response;
     }
 }

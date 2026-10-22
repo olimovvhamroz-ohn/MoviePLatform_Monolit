@@ -1,10 +1,11 @@
 ﻿using System.Text.Json;
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Enums;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Movies.Query;
 
@@ -15,7 +16,7 @@ public record GetMoviesByFilterQuery(
     AgeRating? AgeRating) : IRequest<List<MovieResponse>>;
 
 public class GetMoviesByFilterQueryHandler(
-    IMovieRepository repository,
+    ApplicationDbContext context,
     IMapper mapper,
     IDistributedCache cache,
     ILogger<GetMoviesByFilterQueryHandler> logger)
@@ -25,6 +26,7 @@ public class GetMoviesByFilterQueryHandler(
         GetMoviesByFilterQuery request,
         CancellationToken cancellationToken)
     {
+        
         var key =
             $"movie:filter:" +
             $"category={request.CategoryId}:" +
@@ -49,19 +51,32 @@ public class GetMoviesByFilterQueryHandler(
         // 2. If Redis is empty → PostgreSQL
         logger.LogInformation(
             "Getting movies from database by filter");
+        var query = context.Movies
+            .AsNoTracking()
+            .Include(x => x.Category)
+            .Include(x => x.Reviews)
+            .Include(x => x.Actors)
+            .Include(x => x.Studio)
+            .AsSplitQuery();
 
-        var movies = await repository.GetMovieByFilterAsync(
-            request.CategoryId,
-            request.Year,
-            request.MaxPrice,
-            request.AgeRating,
-            cancellationToken);
+        if (request.CategoryId.HasValue) 
+            query = query.Where(x => x.CategoryId == request.CategoryId.Value);
+
+        if (request.Year.HasValue) 
+            query = query.Where(x => x.Year == request.Year.Value); 
+
+        if (request.MaxPrice.HasValue) 
+            query = query.Where(x => x.Price <= request.MaxPrice.Value);
+
+        if (request.AgeRating.HasValue) 
+            query = query.Where(x => x.AgeRating == request.AgeRating.Value);
+
+        var movies= await query.ToListAsync(cancellationToken);
         
         var response = mapper.Map<List<MovieResponse>>(movies);
         
         var json = JsonSerializer.Serialize(response);
 
-        // 5. Save to Redis
         await cache.SetStringAsync(
             key,
             json,

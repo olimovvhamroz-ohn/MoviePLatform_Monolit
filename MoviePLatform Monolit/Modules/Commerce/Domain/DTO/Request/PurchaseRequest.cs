@@ -1,4 +1,4 @@
-﻿namespace MoviePLatform_Monolit.Users.DTO.REQUEST;
+﻿namespace MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Request;
 public class PurchaseRequest
 {
     public long UserId { get; set; }

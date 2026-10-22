@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseService.Command;
 using MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseService.Query;
+using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Request;
+using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Response;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
@@ -13,15 +15,8 @@ namespace MoviePLatform_Monolit.Modules.Commerce.Domain.Controllers;
 [ApiController]
 [Route("api/purchases")]
 [Authorize]
-public class PurchasesController : ControllerBase
+public class PurchasesController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public PurchasesController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     [HttpGet]
     public async Task<ActionResult<ApiResponse<List<PurchaseResponse>>>> GetUserPurchases(
         [FromQuery] int pageNumber = 1,
@@ -32,7 +27,7 @@ public class PurchasesController : ControllerBase
             return Unauthorized();
 
         var query = new GetUserPurchasesQuery(id);
-        var result = await _mediator.Send(query);
+        var result = await mediator.Send(query);
         return Ok(ApiResponse<List<PurchaseResponse>>.SuccessResponse(
             result, "User purchases retrieved"));
     }
@@ -47,7 +42,7 @@ public class PurchasesController : ControllerBase
              UserId = request.UserId,
              MovieId = request.MovieId });
         
-        var result = await _mediator.Send(command);
+        var result = await mediator.Send(command);
 
         return CreatedAtAction(nameof(GetUserPurchases), null,
             ApiResponse<PurchaseResponse>.SuccessResponse(result, "Purchase created", 201));
@@ -61,7 +56,7 @@ public class PurchasesController : ControllerBase
             return Unauthorized();
 
         var query = new HasUserPurchasedMovieQuery(id, movieId);
-        var result = await _mediator.Send(query);
+        var result = await mediator.Send(query);
         return Ok(ApiResponse<bool>.SuccessResponse(
             result, result ? "User has purchased this movie" : "User has not purchased this movie"));
     }
@@ -76,7 +71,7 @@ public class PurchasesController : ControllerBase
         }
 
         var query = new GetPurchaseByIdQuery(id, purchaseId);
-        var result = await _mediator.Send(query);
+        var result = await mediator.Send(query);
 
         return Ok(ApiResponse<PurchaseResponse>.SuccessResponse(
             result, "Purchase retrieved"));
@@ -89,7 +84,7 @@ public class PurchasesController : ControllerBase
         [FromQuery] int pageSize = 10)
     {
         var query = new  GetAllPurchasesQuery(pageNumber,pageSize); 
-        await _mediator.Send(query);
+        await mediator.Send(query);
         return Ok(ApiResponse<List<PurchaseResponse>>.SuccessResponse(
             new List<PurchaseResponse>(), "All purchases retrieved"));
     }

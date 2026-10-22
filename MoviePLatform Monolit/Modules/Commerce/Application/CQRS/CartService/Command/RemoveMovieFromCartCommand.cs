@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
-using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.CartService.Command;
@@ -9,28 +10,28 @@ namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.CartService.Co
 public record RemoveMovieFromCartCommand(long UserId, long MovieId) : IRequest<CartResponse>;
 
 public class RemoveMovieFromCartCommandHandler(
-    ICartRepository cartRepository, 
-    ILogger<RemoveMovieFromCartCommandHandler> logger, 
-    IMapper mapper) 
-    : IRequestHandler<RemoveMovieFromCartCommand, CartResponse>
-
+    ApplicationDbContext context,
+    ILogger<RemoveMovieFromCartCommandHandler> logger,
+    IMapper mapper) : IRequestHandler<RemoveMovieFromCartCommand, CartResponse>
 {
     public async Task<CartResponse> Handle(RemoveMovieFromCartCommand request, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Removing movie {MovieId} from cart for user {UserId}", request.MovieId, request.UserId);
-
         if (request.UserId <= 0 || request.MovieId <= 0)
             throw new BadRequestException("Invalid userId or movieId");
 
-        var cart = await cartRepository.GetActiveCartByUserId(request.UserId);
-        if (cart == null)
-            throw new NotFoundException("Cart not found");
+        logger.LogInformation("Removing movie {MovieId} from cart for user {UserId}", request.MovieId, request.UserId);
 
-        if (cart.CartItems.All(x => x.MovieId != request.MovieId))
-            throw new NotFoundException("Movie not found in cart");
+        var cart = await context.Carts
+                       .Include(x => x.CartItems)
+                       .FirstOrDefaultAsync(x => x.UserId == request.UserId && !x.IsCheckedOut, cancellationToken)
+                   ?? throw new NotFoundException("Cart not found");
 
-        await cartRepository.RemoveMovieFromCart(request.UserId, request.MovieId);
-        var updatedCart = await cartRepository.GetActiveCartByUserId(request.UserId);
-        return mapper.Map<CartResponse>(updatedCart);
+        var item = cart.CartItems.FirstOrDefault(x => x.MovieId == request.MovieId)
+                   ?? throw new NotFoundException("Movie not found in cart");
+
+        cart.CartItems.Remove(item);
+        await context.SaveChangesAsync(cancellationToken);
+
+        return mapper.Map<CartResponse>(cart);
     }
 }

@@ -1,21 +1,18 @@
 ﻿using MediatR;
-using MoviePLatform_Monolit.Modules.Command.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
 
 namespace MoviePLatform_Monolit.Modules.Engagement.Application.CQRS.Watchlist.Query;
 
 public record GetCountByUserId(long Id) : IRequest<int>;
 
-public class GetCountByIdQuery(IWatchlistRepository watchlistRepository) : IRequestHandler<GetCountByUserId, int>
+public class GetCountByUserIdQueryHandler(ApplicationDbContext context)
+    : IRequestHandler<GetCountByUserId, int>
 {
-   
-
-
-    public async Task<int> Handle(
-        GetCountByUserId request,
-        CancellationToken cancellationToken)
+    public Task<int> Handle(GetCountByUserId request, CancellationToken cancellationToken)
     {
-        var count = await watchlistRepository.CountByUserId(request.Id);
-
-        return count;
+        return context.Watchlists
+            .AsNoTracking()
+            .CountAsync(x => x.UserId == request.Id, cancellationToken);
     }
 }

@@ -1,40 +1,41 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Studios.Command;
 
 public record DeleteStudioCommand(int Id) : IRequest<StudioResponse>;
 
 public class DeleteStudioCommandHandler(
-    IStudioRepository repository,
+    ApplicationDbContext context,
     IMapper mapper,
     ILogger<DeleteStudioCommandHandler> logger,
     IDistributedCache cache)
     : IRequestHandler<DeleteStudioCommand, StudioResponse>
 {
-    public async Task<StudioResponse> Handle(
-        DeleteStudioCommand request,
-        CancellationToken cancellationToken)
+    public async Task<StudioResponse> Handle(DeleteStudioCommand request, CancellationToken cancellationToken)
     {
+        if (request.Id <= 0)
+            throw new BadRequestException("ID must be greater than zero");
+
         logger.LogInformation("Deleting studio {Id}", request.Id);
 
-        var deleted = await repository.DeleteAsync(
-            request.Id,
-            cancellationToken);
+        var studio = await context.Studios
+                         .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
+                     ?? throw new NotFoundException($"Studio with ID {request.Id} was not found");
 
-        // Remove cache for this studio
-        await cache.RemoveAsync(
-            $"studio:{request.Id}",
-            cancellationToken);
+        var response = mapper.Map<StudioResponse>(studio);
 
-        // Remove cached list of all studios
-        await cache.RemoveAsync(
-            "studio:all",
-            cancellationToken);
+        context.Studios.Remove(studio);
+        await context.SaveChangesAsync(cancellationToken);
 
-        return mapper.Map<StudioResponse>(deleted);
+        await cache.RemoveAsync($"studio:{request.Id}", cancellationToken);
+        await cache.RemoveAsync("studio:all", cancellationToken);
+
+        return response;
     }
 }

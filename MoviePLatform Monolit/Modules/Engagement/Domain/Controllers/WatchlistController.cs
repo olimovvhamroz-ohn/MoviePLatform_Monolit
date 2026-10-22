@@ -14,15 +14,8 @@ namespace MoviePLatform_Monolit.Modules.Engagement.Domain.Controllers;
 [ApiController]
 [Route("api/watchlist")]
 [Authorize]
-public class WatchlistController : ControllerBase
+public class WatchlistController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public WatchlistController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     [HttpGet]
     public async Task<ActionResult<ApiResponse<List<WatchlistResponse>>>> GetWatchlist(
         [FromQuery] int pageNumber = 1,
@@ -33,7 +26,7 @@ public class WatchlistController : ControllerBase
             return Unauthorized();
 
         var query = new GetWatchlistByUserIdQuery(id);
-        var result = await _mediator.Send(query);
+        var result = await mediator.Send(query);
         return Ok(ApiResponse<List<WatchlistResponse>>.SuccessResponse(
             result, "Watchlist retrieved"));
     }
@@ -46,7 +39,7 @@ public class WatchlistController : ControllerBase
             return Unauthorized();
 
         var query = new IsInWatchlistQuery(id, movieId);
-        var result = await _mediator.Send(query);
+        var result = await mediator.Send(query);
         return Ok(ApiResponse<bool>.SuccessResponse(
             result, result ? "Movie is in watchlist" : "Movie is not in watchlist"));
     }
@@ -60,7 +53,7 @@ public class WatchlistController : ControllerBase
             return Unauthorized();
 
         var command = new CreateWatchlistCommand(id, request.MovieId);
-        var result = await _mediator.Send(command);
+        var result = await mediator.Send(command);
 
         return CreatedAtAction(nameof(GetWatchlist), null,
             ApiResponse<WatchlistResponse>.SuccessResponse(result, "Added to watchlist", 201));
@@ -74,7 +67,7 @@ public class WatchlistController : ControllerBase
             return Unauthorized();
 
         var command = new DeleteWatchlistCommand(id, movieId);
-        await _mediator.Send(command);
+        await mediator.Send(command);
         return Ok(ApiResponse.SuccessResponse("Removed from watchlist"));
     }
 
@@ -86,7 +79,7 @@ public class WatchlistController : ControllerBase
             return Unauthorized();
 
         var command = new MarkWatchedCommand(id, movieId);
-        var result = await _mediator.Send(command);
+        var result = await mediator.Send(command);
         return Ok(ApiResponse<WatchlistResponse>.SuccessResponse(result, "Marked as watched"));
     }
 
@@ -100,7 +93,7 @@ public class WatchlistController : ControllerBase
    
        var query = new GetCountByUserId(id);
    
-       var result = await _mediator.Send(query);
+       var result = await mediator.Send(query);
    
        return Ok(ApiResponse<int>.SuccessResponse(
            result,

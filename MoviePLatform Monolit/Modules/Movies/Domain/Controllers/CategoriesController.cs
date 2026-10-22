@@ -57,7 +57,7 @@ public class CategoriesController(IMediator mediator) : ControllerBase
     public async Task<ActionResult<ApiResponse>> DeleteCategory(int id)
     {
         
-            var command = new DeleteCategoriy(id) ;
+            var command = new DeleteCategoryCommand(id) ;
             await mediator.Send(command);
             
             return Ok(ApiResponse.SuccessResponse("Category deleted successfully"));

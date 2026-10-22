@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Categories.Query;
 
@@ -9,7 +10,7 @@ public record GetAllCategories : IRequest<List<CategoryResponse>>;
 
 public class GetAllCatecoriyQuery(
     ILogger<GetAllCatecoriyQuery> logger,
-    ICategoryRepository repository,
+    ApplicationDbContext context,
     IMapper mapper)
     : IRequestHandler<GetAllCategories, List<CategoryResponse>>
 {
@@ -17,8 +18,8 @@ public class GetAllCatecoriyQuery(
     {
         logger.LogInformation("Getting all categories");
 
-        var data = await repository.GetAllAsync(cancellationToken);
-
+        var data = await context.Categories.AsNoTracking().ToListAsync(cancellationToken);
+        
         logger.LogInformation("Total categories found: {Count}", data.Count);
 
         return mapper.Map<List<CategoryResponse>>(data);

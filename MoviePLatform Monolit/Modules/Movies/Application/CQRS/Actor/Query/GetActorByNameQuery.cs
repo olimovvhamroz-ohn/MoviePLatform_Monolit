@@ -2,30 +2,20 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Actor.Query;
 
 public record GetActorByNameQuery(string Name) : IRequest<ActorResponse>;
 
-public class GetActorByNameQueryHandler
-    : IRequestHandler<GetActorByNameQuery, ActorResponse>
+public class GetActorByNameQueryHandler(
+    ApplicationDbContext context,
+    IMapper _mapper,
+    IDistributedCache _cache) : IRequestHandler<GetActorByNameQuery, ActorResponse>
 {
-    private readonly IActorRepository _actorRepository;
-    private readonly IMapper _mapper;
-    private readonly IDistributedCache _cache;
-
-    public GetActorByNameQueryHandler(
-        IActorRepository actorRepository,
-        IMapper mapper,
-        IDistributedCache cache)
-    {
-        _actorRepository = actorRepository;
-        _mapper = mapper;
-        _cache = cache;
-    }
-
     public async Task<ActorResponse> Handle(
         GetActorByNameQuery request,
         CancellationToken cancellationToken)
@@ -36,23 +26,27 @@ public class GetActorByNameQueryHandler
             cacheKey,
             cancellationToken);
 
-       
+
         if (!string.IsNullOrEmpty(cachedActor))
         {
             return JsonSerializer.Deserialize<ActorResponse>(
                 cachedActor)!;
         }
 
-        var actor = await _actorRepository.GetByName(request.Name);
-
-
-      
+        var actor = await context.Actors
+            .Include(x => x.Movies)
+            .FirstOrDefaultAsync(
+                x => x.Name.ToLower() == request.Name.ToLower(),
+                cancellationToken);
+        if (actor == null)
+            throw new NotFoundException($"Actor {request.Name} not found");
+        
         var actorResponse = _mapper.Map<ActorResponse>(actor);
 
-        
+
         var json = JsonSerializer.Serialize(actorResponse);
 
-     
+
         await _cache.SetStringAsync(
             cacheKey,
             json,

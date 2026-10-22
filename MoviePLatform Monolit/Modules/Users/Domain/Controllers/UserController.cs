@@ -5,6 +5,7 @@ using System.Security.Claims;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Users.Application.CQRS.UserService.command;
 using MoviePLatform_Monolit.Modules.Users.Application.CQRS.UserService.Query;
+using MoviePLatform_Monolit.Modules.Users.Domain.DTO.REQUEST;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;
 using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
@@ -13,97 +14,71 @@ namespace MoviePLatform_Monolit.Modules.Users.Domain.Controllers;
 [ApiController]
 [Route("api/users")]
 [Authorize]
-public class UsersController : ControllerBase
+public class UsersController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
+    private bool TryGetCurrentUserId(out long id) =>
+        long.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out id) && id > 0;
 
-    public UsersController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
+    private bool IsSelfOrAdmin(long id) =>
+        (TryGetCurrentUserId(out var currentId) && currentId == id) || User.IsInRole("Admin");
 
     [Authorize(Roles = "Admin")]
     [HttpGet]
-    public async Task<ActionResult<ApiResponse<List<UserResponse>>>> GetAllUsers()
+    public async Task<ActionResult<ApiResponse<List<UserResponse>>>> GetAllUsers(CancellationToken ct)
     {
-        var query = new GetAllUsersQuery();
-        var result = await _mediator.Send(query);
-
-        return Ok(ApiResponse<List<UserResponse>>.SuccessResponse(
-            result, $"Retrieved {result.Count} users"));
+        var result = await mediator.Send(new GetAllUsersQuery(), ct);
+        return Ok(ApiResponse<List<UserResponse>>.SuccessResponse(result, $"Retrieved {result.Count} users"));
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ApiResponse<UserResponse>>> GetUserById(int id)
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<ApiResponse<UserResponse>>> GetUserById(long id, CancellationToken ct)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userId != id.ToString() && !User.IsInRole("Admin"))
+        if (!IsSelfOrAdmin(id))
             return Forbid();
 
-        var query = new GetUserByIdQuery(id);
-        var result = await _mediator.Send(query);
-
-        if (result == null)
-            return NotFound(ApiResponse<UserResponse>.NotFoundResponse("User not found"));
-
+        var result = await mediator.Send(new GetUserByIdQuery(id), ct);
         return Ok(ApiResponse<UserResponse>.SuccessResponse(result, "User retrieved"));
     }
 
     [HttpGet("me/profile")]
-    public async Task<ActionResult<ApiResponse<UserResponse>>> GetCurrentUser()
+    public async Task<ActionResult<ApiResponse<UserResponse>>> GetCurrentUser(CancellationToken ct)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (!int.TryParse(userId, out var id))
+        if (!TryGetCurrentUserId(out var id))
             return Unauthorized();
 
-        var query = new GetUserByIdQuery(id);
-        var result = await _mediator.Send(query);
-
-        if (result == null)
-            return NotFound(ApiResponse<UserResponse>.NotFoundResponse("User not found"));
-
+        var result = await mediator.Send(new GetUserByIdQuery(id), ct);
         return Ok(ApiResponse<UserResponse>.SuccessResponse(result, "Current user retrieved"));
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:long}")]
     public async Task<ActionResult<ApiResponse<UserResponse>>> UpdateUser(
-        int id, [FromBody] UserRequest request)
+        long id, [FromBody] UpdateProfileRequest request, CancellationToken ct)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userId != id.ToString() && !User.IsInRole("Admin"))
+        if (!IsSelfOrAdmin(id))
             return Forbid();
 
-        // TODO: реализовать UpdateUserCommand
-        return Ok(ApiResponse<UserResponse>.SuccessResponse(
-            new UserResponse(), "User updated successfully"));
+        var result = await mediator.Send(new UpdateUserCommand(id, request), ct);
+        return Ok(ApiResponse<UserResponse>.SuccessResponse(result, "Profile updated successfully"));
     }
 
-    [HttpPut("{id}/favorite-genres")]
+    [HttpPut("{id:long}/favorite-genres")]
     public async Task<ActionResult<ApiResponse<UserResponse>>> UpdateFavoriteGenres(
-        int id, [FromBody] UpdateFavoriteGenresRequest request)
+        long id, [FromBody] UpdateFavoriteGenresRequest request, CancellationToken ct)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (userId != id.ToString())
+        if (!TryGetCurrentUserId(out var currentId) || currentId != id)
             return Forbid();
 
-        var command = new UpdateFavoriteGenresCommand(id, request);
-        var result = await _mediator.Send(command);
+        var result = await mediator.Send(new UpdateFavoriteGenresCommand(id, request), ct);
         return Ok(ApiResponse<UserResponse>.SuccessResponse(result, "Favorite genres updated"));
     }
 
-    [HttpDelete("{id}")]
-    public async Task<ActionResult<ApiResponse>> DeleteUser(int id)
+    [HttpDelete("{id:long}")]
+    public async Task<ActionResult<ApiResponse>> DeleteUser(long id, CancellationToken ct)
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (userId != id.ToString() && !User.IsInRole("Admin"))
+        if (!IsSelfOrAdmin(id))
             return Forbid();
 
-        var command = new DeleteUserCommand(id);
-
-        await _mediator.Send(command);
-
-        return Ok(ApiResponse.SuccessResponse(
-            "User account deleted successfully"));
+        await mediator.Send(new DeleteUserCommand(id), ct);
+        return Ok(ApiResponse.SuccessResponse("User account deleted successfully"));
     }
 }

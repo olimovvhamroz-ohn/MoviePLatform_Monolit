@@ -1,68 +1,57 @@
 ﻿using System.Text.Json;
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using MoviePLatform_Monolit.Modules.Command.Data;
+using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Studios.Query;
 
 public record GetStudioByIdQuery(int Id) : IRequest<StudioResponse>;
 
-public class GetStudioByIdQueryHandler
- (
-         IStudioRepository repository,
-         IMapper mapper,
-         IDistributedCache cache,
-         ILogger<GetStudioByIdQueryHandler> logger)  
-         : IRequestHandler<GetStudioByIdQuery, StudioResponse>
+public class GetStudioByIdQueryHandler(
+    ApplicationDbContext context,
+    IMapper mapper,
+    IDistributedCache cache,
+    ILogger<GetStudioByIdQueryHandler> logger)
+    : IRequestHandler<GetStudioByIdQuery, StudioResponse>
 {
-  
-
-    public async Task<StudioResponse> Handle(
-        GetStudioByIdQuery request,
-        CancellationToken cancellationToken)
+    public async Task<StudioResponse> Handle(GetStudioByIdQuery request, CancellationToken cancellationToken)
     {
+        if (request.Id <= 0)
+            throw new BadRequestException("ID must be greater than zero");
+
         var key = $"studio:{request.Id}";
 
-        // 1. Check Redis
-        var cachedStudio = await cache.GetStringAsync(
-            key,
-            cancellationToken);
+        var cached = await cache.GetStringAsync(key, cancellationToken);
 
-        if (!string.IsNullOrEmpty(cachedStudio))
+        if (!string.IsNullOrEmpty(cached))
         {
-            logger.LogInformation(
-                "Studio {Id} found in Redis cache",
-                request.Id);
-
-            return JsonSerializer.Deserialize<StudioResponse>(
-                cachedStudio)!;
+            var cachedResponse = JsonSerializer.Deserialize<StudioResponse>(cached);
+            if (cachedResponse is not null)
+            {
+                logger.LogInformation("Studio {Id} served from cache", request.Id);
+                return cachedResponse;
+            }
         }
 
-        // 2. Redis empty → PostgreSQL
-        logger.LogInformation(
-            "Getting studio {Id} from database",
-            request.Id);
+        logger.LogInformation("Getting studio {Id} from database", request.Id);
 
-        var studio = await repository.GetByIdAsync(
-            request.Id,
-            cancellationToken);
+        var studio = await context.Studios
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
+            ?? throw new NotFoundException($"Studio with ID {request.Id} was not found");
 
-        // 3. Entity → Response
         var response = mapper.Map<StudioResponse>(studio);
 
-        // 4. Response → JSON
-        var json = JsonSerializer.Serialize(response);
-
-        // 5. Save to Redis
         await cache.SetStringAsync(
             key,
-            json,
+            JsonSerializer.Serialize(response),
             new DistributedCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow =
-                    TimeSpan.FromMinutes(10)
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
             },
             cancellationToken);
 

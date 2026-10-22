@@ -6,12 +6,8 @@ using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 
 namespace MoviePLatform_Monolit.Modules.Command.Data;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-    {
-    }
-
     public DbSet<UserEntity> Users => Set<UserEntity>();
     public DbSet<UserFavoriteCategoryEntity> UserFavoriteCategories => Set<UserFavoriteCategoryEntity>();
     

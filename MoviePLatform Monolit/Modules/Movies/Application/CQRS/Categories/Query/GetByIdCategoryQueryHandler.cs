@@ -1,10 +1,11 @@
 ﻿using System.Text.Json;
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
+using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
-using MoviePLatform_Monolit.Modules.Movies.Infrastructure.Repositories;
 
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Categories.Query;
 
@@ -12,28 +13,35 @@ public record GetCategoryByIdQuery(int Id) : IRequest<CategoryResponse>;
 
 public class GetCategoryByIdQueryHandler(
     ILogger<GetCategoryByIdQueryHandler> logger,
-    ICategoryRepository repository,
+    ApplicationDbContext context,
     IMapper mapper,
     IDistributedCache cache) : IRequestHandler<GetCategoryByIdQuery, CategoryResponse>
 {
     public async Task<CategoryResponse> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
     {
-        var key = $"category:{request.Id}";
-        var cach = await cache.GetStringAsync(key, cancellationToken);
+        if (request.Id <= 0) throw new BadRequestException("ID must be greater than zero");
 
-        if (!string.IsNullOrEmpty(cach))
+        var key = $"category:{request.Id}";
+        var cached = await cache.GetStringAsync(key, cancellationToken);
+
+        if (!string.IsNullOrEmpty(cached))
         {
-            logger.LogInformation("Category found with id: {Id}", request.Id);
-            return JsonSerializer.Deserialize<CategoryResponse>(cach)!;
+            var cachedResponse = JsonSerializer.Deserialize<CategoryResponse>(cached);
+            if (cachedResponse is not null)
+            {
+                logger.LogInformation("Category {Id} served from cache", request.Id);
+                return cachedResponse;
+            }
         }
 
         logger.LogInformation("Getting category by id: {Id} via CQRS", request.Id);
 
-        var data = await repository.GetByIdAsync(request.Id, cancellationToken);
 
-        logger.LogInformation("Category found: {Title}", data.Title);
+        var res = await context.Categories.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
+                  ?? throw new NotFoundException($"Id {request.Id} not found");
+        logger.LogInformation("Category found: {Title}", res.Title);
 
-        var response = mapper.Map<CategoryResponse>(data);
+        var response = mapper.Map<CategoryResponse>(res);
         var json = JsonSerializer.Serialize(response);
 
         await cache.SetStringAsync(

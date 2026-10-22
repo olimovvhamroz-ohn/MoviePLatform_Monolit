@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Mail;
 
-namespace MoviePLatform_Monolit.Modules.Users.Application.CQRS.SmsService;
+namespace MoviePLatform_Monolit.Modules.Users.Application.CQRS.Notifications;
 
 public interface IEmailService
 {
