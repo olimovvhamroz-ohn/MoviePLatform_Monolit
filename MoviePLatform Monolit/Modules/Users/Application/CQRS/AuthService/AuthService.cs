@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
-using MoviePLatform_Monolit.Modules.Users.Application.CQRS.SmsService;
+using MoviePLatform_Monolit.Modules.Users.Application.CQRS.Notifications;
 using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 using MoviePLatform_Monolit.Modules.Users.Domain.Enums;
 using MoviePLatform_Monolit.Users.DTO.REQUEST;

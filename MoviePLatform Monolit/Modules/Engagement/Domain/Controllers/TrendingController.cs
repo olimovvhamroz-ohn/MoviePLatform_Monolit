@@ -8,17 +8,8 @@ namespace MoviePLatform_Monolit.Modules.Engagement.Domain.Controllers;
 
 [ApiController]
 [Route("api/trending")]
-public class TrendingController : ControllerBase
+public class TrendingController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public TrendingController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
-  
-  
     [HttpGet]
     public async Task<ActionResult<ApiResponse<List<TrendingMovieResponse>>>> GetTrendingMovies(
         [FromQuery] int take = 10,
@@ -27,7 +18,7 @@ public class TrendingController : ControllerBase
             var query = new GetTrendingQuery(days, take);
         
 
-            var result = await _mediator.Send(query);
+            var result = await mediator.Send(query);
             return Ok(ApiResponse<List<TrendingMovieResponse>>.SuccessResponse(
                 result, $"Retrieved {result.Count} trending movies"));
        
@@ -41,7 +32,7 @@ public class TrendingController : ControllerBase
         
             var query = new GetTrendingQuery(7, count);
 
-            var result = await _mediator.Send(query);
+            var result = await mediator.Send(query);
             return Ok(ApiResponse<List<TrendingMovieResponse>>.SuccessResponse(
                 result, "Weekly trending movies retrieved"));
         
@@ -58,7 +49,7 @@ public class TrendingController : ControllerBase
     {
             var query = new GetTrendingQuery(30, count);
 
-            var result = await _mediator.Send(query);
+            var result = await mediator.Send(query);
             return Ok(ApiResponse<List<TrendingMovieResponse>>.SuccessResponse(
                 result, "Monthly trending movies retrieved"));
        
@@ -73,7 +64,7 @@ public class TrendingController : ControllerBase
     {
        
             var query = new GetTrendingQuery(9999, count);
-            var result = await _mediator.Send(query);
+            var result = await mediator.Send(query);
             return Ok(ApiResponse<List<TrendingMovieResponse>>.SuccessResponse(
                 result, "All-time trending movies retrieved"));
         

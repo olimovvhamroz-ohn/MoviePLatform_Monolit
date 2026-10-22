@@ -9,8 +9,8 @@ using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 namespace MoviePLatform_Monolit.Modules.Movies.Application.CQRS.Categories.Command;
 public record DeleteCategoryCommand(int Id) : IRequest<CategoryResponse>;
 
-public class DeleteCategoriyCommandHandler(
-    ILogger<DeleteCategoriyCommandHandler> logger,
+public class DeleteCategoryCommandHandler(
+    ILogger<DeleteCategoryCommandHandler> logger,
     ApplicationDbContext context ,
     IMapper mapper,IDistributedCache cache) : IRequestHandler<DeleteCategoryCommand, CategoryResponse>
 {

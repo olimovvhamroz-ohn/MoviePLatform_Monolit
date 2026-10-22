@@ -13,7 +13,7 @@ using MoviePLatform_Monolit.Modules.Command.Mappings;
 using MoviePLatform_Monolit.Modules.Command.Middleware;
 using MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.Payments;
 using MoviePLatform_Monolit.Modules.Users.Application.CQRS.AuthService;
-using MoviePLatform_Monolit.Modules.Users.Application.CQRS.SmsService;
+using MoviePLatform_Monolit.Modules.Users.Application.CQRS.Notifications;
 using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 using Scalar.AspNetCore;
 using Serilog;
@@ -56,7 +56,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // 4. Сервисы приложения. 
 builder.Services.AddScoped<IPaymentGateway, FakePaymentGateway>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IJwtService, Jwtservice>();
+builder.Services.AddScoped<IJwtService,JwtService>();
 builder.Services.AddScoped<IPasswordHasher<UserEntity>, PasswordHasher<UserEntity>>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
@@ -104,7 +104,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// 8. Middleware. Порядок важен.
+// 8. Middleware. 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseSerilogRequestLogging();

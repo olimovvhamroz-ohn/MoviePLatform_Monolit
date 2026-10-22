@@ -2,9 +2,9 @@
 
 public static class RentalPolicy
 {
-    public static readonly TimeSpan StartWindow = TimeSpan.FromDays(30);
+    private static readonly TimeSpan StartWindow = TimeSpan.FromDays(30);
 
-    public static readonly TimeSpan PlaybackWindow = TimeSpan.FromHours(48);
+    private static readonly TimeSpan PlaybackWindow = TimeSpan.FromHours(48);
 
     public static DateTime? GetExpiresAt(DateTime? firstWatchedAt)
     {

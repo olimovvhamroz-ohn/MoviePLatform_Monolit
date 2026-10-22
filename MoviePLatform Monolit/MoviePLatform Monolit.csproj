@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>MoviePLatform_Monolit</RootNamespace>
         <UserSecretsId>6a8afb53-8a58-44f6-bb93-f9fd389442a3</UserSecretsId>
+        <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.OpenApi.Generated</InterceptorsNamespaces>
     </PropertyGroup>
 
     <ItemGroup>

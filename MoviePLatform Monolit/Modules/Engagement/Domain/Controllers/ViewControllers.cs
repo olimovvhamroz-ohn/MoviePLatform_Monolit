@@ -13,15 +13,8 @@ namespace MoviePLatform_Monolit.Modules.Engagement.Domain.Controllers;
 [ApiController]
 [Route("api/views")]
 [Authorize]
-public class ViewsController : ControllerBase
+public class ViewsController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator _mediator;
-
-    public ViewsController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
-
     [HttpGet("history")]
     public async Task<ActionResult<ApiResponse<List<ViewResponse>>>> GetViewHistory(
         [FromQuery] int pageNumber = 1,
@@ -32,7 +25,7 @@ public class ViewsController : ControllerBase
             return Unauthorized();
 
         var query = new GetHistoryQuery(id, pageNumber, pageSize);
-        var result = await _mediator.Send(query);
+        var result = await mediator.Send(query);
         return Ok(ApiResponse<List<ViewResponse>>.SuccessResponse(
             result, "View history retrieved"));
     }
@@ -47,7 +40,7 @@ public class ViewsController : ControllerBase
             return Unauthorized();
 
         var query = new GetContinueWatchingQuery(id);
-        var result = await _mediator.Send(query);
+        var result = await mediator.Send(query);
         return Ok(ApiResponse<List<ViewResponse>>.SuccessResponse(
             result, "Continue watching list retrieved"));
     }
@@ -61,7 +54,7 @@ public class ViewsController : ControllerBase
             return Unauthorized();
 
         var command = new RecordViewCommand(id, request.MovieId, request.PositionSeconds, request.IsCompleted);
-        var result = await _mediator.Send(command);
+        var result = await mediator.Send(command);
         return Ok(ApiResponse<ViewResponse>.SuccessResponse(result, "View recorded"));
     }
 

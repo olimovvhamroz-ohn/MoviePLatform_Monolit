@@ -28,7 +28,6 @@ public class GetActorByIdQueryHandler(
             cacheKey,
             cancellationToken);
 
-        // 3. Агар дар Redis бошад → дигар ба database намеравем
         if (!string.IsNullOrEmpty(cachedActor))
         {
             logger.LogInformation(
@@ -37,8 +36,6 @@ public class GetActorByIdQueryHandler(
 
             return JsonSerializer.Deserialize<ActorResponse>(cachedActor)!;
         }
-
-       
         
         var actor = await context.Actors.Include(x => x.Movies).
             FirstOrDefaultAsync(x => x.Id == request.ActorId, cancellationToken);
@@ -50,7 +47,6 @@ public class GetActorByIdQueryHandler(
 
         var json = JsonSerializer.Serialize(actorResponse);
 
-        // 7. Дар Redis нигоҳ медорем
         await cache.SetStringAsync(
             cacheKey,
             json,
@@ -62,7 +58,7 @@ public class GetActorByIdQueryHandler(
             cancellationToken);
 
         logger.LogInformation(
-            "Actor {ActorId} loaded from database and saved to Redis",
+            "Actor {ActorId} loaded from database and saved to Redis", 
             request.ActorId);
 
 
