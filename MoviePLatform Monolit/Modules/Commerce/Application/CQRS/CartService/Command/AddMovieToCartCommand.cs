@@ -3,8 +3,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
+using MoviePLatform_Monolit.Modules.Commerce.Domain.Entity;
 using MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
-using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.CartService.Command;
 

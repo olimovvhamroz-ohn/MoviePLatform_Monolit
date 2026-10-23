@@ -59,24 +59,27 @@ public class ViewsController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete("{viewId}")]
-    public async Task<ActionResult<ApiResponse>> DeleteFromHistory(int viewId)
+    public async Task<ActionResult<ApiResponse<bool>>> DeleteFromHistory(long viewId)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!long.TryParse(userId, out var id))
             return Unauthorized();
+        
+        var command=new DeleteFromHistoryCommand(id, viewId);
+        await mediator.Send(command);
 
-        // TODO: реализовать DeleteFromHistoryCommand
-        return Ok(ApiResponse.SuccessResponse("Removed from history"));
+        return Ok(ApiResponse<bool>.SuccessResponse(true));
     }
 
     [HttpDelete("clear/all")]
-    public async Task<ActionResult<ApiResponse>> ClearAllHistory()
+    public async Task<ActionResult<ApiResponse<bool>>> ClearAllHistory()
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!long.TryParse(userId, out var id))
             return Unauthorized();
-
-        // TODO: реализовать ClearAllHistoryCommand
+        var command = new ClearAllHistoryCommand(id);
+        await mediator.Send(command);
+        
         return Ok(ApiResponse.SuccessResponse("History cleared"));
     }
 }

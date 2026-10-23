@@ -7,8 +7,6 @@ using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Request;
 using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Response;
 using MoviePLatform_Monolit.Modules.Users.Application.Policies;
 using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
-using MoviePLatform_Monolit.Users.DTO.REQUEST;
-using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.PurchaseService.Command;
 

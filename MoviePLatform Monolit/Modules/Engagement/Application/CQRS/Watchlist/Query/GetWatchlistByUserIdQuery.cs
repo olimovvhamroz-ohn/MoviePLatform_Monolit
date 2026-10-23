@@ -22,7 +22,7 @@ public class GetWatchlistByUserIdQueryHandler(ApplicationDbContext context)
                 Id = x.Id,
                 UserId = x.UserId,
                 MovieId = x.MovieId,
-                MovieTitle = x.Movie.Title,
+                MovieTitle = x.Movie!.Title,
                 PosterUrl = x.Movie.PosterUrl,
                 IsWatched = x.IsWatched,
                 AddedAt = x.AddedAt
