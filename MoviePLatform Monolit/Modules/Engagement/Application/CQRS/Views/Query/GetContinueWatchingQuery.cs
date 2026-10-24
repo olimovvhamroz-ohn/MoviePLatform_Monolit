@@ -28,7 +28,7 @@ public class GetContinueWatchingQueryHandler(ApplicationDbContext context)
                 Id = x.Id,
                 UserId = x.UserId,
                 MovieId = x.MovieId,
-                MovieTitle = x.Movie.Title,
+                MovieTitle = x.Movie!.Title,
                 PosterUrl = x.Movie.PosterUrl,
                 PositionSeconds = x.PositionSeconds,
                 IsCompleted = x.IsCompleted,

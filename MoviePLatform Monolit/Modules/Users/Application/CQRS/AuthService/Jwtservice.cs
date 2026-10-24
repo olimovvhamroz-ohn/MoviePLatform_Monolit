@@ -5,13 +5,13 @@ using Microsoft.IdentityModel.Tokens;
 using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 
 namespace MoviePLatform_Monolit.Modules.Users.Application.CQRS.AuthService;
-
 public interface IJwtService
 {
     string GenerateToken(UserEntity user);
 }
-public class Jwtservice (IConfiguration configuration): IJwtService
+public class JwtService(IConfiguration configuration): IJwtService
 {
+    
     public string GenerateToken(UserEntity user)
     {
         var claims = new List<Claim>

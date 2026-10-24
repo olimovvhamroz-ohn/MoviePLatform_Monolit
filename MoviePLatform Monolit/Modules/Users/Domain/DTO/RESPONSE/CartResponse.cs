@@ -1,6 +1,5 @@
 ﻿
 using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Response;
-using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
 

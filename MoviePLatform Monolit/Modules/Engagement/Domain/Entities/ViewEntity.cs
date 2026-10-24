@@ -7,7 +7,7 @@ public class ViewEntity : BaseEntity
     public long UserId { get; set; }
     public long MovieId { get; set; }
 
-    
+
     public int PositionSeconds { get; set; }
     public bool IsCompleted { get; set; }
 

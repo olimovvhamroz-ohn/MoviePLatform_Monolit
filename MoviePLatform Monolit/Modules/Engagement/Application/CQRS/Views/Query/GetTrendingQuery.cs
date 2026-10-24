@@ -23,7 +23,7 @@ public class GetTrendingQueryHandler(ApplicationDbContext context)
         return await context.Views
             .AsNoTracking()
             .Where(v => v.LastWatchedAt >= since)
-            .GroupBy(v => new { v.MovieId, v.Movie.Title, v.Movie.PosterUrl })
+            .GroupBy(v => new { v.MovieId, v.Movie!.Title, v.Movie.PosterUrl })
             .Select(g => new TrendingMovieResponse
             {
                 MovieId = g.Key.MovieId,
