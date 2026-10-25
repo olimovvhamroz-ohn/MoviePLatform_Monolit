@@ -26,6 +26,7 @@ public class GetMovieReviewQueryHandler(ApplicationDbContext context, IMapper ma
 
         var reviews = await context.Reviews
             .AsNoTracking()
+            .Where(x=>x.IsDeleted==false)
             .Where(x => x.MovieId == request.MovieId)
             .OrderByDescending(x => x.Id)
             .Skip(skip)

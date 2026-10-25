@@ -3,9 +3,9 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
+using MoviePLatform_Monolit.Modules.Users.Domain.DTO.REQUEST;
+using MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
-using MoviePLatform_Monolit.Users.DTO.REQUEST;
-using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Users.Application.CQRS.UserService.command;
 

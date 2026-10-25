@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
+//using Microsoft.Extensions.Caching.Distributed;
 using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
 
@@ -10,8 +10,9 @@ public record DeleteMovieCommand(long Id) : IRequest<bool>;
 
 public class DeleteMovieCommandHandler(
     ApplicationDbContext context,
-    ILogger<DeleteMovieCommandHandler> logger,
-    IDistributedCache cache)
+    ILogger<DeleteMovieCommandHandler> logger
+    // , IDistributedCache cache
+)
     : IRequestHandler<DeleteMovieCommand, bool>
 {
     public async Task<bool> Handle(DeleteMovieCommand request, CancellationToken cancellationToken)
@@ -21,14 +22,15 @@ public class DeleteMovieCommandHandler(
 
         logger.LogInformation("Deleting movie {Id} via CQRS", request.Id);
 
-        var movie = await context.Movies
+        var movie =
+            await context.Movies.Where(x => x.IsDeleted == false)
                         .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
                     ?? throw new NotFoundException($"Movie with ID {request.Id} was not found");
 
-        context.Movies.Remove(movie);
+        movie.IsDeleted = true;
         await context.SaveChangesAsync(cancellationToken);
 
-        await cache.RemoveAsync($"movie:{request.Id}", cancellationToken);
+        //await cache.RemoveAsync($"movie:{request.Id}", cancellationToken);
 
         return true;
     }

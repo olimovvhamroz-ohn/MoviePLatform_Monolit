@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Modules.Command.Data;
-using MoviePLatform_Monolit.Users.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Users.Application.CQRS.UserService.Query;
 
@@ -19,6 +19,7 @@ public class GetAllUsersQueryHandler(
 
         var users = await context.Users
             .AsNoTracking()
+            .Where(x=>x.IsDeleted==false)
             .ToListAsync(cancellationToken);
 
         logger.LogInformation("Total users: {Count}", users.Count);

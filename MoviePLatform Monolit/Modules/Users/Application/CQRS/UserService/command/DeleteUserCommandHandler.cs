@@ -14,11 +14,10 @@ public class DeleteUserCommandHandler(ApplicationDbContext context) : IRequestHa
         if (request.Id <= 0)
             throw new BadRequestException("ID must be greater than zero");
 
-        var user = await context.Users
+        var user = await context.Users.Where(x=>x.IsDeleted==false)
                        .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
                    ?? throw new NotFoundException($"User {request.Id} not found");
-
-        context.Users.Remove(user);
+        user.IsDeleted = true;
         await context.SaveChangesAsync(cancellationToken);
 
         return Unit.Value;

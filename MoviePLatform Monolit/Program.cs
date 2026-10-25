@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.OpenApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using MoviePLatform_Monolit;
 using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Interfaces;
 using MoviePLatform_Monolit.Modules.Command.Mappings;
 using MoviePLatform_Monolit.Modules.Command.Middleware;
+using MoviePLatform_Monolit.Modules.Command.UpdateTimestampsInterceptor;
 using MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.Payments;
 using MoviePLatform_Monolit.Modules.Users.Application.CQRS.AuthService;
 using MoviePLatform_Monolit.Modules.Users.Application.CQRS.Notifications;
@@ -50,8 +52,13 @@ else
     throw new InvalidOperationException("Redis:ConnectionString is not configured");
 }
 // 3. База данных
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddSingleton<UpdateTimestampsInterceptor>();
+
+builder.Services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
+    options
+        .UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+        .AddInterceptors(
+            serviceProvider.GetRequiredService<UpdateTimestampsInterceptor>()));
 
 // 4. Сервисы приложения. 
 builder.Services.AddScoped<IPaymentGateway, FakePaymentGateway>();
@@ -122,45 +129,48 @@ finally
     Log.CloseAndFlush();
 }
 
-internal sealed class BearerSecuritySchemeTransformer(
-    IAuthenticationSchemeProvider authenticationSchemeProvider)
-    : IOpenApiDocumentTransformer
+namespace MoviePLatform_Monolit
 {
-    public async Task TransformAsync(
-        OpenApiDocument document,
-        OpenApiDocumentTransformerContext context,
-        CancellationToken cancellationToken)
+    internal sealed class BearerSecuritySchemeTransformer(
+        IAuthenticationSchemeProvider authenticationSchemeProvider)
+        : IOpenApiDocumentTransformer
     {
-        var authenticationSchemes = await authenticationSchemeProvider.GetAllSchemesAsync();
-
-        if (authenticationSchemes.All(x => x.Name != "Bearer"))
-            return;
-
-        document.Components ??= new OpenApiComponents();
-
-        document.Components.SecuritySchemes =
-            new Dictionary<string, IOpenApiSecurityScheme>
-            {
-                ["Bearer"] = new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    In = ParameterLocation.Header,
-                    BearerFormat = "JWT"
-                }
-            };
-
-        foreach (var operation in document.Paths.Values
-                     .Where(path => path.Operations != null)
-                     .SelectMany(path => path.Operations!))
+        public async Task TransformAsync(
+            OpenApiDocument document,
+            OpenApiDocumentTransformerContext context,
+            CancellationToken cancellationToken)
         {
-            operation.Value.Security ??= [];
+            var authenticationSchemes = await authenticationSchemeProvider.GetAllSchemesAsync();
 
-            operation.Value.Security.Add(
-                new OpenApiSecurityRequirement
+            if (authenticationSchemes.All(x => x.Name != "Bearer"))
+                return;
+
+            document.Components ??= new OpenApiComponents();
+
+            document.Components.SecuritySchemes =
+                new Dictionary<string, IOpenApiSecurityScheme>
                 {
-                    [new OpenApiSecuritySchemeReference("Bearer", document)] = []
-                });
+                    ["Bearer"] = new OpenApiSecurityScheme
+                    {
+                        Type = SecuritySchemeType.Http,
+                        Scheme = "bearer",
+                        In = ParameterLocation.Header,
+                        BearerFormat = "JWT"
+                    }
+                };
+
+            foreach (var operation in document.Paths.Values
+                         .Where(path => path.Operations != null)
+                         .SelectMany(path => path.Operations!))
+            {
+                operation.Value.Security ??= [];
+
+                operation.Value.Security.Add(
+                    new OpenApiSecurityRequirement
+                    {
+                        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+                    });
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace MoviePLatform_Monolit.Users.DTO.REQUEST;
+﻿namespace MoviePLatform_Monolit.Modules.Users.Domain.DTO.REQUEST;
 public class UserRequest
 {
     public string Name { get; set; } = string.Empty;

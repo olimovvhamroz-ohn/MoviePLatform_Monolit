@@ -1,8 +1,8 @@
-﻿using System.Text.Json;
+﻿//using System.Text.Json;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
+//using Microsoft.Extensions.Caching.Distributed;
 using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 
@@ -13,8 +13,9 @@ public record GetMovieByIdQuery(long Id) : IRequest<MovieResponse>;
 public class GetMovieByIdQueryHandler(
     ApplicationDbContext context,
     IMapper mapper,
-    ILogger<GetMovieByIdQueryHandler> logger,
-    IDistributedCache cache) : IRequestHandler<GetMovieByIdQuery, MovieResponse>
+    ILogger<GetMovieByIdQueryHandler> logger
+    //,IDistributedCache cache
+    ) : IRequestHandler<GetMovieByIdQuery, MovieResponse>
 {
     public async Task<MovieResponse> Handle(
         GetMovieByIdQuery request,
@@ -25,7 +26,7 @@ public class GetMovieByIdQueryHandler(
             throw new ArgumentException("ID must be greater than zero.", nameof(request.Id));
         }
 
-        var key = $"movie:{request.Id}";
+        /*var key = $"movie:{request.Id}";
 
         // 1. Check 
         var cachedMovie = await cache.GetStringAsync(
@@ -41,14 +42,14 @@ public class GetMovieByIdQueryHandler(
             return JsonSerializer.Deserialize<MovieResponse>(
                 cachedMovie)!;
         }
-
-        // 2. If not in Redis → PostgreSQL
+*/
         logger.LogInformation(
             "Getting movie by id {MovieId} from database",
             request.Id);
 
 
         var movie = await context.Movies
+            .Where(x=>x.IsDeleted==false)
             .Include(x => x.Category)
             .Include(x => x.Reviews)
             .Include(x => x.Actors)
@@ -62,7 +63,7 @@ public class GetMovieByIdQueryHandler(
 
         // 3. Map Entity → Response
         var response = mapper.Map<MovieResponse>(movie);
-
+/*
         // 4. Serialize Response → JSON
         var json = JsonSerializer.Serialize(response);
 
@@ -80,7 +81,7 @@ public class GetMovieByIdQueryHandler(
         logger.LogInformation(
             "Movie {MovieId} loaded from database and saved to Redis",
             request.Id);
-
+*/
         return response;
     }
 }

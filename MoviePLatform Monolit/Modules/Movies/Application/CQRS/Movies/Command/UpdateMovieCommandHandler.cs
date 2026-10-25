@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
+//using Microsoft.Extensions.Caching.Distributed;
 using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.REQUEST;
@@ -16,8 +16,9 @@ public record UpdateMovieCommand(
 public class UpdateMovieCommandHandler(
     ApplicationDbContext context,
     IMapper mapper,
-    ILogger<UpdateMovieCommandHandler> logger,
-    IDistributedCache cache)
+    ILogger<UpdateMovieCommandHandler> logger
+    //,IDistributedCache cache
+    )
     : IRequestHandler<UpdateMovieCommand, MovieResponse>
 {
     public async Task<MovieResponse> Handle(UpdateMovieCommand request, CancellationToken cancellationToken)
@@ -63,7 +64,7 @@ public class UpdateMovieCommandHandler(
         entity.AgeRating = request.Input.AgeRating;
 
         await context.SaveChangesAsync(cancellationToken);
-        await cache.RemoveAsync($"movie:{request.Id}", cancellationToken);
+        //await cache.RemoveAsync($"movie:{request.Id}", cancellationToken);
 
         return mapper.Map<MovieResponse>(entity);
     }

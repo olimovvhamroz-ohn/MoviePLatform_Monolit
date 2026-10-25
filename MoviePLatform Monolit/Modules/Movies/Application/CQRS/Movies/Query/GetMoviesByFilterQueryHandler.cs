@@ -1,8 +1,9 @@
-﻿using System.Text.Json;
+﻿//using System.Text.Json;
+
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
+//using Microsoft.Extensions.Caching.Distributed;
 using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Enums;
@@ -18,7 +19,7 @@ public record GetMoviesByFilterQuery(
 public class GetMoviesByFilterQueryHandler(
     ApplicationDbContext context,
     IMapper mapper,
-    IDistributedCache cache,
+    // IDistributedCache cache,
     ILogger<GetMoviesByFilterQueryHandler> logger)
     : IRequestHandler<GetMoviesByFilterQuery, List<MovieResponse>>
 {
@@ -26,8 +27,7 @@ public class GetMoviesByFilterQueryHandler(
         GetMoviesByFilterQuery request,
         CancellationToken cancellationToken)
     {
-        
-        var key =
+        /*var key =
             $"movie:filter:" +
             $"category={request.CategoryId}:" +
             $"year={request.Year}:" +
@@ -47,34 +47,35 @@ public class GetMoviesByFilterQueryHandler(
             return JsonSerializer.Deserialize<List<MovieResponse>>(
                 cachedMovies)!;
         }
-
+*/
         // 2. If Redis is empty → PostgreSQL
         logger.LogInformation(
             "Getting movies from database by filter");
         var query = context.Movies
             .AsNoTracking()
+            .Where(x => x.IsDeleted == false)
             .Include(x => x.Category)
             .Include(x => x.Reviews)
             .Include(x => x.Actors)
             .Include(x => x.Studio)
             .AsSplitQuery();
 
-        if (request.CategoryId.HasValue) 
+        if (request.CategoryId.HasValue)
             query = query.Where(x => x.CategoryId == request.CategoryId.Value);
 
-        if (request.Year.HasValue) 
-            query = query.Where(x => x.Year == request.Year.Value); 
+        if (request.Year.HasValue)
+            query = query.Where(x => x.Year == request.Year.Value);
 
-        if (request.MaxPrice.HasValue) 
+        if (request.MaxPrice.HasValue)
             query = query.Where(x => x.Price <= request.MaxPrice.Value);
 
-        if (request.AgeRating.HasValue) 
+        if (request.AgeRating.HasValue)
             query = query.Where(x => x.AgeRating == request.AgeRating.Value);
 
-        var movies= await query.ToListAsync(cancellationToken);
-        
+        var movies = await query.ToListAsync(cancellationToken);
+
         var response = mapper.Map<List<MovieResponse>>(movies);
-        
+        /*
         var json = JsonSerializer.Serialize(response);
 
         await cache.SetStringAsync(
@@ -89,7 +90,7 @@ public class GetMoviesByFilterQueryHandler(
 
         logger.LogInformation(
             "Movies loaded from database and saved to Redis");
-
+*/
         return response;
     }
 }

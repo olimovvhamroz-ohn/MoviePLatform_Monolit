@@ -1,8 +1,9 @@
-﻿using System.Text.Json;
+﻿//using System.Text.Json;
+
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
+//using Microsoft.Extensions.Caching.Distributed;
 using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 
@@ -15,8 +16,9 @@ public record GetMoviesPaginationQuery(
 public class GetMoviesPaginationQueryHandler(
     ApplicationDbContext context,
     IMapper mapper,
-    ILogger<GetMoviesPaginationQueryHandler> logger,
-    IDistributedCache cache)
+    ILogger<GetMoviesPaginationQueryHandler> logger
+    //,IDistributedCache cache
+)
     : IRequestHandler<GetMoviesPaginationQuery, List<MovieResponse>>
 {
     public async Task<List<MovieResponse>> Handle(
@@ -28,7 +30,7 @@ public class GetMoviesPaginationQueryHandler(
 
         var skip = (request.Page - 1) * request.PageSize;
 
-        var key =
+        /*var key =
             $"movie:page:{page}:size:{pageSize}";
 
         var cachedMovies = await cache.GetStringAsync(
@@ -44,7 +46,7 @@ public class GetMoviesPaginationQueryHandler(
 
             return JsonSerializer.Deserialize<List<MovieResponse>>(
                 cachedMovies)!;
-        }
+        }*/
 
         logger.LogInformation(
             "Getting movies page {Page} size {PageSize} from database",
@@ -53,6 +55,7 @@ public class GetMoviesPaginationQueryHandler(
 
         var movies = await context.Movies
             .AsNoTracking()
+            .Where(x => x.IsDeleted == false)
             .Include(x => x.Category)
             .Include(x => x.Reviews)
             .Include(x => x.Actors)
@@ -61,11 +64,11 @@ public class GetMoviesPaginationQueryHandler(
             .Skip(skip)
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
-        
+
         var response = mapper.Map<List<MovieResponse>>(movies);
-        
-        var json = JsonSerializer.Serialize(response);
-        
+
+        /*var json = JsonSerializer.Serialize(response);
+
         await cache.SetStringAsync(
             key,
             json,
@@ -75,7 +78,7 @@ public class GetMoviesPaginationQueryHandler(
                     TimeSpan.FromMinutes(10)
             },
             cancellationToken);
-
+*/
         return response;
     }
 }

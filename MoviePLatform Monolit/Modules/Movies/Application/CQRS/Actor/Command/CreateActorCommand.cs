@@ -25,6 +25,7 @@ public class CreateActorCommand (IMapper mapper, ApplicationDbContext context, I
         if (dublicate != null) throw new BadRequestException("Actor already exists");
         
         var model = mapper.Map<ActorEntity>(request.ActorRequest);
+       
         
         await context.Actors.AddAsync(model, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);

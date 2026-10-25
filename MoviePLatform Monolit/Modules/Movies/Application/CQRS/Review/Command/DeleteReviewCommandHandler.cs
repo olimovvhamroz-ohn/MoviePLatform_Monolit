@@ -16,17 +16,19 @@ public class DeleteReviewCommandHandler(ApplicationDbContext context) : IRequest
         if (request.UserId <= 0)
             throw new BadRequestException("User ID must be greater than zero");
 
-        var res = await context.Reviews.FirstOrDefaultAsync(x => x.Id == request.ReviewId, cancellationToken)
+        var res = await context.Reviews
+                      .Where(x => x.IsDeleted == false)
+                      .FirstOrDefaultAsync(x => x.Id == request.ReviewId, cancellationToken)
                   ?? throw new NotFoundException($"Id {request.ReviewId} not found");
-        
+
         if (res.UserId != request.UserId)
         {
             throw new UnauthorizedException(" иҷозат надорed");
         }
 
-        context.Reviews.Remove(res);
+        res.IsDeleted = true;
         await context.SaveChangesAsync(cancellationToken);
-        
+
         return Unit.Value;
     }
 }
