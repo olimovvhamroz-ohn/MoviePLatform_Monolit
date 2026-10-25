@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using MoviePLatform_Monolit.Users.DTO.REQUEST;
+using MoviePLatform_Monolit.Modules.Users.Domain.DTO.REQUEST;
 
 namespace MoviePLatform_Monolit.Modules.Command.Validators;
 

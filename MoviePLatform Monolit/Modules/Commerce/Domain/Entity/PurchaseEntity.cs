@@ -1,7 +1,8 @@
-﻿using MoviePLatform_Monolit.Modules.Engagement.Domain.Entities;
+﻿using MoviePLatform_Monolit.Modules.Command.BaseEntity;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
+using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 
-namespace MoviePLatform_Monolit.Modules.Users.Domain.Entity;
+namespace MoviePLatform_Monolit.Modules.Commerce.Domain.Entity;
 
 public class PurchaseEntity : BaseEntity
 {

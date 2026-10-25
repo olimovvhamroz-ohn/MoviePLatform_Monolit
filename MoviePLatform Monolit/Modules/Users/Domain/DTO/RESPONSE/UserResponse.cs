@@ -1,5 +1,5 @@
 ﻿
-namespace MoviePLatform_Monolit.Users.DTO.RESPONSE;
+namespace MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
 public class UserResponse
 {
     public long Id { get; set; }

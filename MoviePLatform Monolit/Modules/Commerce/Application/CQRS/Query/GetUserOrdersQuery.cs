@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Modules.Command.Data;
-using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Commerce.Domain.DTO.Response;
 
 namespace MoviePLatform_Monolit.Modules.Commerce.Application.CQRS.Query;
 

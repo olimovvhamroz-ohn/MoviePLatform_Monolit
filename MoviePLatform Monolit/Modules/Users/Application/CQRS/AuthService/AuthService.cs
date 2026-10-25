@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Users.Application.CQRS.Notifications;
+using MoviePLatform_Monolit.Modules.Users.Domain.DTO.REQUEST;
+using MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
 using MoviePLatform_Monolit.Modules.Users.Domain.Enums;
-using MoviePLatform_Monolit.Users.DTO.REQUEST;
-using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Users.Application.CQRS.AuthService;
 
@@ -36,7 +36,7 @@ public class AuthService(
             Email = email,
             Phone = request.Phone,
             Name = request.Name,
-            Role = Role.Admin,
+            Role = Role.Client,
             DateOfBirth = request.DateOfBirth
         };
 

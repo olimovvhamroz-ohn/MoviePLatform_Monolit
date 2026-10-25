@@ -22,7 +22,39 @@ namespace MoviePLatform_Monolit.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Entity.CartItemEntity", b =>
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.CartEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsCheckedOut")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("\"IsCheckedOut\" = false");
+
+                    b.ToTable("carts", "commerce");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.CartItemEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,167 +65,23 @@ namespace MoviePLatform_Monolit.Migrations
                     b.Property<long>("CartId")
                         .HasColumnType("bigint");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
                     b.Property<long>("MovieId")
                         .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
 
                     b.ToTable("CartItems");
-                });
-
-            modelBuilder.Entity("MoviePLatform_Monolit.Entity.CategoryEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Categories");
-                });
-
-            modelBuilder.Entity("MoviePLatform_Monolit.Entity.MovieEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("AgeRating")
-                        .HasColumnType("integer");
-
-                    b.Property<long?>("CategoryId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<TimeSpan>("Duration")
-                        .HasColumnType("interval");
-
-                    b.Property<string>("PosterUrl")
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<long?>("StudioId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("StudioId");
-
-                    b.ToTable("movies", "catalog");
-                });
-
-            modelBuilder.Entity("MoviePLatform_Monolit.Entity.PurchaseEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime?>("FirstWatchedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("MovieId")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("PurchasePrice")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<DateTime>("PurchasedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId", "MovieId")
-                        .IsUnique();
-
-                    b.ToTable("purchases", "commerce");
-                });
-
-            modelBuilder.Entity("MoviePLatform_Monolit.Entity.ReviewEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("MovieId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MovieId", "UserId")
-                        .IsUnique();
-
-                    b.ToTable("reviews", "catalog");
-                });
-
-            modelBuilder.Entity("MoviePLatform_Monolit.Entity.StudioEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("FoundYear")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Studios");
                 });
 
             modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.OrderEntity", b =>
@@ -298,6 +186,132 @@ namespace MoviePLatform_Monolit.Migrations
                     b.ToTable("payments", "commerce");
                 });
 
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.PurchaseEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("FirstWatchedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("MovieId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("PurchasePrice")
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<DateTime>("PurchasedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovieId");
+
+                    b.HasIndex("UserId", "MovieId")
+                        .IsUnique();
+
+                    b.ToTable("purchases", "commerce");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Engagement.Domain.Entities.ViewEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("FirstWatchedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LastWatchedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("MovieId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("PositionSeconds")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("ViewCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovieId");
+
+                    b.ToTable("Views");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Engagement.Domain.Entities.WatchlistEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsWatched")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("MovieId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovieId");
+
+                    b.HasIndex("UserId", "MovieId")
+                        .IsUnique();
+
+                    b.ToTable("watchlist", "engagement");
+                });
+
             modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.ActorEntity", b =>
                 {
                     b.Property<long>("Id")
@@ -309,16 +323,25 @@ namespace MoviePLatform_Monolit.Migrations
                     b.Property<string>("Biography")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
                     b.ToTable("Actors");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Users.Domain.Entity.CartEntity", b =>
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.CategoryEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -326,28 +349,166 @@ namespace MoviePLatform_Monolit.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<bool>("IsCheckedOut")
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("AgeRating")
+                        .HasColumnType("integer");
+
+                    b.Property<long?>("CategoryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<TimeSpan>("Duration")
+                        .HasColumnType("interval");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("PosterUrl")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<long?>("StudioId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("StudioId");
+
+                    b.ToTable("movies", "catalog");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.ReviewEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("MovieId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("\"IsCheckedOut\" = false");
+                    b.HasIndex("MovieId", "UserId")
+                        .IsUnique();
 
-                    b.ToTable("carts", "commerce");
+                    b.ToTable("reviews", "catalog");
                 });
 
-            modelBuilder.Entity("UserEntity", b =>
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.StudioEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("FoundYear")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Studios");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Users.Domain.Entity.UserEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("date");
@@ -356,6 +517,9 @@ namespace MoviePLatform_Monolit.Migrations
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -374,6 +538,9 @@ namespace MoviePLatform_Monolit.Migrations
                     b.Property<int>("Role")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -382,7 +549,7 @@ namespace MoviePLatform_Monolit.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("UserFavoriteCategoryEntity", b =>
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Users.Domain.Entity.UserFavoriteCategoryEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -393,6 +560,15 @@ namespace MoviePLatform_Monolit.Migrations
                     b.Property<long>("CategoryId")
                         .HasColumnType("bigint");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("UpdatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
@@ -401,72 +577,6 @@ namespace MoviePLatform_Monolit.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserFavoriteCategories");
-                });
-
-            modelBuilder.Entity("ViewEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("FirstWatchedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("LastWatchedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("MovieId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("PositionSeconds")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("ViewCount")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MovieId");
-
-                    b.ToTable("Views");
-                });
-
-            modelBuilder.Entity("WatchlistEntity", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("AddedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsWatched")
-                        .HasColumnType("boolean");
-
-                    b.Property<long>("MovieId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MovieId");
-
-                    b.HasIndex("UserId", "MovieId")
-                        .IsUnique();
-
-                    b.ToTable("watchlist", "engagement");
                 });
 
             modelBuilder.Entity("movie_actors", b =>
@@ -484,39 +594,15 @@ namespace MoviePLatform_Monolit.Migrations
                     b.ToTable("movie_actors", "catalog");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Entity.CartItemEntity", b =>
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.CartItemEntity", b =>
                 {
-                    b.HasOne("MoviePLatform_Monolit.Modules.Users.Domain.Entity.CartEntity", "Cart")
+                    b.HasOne("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.CartEntity", "Cart")
                         .WithMany("CartItems")
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Cart");
-                });
-
-            modelBuilder.Entity("MoviePLatform_Monolit.Entity.MovieEntity", b =>
-                {
-                    b.HasOne("MoviePLatform_Monolit.Entity.CategoryEntity", "Category")
-                        .WithMany("Movies")
-                        .HasForeignKey("CategoryId");
-
-                    b.HasOne("MoviePLatform_Monolit.Entity.StudioEntity", "Studio")
-                        .WithMany("Movies")
-                        .HasForeignKey("StudioId");
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Studio");
-                });
-
-            modelBuilder.Entity("MoviePLatform_Monolit.Entity.ReviewEntity", b =>
-                {
-                    b.HasOne("MoviePLatform_Monolit.Entity.MovieEntity", null)
-                        .WithMany("Reviews")
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.OrderItemEntity", b =>
@@ -541,37 +627,80 @@ namespace MoviePLatform_Monolit.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("UserFavoriteCategoryEntity", b =>
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.PurchaseEntity", b =>
                 {
-                    b.HasOne("UserEntity", "User")
+                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", "Movie")
+                        .WithMany()
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MoviePLatform_Monolit.Modules.Users.Domain.Entity.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Engagement.Domain.Entities.ViewEntity", b =>
+                {
+                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", "Movie")
+                        .WithMany()
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Engagement.Domain.Entities.WatchlistEntity", b =>
+                {
+                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", "Movie")
+                        .WithMany()
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", b =>
+                {
+                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.CategoryEntity", "Category")
+                        .WithMany("Movies")
+                        .HasForeignKey("CategoryId");
+
+                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.StudioEntity", "Studio")
+                        .WithMany("Movies")
+                        .HasForeignKey("StudioId");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Studio");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.ReviewEntity", b =>
+                {
+                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", null)
+                        .WithMany("Reviews")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Users.Domain.Entity.UserFavoriteCategoryEntity", b =>
+                {
+                    b.HasOne("MoviePLatform_Monolit.Modules.Users.Domain.Entity.UserEntity", "User")
                         .WithMany("FavoriteCategories")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ViewEntity", b =>
-                {
-                    b.HasOne("MoviePLatform_Monolit.Entity.MovieEntity", "Movie")
-                        .WithMany()
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Movie");
-                });
-
-            modelBuilder.Entity("WatchlistEntity", b =>
-                {
-                    b.HasOne("MoviePLatform_Monolit.Entity.MovieEntity", "Movie")
-                        .WithMany()
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Movie");
                 });
 
             modelBuilder.Entity("movie_actors", b =>
@@ -582,26 +711,16 @@ namespace MoviePLatform_Monolit.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MoviePLatform_Monolit.Entity.MovieEntity", null)
+                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", null)
                         .WithMany()
                         .HasForeignKey("movie_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Entity.CategoryEntity", b =>
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.CartEntity", b =>
                 {
-                    b.Navigation("Movies");
-                });
-
-            modelBuilder.Entity("MoviePLatform_Monolit.Entity.MovieEntity", b =>
-                {
-                    b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("MoviePLatform_Monolit.Entity.StudioEntity", b =>
-                {
-                    b.Navigation("Movies");
+                    b.Navigation("CartItems");
                 });
 
             modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.OrderEntity", b =>
@@ -611,12 +730,22 @@ namespace MoviePLatform_Monolit.Migrations
                     b.Navigation("Payment");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Users.Domain.Entity.CartEntity", b =>
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.CategoryEntity", b =>
                 {
-                    b.Navigation("CartItems");
+                    b.Navigation("Movies");
                 });
 
-            modelBuilder.Entity("UserEntity", b =>
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", b =>
+                {
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.StudioEntity", b =>
+                {
+                    b.Navigation("Movies");
+                });
+
+            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Users.Domain.Entity.UserEntity", b =>
                 {
                     b.Navigation("FavoriteCategories");
                 });

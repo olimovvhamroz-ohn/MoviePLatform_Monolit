@@ -18,8 +18,11 @@ public class GetAllCatecoriyQuery(
     {
         logger.LogInformation("Getting all categories");
 
-        var data = await context.Categories.AsNoTracking().ToListAsync(cancellationToken);
-        
+        var data = await context.Categories
+            .AsNoTracking()
+            .Where(x => x.IsDeleted == false)
+            .ToListAsync(cancellationToken);
+
         logger.LogInformation("Total categories found: {Count}", data.Count);
 
         return mapper.Map<List<CategoryResponse>>(data);

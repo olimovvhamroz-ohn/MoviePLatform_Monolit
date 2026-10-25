@@ -1,8 +1,8 @@
-﻿using System.Text.Json;
+﻿//using System.Text.Json;
 using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
+//using Microsoft.Extensions.Caching.Distributed;
 using MoviePLatform_Monolit.Modules.Command.Data;
 using MoviePLatform_Monolit.Modules.Command.Extensions;
 using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
@@ -14,7 +14,7 @@ public record GetStudioByIdQuery(int Id) : IRequest<StudioResponse>;
 public class GetStudioByIdQueryHandler(
     ApplicationDbContext context,
     IMapper mapper,
-    IDistributedCache cache,
+  //  IDistributedCache cache,
     ILogger<GetStudioByIdQueryHandler> logger)
     : IRequestHandler<GetStudioByIdQuery, StudioResponse>
 {
@@ -23,7 +23,7 @@ public class GetStudioByIdQueryHandler(
         if (request.Id <= 0)
             throw new BadRequestException("ID must be greater than zero");
 
-        var key = $"studio:{request.Id}";
+/*var key = $"studio:{request.Id}";
 
         var cached = await cache.GetStringAsync(key, cancellationToken);
 
@@ -36,7 +36,7 @@ public class GetStudioByIdQueryHandler(
                 return cachedResponse;
             }
         }
-
+*/
         logger.LogInformation("Getting studio {Id} from database", request.Id);
 
         var studio = await context.Studios
@@ -45,7 +45,7 @@ public class GetStudioByIdQueryHandler(
             ?? throw new NotFoundException($"Studio with ID {request.Id} was not found");
 
         var response = mapper.Map<StudioResponse>(studio);
-
+/*
         await cache.SetStringAsync(
             key,
             JsonSerializer.Serialize(response),
@@ -53,7 +53,7 @@ public class GetStudioByIdQueryHandler(
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
             },
-            cancellationToken);
+            cancellationToken);*/
 
         return response;
     }

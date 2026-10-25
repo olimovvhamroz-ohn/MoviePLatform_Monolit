@@ -28,8 +28,10 @@ public class CheckEntitlementQueryHandler(ApplicationDbContext context)
 
         var purchase = await context.Purchases
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.UserId == request.UserId && x.MovieId == request.MovieId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.UserId == request.UserId 
+                                      && x.MovieId == request.MovieId, cancellationToken);
 
         return EntitlementEvaluator.CheckAccess(user, movie, purchase, DateTime.UtcNow);
     }
+    
 }

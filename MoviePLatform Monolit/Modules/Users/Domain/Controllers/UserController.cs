@@ -6,8 +6,7 @@ using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Users.Application.CQRS.UserService.command;
 using MoviePLatform_Monolit.Modules.Users.Application.CQRS.UserService.Query;
 using MoviePLatform_Monolit.Modules.Users.Domain.DTO.REQUEST;
-using MoviePLatform_Monolit.Users.DTO.REQUEST;
-using MoviePLatform_Monolit.Users.DTO.RESPONSE;
+using MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Users.Domain.Controllers;
 

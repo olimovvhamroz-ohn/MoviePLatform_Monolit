@@ -10,7 +10,6 @@ using MoviePLatform_Monolit.Modules.Movies.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Movies.Domain.Entity;
 using MoviePLatform_Monolit.Modules.Users.Domain.DTO.RESPONSE;
 using MoviePLatform_Monolit.Modules.Users.Domain.Entity;
-using MoviePLatform_Monolit.Users.DTO.RESPONSE;
 
 namespace MoviePLatform_Monolit.Modules.Command.Mappings;
 
