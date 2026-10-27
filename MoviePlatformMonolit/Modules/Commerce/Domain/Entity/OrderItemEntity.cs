@@ -1,0 +1,10 @@
+﻿namespace MoviePlatformMonolit.Modules.Commerce.Domain.Entity;
+public class OrderItemEntity
+{
+    public long Id { get; set; }
+    public long OrderId { get; set; }
+    public long MovieId { get; set; }
+    public decimal Price { get; set; }
+    public int Quantity { get; set; } = 1;
+    public OrderEntity? Order { get; set; }
+}
