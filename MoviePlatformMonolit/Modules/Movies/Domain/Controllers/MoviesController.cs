@@ -1,6 +1,4 @@
-﻿
-
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MoviePlatformMonolit.Modules.Movies.Application.CQRS.Movies.Command;
@@ -17,18 +15,13 @@ public class MoviesController(IMediator mediator) : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<ApiResponse<MovieResponse>>> GetMovieById(int id)
     {
-        
-            var query = new GetMovieByIdQuery(id);
-            var result = await mediator.Send(query);
-            
-            if (result == null)
-                return NotFound(ApiResponse<MovieResponse>.NotFoundResponse("Movie not found"));
+        var query = new GetMovieByIdQuery(id);
+        var result = await mediator.Send(query);
 
-            return Ok(ApiResponse<MovieResponse>.SuccessResponse(result, "Movie retrieved successfully"));
-       
+        return Ok(ApiResponse<MovieResponse>.SuccessResponse(result, "Movie retrieved successfully"));
     }
 
-  
+
     [HttpGet]
     public async Task<ActionResult<ApiResponse<PaginatedResponse<MovieResponse>>>> GetMovies(
         [FromQuery] int pageNumber = 1,
@@ -39,25 +32,19 @@ public class MoviesController(IMediator mediator) : ControllerBase
         return Ok(ApiResponse<PaginatedResponse<MovieResponse>>.SuccessResponse(
             result, "Movies retrieved successfully"));
     }
-  
-    
-   
+
+
     [HttpGet("search/{name}")]
     public async Task<ActionResult<ApiResponse<List<MovieResponse>>>> SearchMovies(string name)
     {
-       
-            var query = new GetMoviesByNameQuery(name);
-            var result = await mediator.Send(query);
-        
-            return Ok(ApiResponse<List<MovieResponse>>.SuccessResponse(
-                result, $"Found {result.Count} movies"));
-        
+        var query = new GetMoviesByNameQuery(name);
+        var result = await mediator.Send(query);
+
+        return Ok(ApiResponse<List<MovieResponse>>.SuccessResponse(
+            result, $"Found {result.Count} movies"));
     }
 
-   
-    
-  
-   
+
     [HttpPost("filter")]
     public async Task<ActionResult<ApiResponse<List<MovieResponse>>>> FilterMovies(
         [FromBody] MovieFilterRequest filter)
@@ -71,49 +58,41 @@ public class MoviesController(IMediator mediator) : ControllerBase
             result, "Filtered movies retrieved"));
     }
 
-   
 
- 
     [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<ApiResponse<MovieResponse>>> CreateMovie(
         [FromBody] MovieRequest request)
     {
-       
-            var command = new CreateMovieCommand
-                (request);
-           
+        var command = new CreateMovieCommand
+            (request);
 
-            var result = await mediator.Send(command);
-            return CreatedAtAction(nameof(GetMovieById), new { id = result.Id }, 
-                ApiResponse<MovieResponse>.SuccessResponse(result, "Movie created successfully", 201));
-       
+
+        var result = await mediator.Send(command);
+        return CreatedAtAction(nameof(GetMovieById), new { id = result.Id },
+            ApiResponse<MovieResponse>.SuccessResponse(result, "Movie created successfully", 201));
     }
 
-  
+
     [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task<ActionResult<ApiResponse<MovieResponse>>> UpdateMovie(
         int id, [FromBody] MovieRequest request)
     {
-        
-            var command = new UpdateMovieCommand(id, request);
-          
+        var command = new UpdateMovieCommand(id, request);
 
-            var result = await mediator.Send(command);
-            return Ok(ApiResponse<MovieResponse>.SuccessResponse(result, "Movie updated successfully"));
-       
+
+        var result = await mediator.Send(command);
+        return Ok(ApiResponse<MovieResponse>.SuccessResponse(result, "Movie updated successfully"));
     }
-    
+
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<ActionResult<ApiResponse>> DeleteMovie(int id)
     {
-      
-        var command = new DeleteMovieCommand (id);
-            await mediator.Send(command);
-            
-            return Ok(ApiResponse.SuccessResponse("Movie deleted successfully"));
-      
+        var command = new DeleteMovieCommand(id);
+        await mediator.Send(command);
+
+        return Ok(ApiResponse.SuccessResponse("Movie deleted successfully"));
     }
 }

@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using MoviePlatformMonolit.Modules.Command.Data;
 using MoviePlatformMonolit.Modules.Command.Extensions;
 using MoviePlatformMonolit.Modules.Movies.Application.Projections;
@@ -12,7 +13,8 @@ public record UpdateMovieCommand(long Id, MovieRequest Input) : IRequest<MovieRe
 
 public class UpdateMovieCommandHandler(
     ApplicationDbContext context,
-    ILogger<UpdateMovieCommandHandler> logger)
+    ILogger<UpdateMovieCommandHandler> logger,
+    IDistributedCache cache)
     : IRequestHandler<UpdateMovieCommand, MovieResponse>
 {
     public async Task<MovieResponse> Handle(UpdateMovieCommand request, CancellationToken cancellationToken)
@@ -61,7 +63,8 @@ public class UpdateMovieCommandHandler(
         entity.AgeRating = input.AgeRating;
 
         await context.SaveChangesAsync(cancellationToken);
-
+        await cache.RemoveAsync($"movie:{request.Id}", cancellationToken);
+        
         return await context.Movies
             .AsNoTracking()
             .Where(x => x.Id == entity.Id)
