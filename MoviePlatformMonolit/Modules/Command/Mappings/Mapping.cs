@@ -17,6 +17,7 @@ public class Mapping : Profile
 {
     public Mapping()
     {
+
         CreateMap<MovieRequest, MovieEntity>();
         CreateMap<MovieEntity, MovieResponse>();
         CreateMap<CategoryRequest, CategoryEntity>();

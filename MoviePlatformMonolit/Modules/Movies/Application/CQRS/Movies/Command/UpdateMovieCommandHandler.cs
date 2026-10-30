@@ -13,8 +13,8 @@ public record UpdateMovieCommand(long Id, MovieRequest Input) : IRequest<MovieRe
 
 public class UpdateMovieCommandHandler(
     ApplicationDbContext context,
-    ILogger<UpdateMovieCommandHandler> logger,
-    IDistributedCache cache)
+    IDistributedCache cache,
+    ILogger<UpdateMovieCommandHandler> logger)
     : IRequestHandler<UpdateMovieCommand, MovieResponse>
 {
     public async Task<MovieResponse> Handle(UpdateMovieCommand request, CancellationToken cancellationToken)
@@ -65,6 +65,7 @@ public class UpdateMovieCommandHandler(
         await context.SaveChangesAsync(cancellationToken);
         await cache.RemoveAsync($"movie:{request.Id}", cancellationToken);
         
+
         return await context.Movies
             .AsNoTracking()
             .Where(x => x.Id == entity.Id)

@@ -1,4 +1,3 @@
-﻿
 using System.Text.Json;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -44,21 +43,22 @@ public class GetMovieByIdQueryHandler(
                 cachedMovie)!;
         }
 
-        
+
         logger.LogInformation(
             "Getting movie by id {MovieId} from database",
             request.Id);
 
 
         var movie = await context.Movies
-            .AsNoTracking()
-            .Where(x => !x.IsDeleted && x.Id == request.Id)
-            .Select(MovieProjections.ToResponse)
-            .FirstOrDefaultAsync(cancellationToken)
-            ?? throw new NotFoundException($"Movie with ID {request.Id} was not found");
+                        .AsNoTracking()
+                        .Where(x => !x.IsDeleted && x.Id == request.Id)
+                        .Select(MovieProjections.ToResponse)
+                        .FirstOrDefaultAsync(cancellationToken)
+                    ?? throw new NotFoundException($"Movie with ID {request.Id} was not found");
 
 
         var json = JsonSerializer.Serialize(movie);
+
 
         await cache.SetStringAsync(
             key,

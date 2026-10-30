@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -30,7 +30,6 @@ public class GetMoviesByFilterQueryHandler(
         GetMoviesByFilterQuery request,
         CancellationToken cancellationToken)
     {
-
         var key = $"movies:filter:" +
                   $"category={request.CategoryId}:" +
                   $"year={request.Year}:" +
@@ -53,7 +52,9 @@ public class GetMoviesByFilterQueryHandler(
 
         logger.LogInformation("Getting movies by filter from database");
 
-        var query = context.Movies.AsNoTracking();
+        var query = context.Movies
+            .AsNoTracking()
+            .Where(x => !x.IsDeleted);
 
         if (request.CategoryId.HasValue)
             query = query.Where(x => x.CategoryId == request.CategoryId.Value);
@@ -80,8 +81,7 @@ public class GetMoviesByFilterQueryHandler(
         {
             logger.LogWarning(ex, "Не удалось записать в кэш: {Key}", key);
         }
+
         return result;
     }
-
-   
 }

@@ -26,6 +26,7 @@ public class GetMoviesPaginationQueryHandler(
             ? DefaultPageSize
             : Math.Min(request.PageSize, MaxPageSize);
 
+
         var skip = (int)Math.Min((long)(page - 1) * pageSize, int.MaxValue);
 
         logger.LogInformation("Getting movies page {Page} size {PageSize}", page, pageSize);

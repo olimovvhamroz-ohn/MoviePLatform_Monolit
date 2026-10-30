@@ -13,7 +13,7 @@ namespace MoviePlatformMonolit.Modules.Movies.Domain.Controllers;
 public class ActorsController(IMediator mediator) : ControllerBase
 {
     [HttpGet("{id}")]
-    public async Task<ActionResult<ApiResponse<ActorResponse>>> GetActorById(int id)
+    public async Task<ActionResult<ApiResponse<ActorResponse>>> GetActorById(long id)
     {
         var query = new GetByIdActorQuery(id);
         var result = await mediator.Send(query);
