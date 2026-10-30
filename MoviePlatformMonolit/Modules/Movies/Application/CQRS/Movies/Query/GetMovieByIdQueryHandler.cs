@@ -1,7 +1,7 @@
-﻿//using System.Text.Json;
+using System.Text.Json;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-//using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Distributed;
 using MoviePlatformMonolit.Modules.Command.Data;
 using MoviePlatformMonolit.Modules.Command.Extensions;
 using MoviePlatformMonolit.Modules.Movies.Application.Projections;
@@ -13,9 +13,9 @@ public record GetMovieByIdQuery(long Id) : IRequest<MovieResponse>;
 
 public class GetMovieByIdQueryHandler(
     ApplicationDbContext context,
-    ILogger<GetMovieByIdQueryHandler> logger
-    //,IDistributedCache cache
-    ) : IRequestHandler<GetMovieByIdQuery, MovieResponse>
+    ILogger<GetMovieByIdQueryHandler> logger,
+    IDistributedCache cache
+) : IRequestHandler<GetMovieByIdQuery, MovieResponse>
 {
     public async Task<MovieResponse> Handle(
         GetMovieByIdQuery request,
@@ -26,9 +26,9 @@ public class GetMovieByIdQueryHandler(
             throw new BadRequestException("ID must be greater than zero");
         }
 
-        /*var key = $"movie:{request.Id}";
+        var key = $"movie:{request.Id}";
 
-        // 1. Check 
+
         var cachedMovie = await cache.GetStringAsync(
             key,
             cancellationToken);
@@ -42,25 +42,24 @@ public class GetMovieByIdQueryHandler(
             return JsonSerializer.Deserialize<MovieResponse>(
                 cachedMovie)!;
         }
-*/
+
+
         logger.LogInformation(
             "Getting movie by id {MovieId} from database",
             request.Id);
 
 
         var movie = await context.Movies
-            .AsNoTracking()
-            .Where(x => !x.IsDeleted && x.Id == request.Id)
-            .Select(MovieProjections.ToResponse)
-            .FirstOrDefaultAsync(cancellationToken);
+                        .AsNoTracking()
+                        .Where(x => !x.IsDeleted && x.Id == request.Id)
+                        .Select(MovieProjections.ToResponse)
+                        .FirstOrDefaultAsync(cancellationToken)
+                    ?? throw new NotFoundException($"Movie with ID {request.Id} was not found");
 
-        return movie ?? throw new NotFoundException($"Movie with ID {request.Id} was not found");
-        // 3. Map Entity → Response
-/*
-        // 4. Serialize Response → JSON
-        var json = JsonSerializer.Serialize(response);
 
-        // 5. Save to Redis
+        var json = JsonSerializer.Serialize(movie);
+
+
         await cache.SetStringAsync(
             key,
             json,
@@ -74,6 +73,6 @@ public class GetMovieByIdQueryHandler(
         logger.LogInformation(
             "Movie {MovieId} loaded from database and saved to Redis",
             request.Id);
-*/
+        return movie;
     }
 }

@@ -22,7 +22,7 @@ namespace MoviePlatformMonolit.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.CartEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.CartEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -54,7 +54,7 @@ namespace MoviePlatformMonolit.Migrations
                     b.ToTable("carts", "commerce");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.CartItemEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.CartItemEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -84,7 +84,7 @@ namespace MoviePlatformMonolit.Migrations
                     b.ToTable("CartItems");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.OrderEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.OrderEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -117,7 +117,7 @@ namespace MoviePlatformMonolit.Migrations
                     b.ToTable("orders", "commerce");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.OrderItemEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.OrderItemEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -144,7 +144,7 @@ namespace MoviePlatformMonolit.Migrations
                     b.ToTable("order_items", "commerce");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.PaymentEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.PaymentEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -186,7 +186,7 @@ namespace MoviePlatformMonolit.Migrations
                     b.ToTable("payments", "commerce");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.PurchaseEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.PurchaseEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -228,7 +228,7 @@ namespace MoviePlatformMonolit.Migrations
                     b.ToTable("purchases", "commerce");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Engagement.Domain.Entities.ViewEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Engagement.Domain.Entities.ViewEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -273,7 +273,7 @@ namespace MoviePlatformMonolit.Migrations
                     b.ToTable("Views");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Engagement.Domain.Entities.WatchlistEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Engagement.Domain.Entities.WatchListEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -312,7 +312,7 @@ namespace MoviePlatformMonolit.Migrations
                     b.ToTable("watchlist", "engagement");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.ActorEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Movies.Domain.Entity.ActorEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -341,7 +341,7 @@ namespace MoviePlatformMonolit.Migrations
                     b.ToTable("Actors");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.CategoryEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Movies.Domain.Entity.CategoryEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -367,7 +367,7 @@ namespace MoviePlatformMonolit.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Movies.Domain.Entity.MovieEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -399,6 +399,7 @@ namespace MoviePlatformMonolit.Migrations
                         .HasColumnType("text");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("numeric(10,2)");
 
                     b.Property<long?>("StudioId")
@@ -424,7 +425,7 @@ namespace MoviePlatformMonolit.Migrations
                     b.ToTable("movies", "catalog");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.ReviewEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Movies.Domain.Entity.ReviewEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -466,7 +467,7 @@ namespace MoviePlatformMonolit.Migrations
                     b.ToTable("reviews", "catalog");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.StudioEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Movies.Domain.Entity.StudioEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -499,7 +500,7 @@ namespace MoviePlatformMonolit.Migrations
                     b.ToTable("Studios");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Users.Domain.Entity.UserEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Users.Domain.Entity.UserEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -549,7 +550,7 @@ namespace MoviePlatformMonolit.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Users.Domain.Entity.UserFavoriteCategoryEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Users.Domain.Entity.UserFavoriteCategoryEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -594,9 +595,9 @@ namespace MoviePlatformMonolit.Migrations
                     b.ToTable("movie_actors", "catalog");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.CartItemEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.CartItemEntity", b =>
                 {
-                    b.HasOne("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.CartEntity", "Cart")
+                    b.HasOne("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.CartEntity", "Cart")
                         .WithMany("CartItems")
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -605,9 +606,9 @@ namespace MoviePlatformMonolit.Migrations
                     b.Navigation("Cart");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.OrderItemEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.OrderItemEntity", b =>
                 {
-                    b.HasOne("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.OrderEntity", "Order")
+                    b.HasOne("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.OrderEntity", "Order")
                         .WithMany("Items")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -616,26 +617,26 @@ namespace MoviePlatformMonolit.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.PaymentEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.PaymentEntity", b =>
                 {
-                    b.HasOne("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.OrderEntity", "Order")
+                    b.HasOne("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.OrderEntity", "Order")
                         .WithOne("Payment")
-                        .HasForeignKey("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.PaymentEntity", "OrderId")
+                        .HasForeignKey("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.PaymentEntity", "OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.PurchaseEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.PurchaseEntity", b =>
                 {
-                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", "Movie")
+                    b.HasOne("MoviePlatformMonolit.Modules.Movies.Domain.Entity.MovieEntity", "Movie")
                         .WithMany()
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MoviePLatform_Monolit.Modules.Users.Domain.Entity.UserEntity", "User")
+                    b.HasOne("MoviePlatformMonolit.Modules.Users.Domain.Entity.UserEntity", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -646,9 +647,9 @@ namespace MoviePlatformMonolit.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Engagement.Domain.Entities.ViewEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Engagement.Domain.Entities.ViewEntity", b =>
                 {
-                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", "Movie")
+                    b.HasOne("MoviePlatformMonolit.Modules.Movies.Domain.Entity.MovieEntity", "Movie")
                         .WithMany()
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -657,9 +658,9 @@ namespace MoviePlatformMonolit.Migrations
                     b.Navigation("Movie");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Engagement.Domain.Entities.WatchlistEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Engagement.Domain.Entities.WatchListEntity", b =>
                 {
-                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", "Movie")
+                    b.HasOne("MoviePlatformMonolit.Modules.Movies.Domain.Entity.MovieEntity", "Movie")
                         .WithMany()
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -668,13 +669,13 @@ namespace MoviePlatformMonolit.Migrations
                     b.Navigation("Movie");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Movies.Domain.Entity.MovieEntity", b =>
                 {
-                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.CategoryEntity", "Category")
+                    b.HasOne("MoviePlatformMonolit.Modules.Movies.Domain.Entity.CategoryEntity", "Category")
                         .WithMany("Movies")
                         .HasForeignKey("CategoryId");
 
-                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.StudioEntity", "Studio")
+                    b.HasOne("MoviePlatformMonolit.Modules.Movies.Domain.Entity.StudioEntity", "Studio")
                         .WithMany("Movies")
                         .HasForeignKey("StudioId");
 
@@ -683,18 +684,18 @@ namespace MoviePlatformMonolit.Migrations
                     b.Navigation("Studio");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.ReviewEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Movies.Domain.Entity.ReviewEntity", b =>
                 {
-                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", null)
+                    b.HasOne("MoviePlatformMonolit.Modules.Movies.Domain.Entity.MovieEntity", null)
                         .WithMany("Reviews")
                         .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Users.Domain.Entity.UserFavoriteCategoryEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Users.Domain.Entity.UserFavoriteCategoryEntity", b =>
                 {
-                    b.HasOne("MoviePLatform_Monolit.Modules.Users.Domain.Entity.UserEntity", "User")
+                    b.HasOne("MoviePlatformMonolit.Modules.Users.Domain.Entity.UserEntity", "User")
                         .WithMany("FavoriteCategories")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -705,47 +706,47 @@ namespace MoviePlatformMonolit.Migrations
 
             modelBuilder.Entity("movie_actors", b =>
                 {
-                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.ActorEntity", null)
+                    b.HasOne("MoviePlatformMonolit.Modules.Movies.Domain.Entity.ActorEntity", null)
                         .WithMany()
                         .HasForeignKey("actor_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", null)
+                    b.HasOne("MoviePlatformMonolit.Modules.Movies.Domain.Entity.MovieEntity", null)
                         .WithMany()
                         .HasForeignKey("movie_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.CartEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.CartEntity", b =>
                 {
                     b.Navigation("CartItems");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Commerce.Domain.Entity.OrderEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Commerce.Domain.Entity.OrderEntity", b =>
                 {
                     b.Navigation("Items");
 
                     b.Navigation("Payment");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.CategoryEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Movies.Domain.Entity.CategoryEntity", b =>
                 {
                     b.Navigation("Movies");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.MovieEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Movies.Domain.Entity.MovieEntity", b =>
                 {
                     b.Navigation("Reviews");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Movies.Domain.Entity.StudioEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Movies.Domain.Entity.StudioEntity", b =>
                 {
                     b.Navigation("Movies");
                 });
 
-            modelBuilder.Entity("MoviePLatform_Monolit.Modules.Users.Domain.Entity.UserEntity", b =>
+            modelBuilder.Entity("MoviePlatformMonolit.Modules.Users.Domain.Entity.UserEntity", b =>
                 {
                     b.Navigation("FavoriteCategories");
                 });

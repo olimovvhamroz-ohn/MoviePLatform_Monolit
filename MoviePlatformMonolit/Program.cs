@@ -19,6 +19,7 @@ using MoviePlatformMonolit.Modules.Users.Application.CQRS.Notifications;
 using MoviePlatformMonolit.Modules.Users.Domain.Entity;
 using Scalar.AspNetCore;
 using Serilog;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 // 1. Логирование. 
@@ -29,28 +30,28 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .CreateLogger();
 
+
+//cache
 builder.Host.UseSerilog(Log.Logger);
-
-// 2. Кэш (Redis). 
-var redisConnection = builder.Configuration["Redis:ConnectionString"];
-
-if (!string.IsNullOrWhiteSpace(redisConnection))
+builder.Services.AddStackExchangeRedisCache(options =>
 {
-    builder.Services.AddStackExchangeRedisCache(options =>
+    options.ConfigurationOptions = new ConfigurationOptions
     {
-        options.Configuration = redisConnection;
-        options.InstanceName = "MoviePlatform:";
-    });
-}
-else if (builder.Environment.IsDevelopment())
-{
-    // локальный кэш в памяти
-    builder.Services.AddDistributedMemoryCache();
-}
-else
-{
-    throw new InvalidOperationException("Redis:ConnectionString is not configured");
-}
+        EndPoints =
+        {
+            {
+                builder.Configuration["Redis:Host"]!,
+                int.Parse(builder.Configuration["Redis:Port"]!)
+            }
+        },
+        User = builder.Configuration["Redis:Username"],
+        Password = builder.Configuration["Redis:Password"],
+        Ssl = false,
+        AbortOnConnectFail = false
+    };
+
+    options.InstanceName = "MoviePlatform:";
+});
 // 3. База данных
 builder.Services.AddSingleton<UpdateTimestampsInterceptor>();
 

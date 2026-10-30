@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
-//using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Distributed;
+
 using MoviePlatformMonolit.Modules.Command.Data;
 using MoviePlatformMonolit.Modules.Command.Extensions;
 
@@ -11,7 +12,7 @@ public record DeleteMovieCommand(long Id) : IRequest<bool>;
 public class DeleteMovieCommandHandler(
     ApplicationDbContext context,
     ILogger<DeleteMovieCommandHandler> logger
-    // , IDistributedCache cache
+     , IDistributedCache cache
 )
     : IRequestHandler<DeleteMovieCommand, bool>
 {
@@ -30,7 +31,7 @@ public class DeleteMovieCommandHandler(
         movie.IsDeleted = true;
         await context.SaveChangesAsync(cancellationToken);
 
-        //await cache.RemoveAsync($"movie:{request.Id}", cancellationToken);
+        await cache.RemoveAsync($"movie:{request.Id}", cancellationToken);
 
         return true;
     }

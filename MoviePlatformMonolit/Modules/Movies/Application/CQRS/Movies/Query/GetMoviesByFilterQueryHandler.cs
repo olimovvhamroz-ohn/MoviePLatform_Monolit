@@ -1,5 +1,7 @@
-﻿using MediatR;
+using System.Text.Json;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using MoviePlatformMonolit.Modules.Command.Data;
 using MoviePlatformMonolit.Modules.Movies.Application.Projections;
 using MoviePlatformMonolit.Modules.Movies.Domain.DTO.RESPONSE;
@@ -15,14 +17,40 @@ public record GetMoviesByFilterQuery(
 
 public class GetMoviesByFilterQueryHandler(
     ApplicationDbContext context,
-    ILogger<GetMoviesByFilterQueryHandler> logger)
+    ILogger<GetMoviesByFilterQueryHandler> logger,
+    IDistributedCache cache)
     : IRequestHandler<GetMoviesByFilterQuery, List<MovieResponse>>
 {
+    private static readonly DistributedCacheEntryOptions CacheOptions = new()
+    {
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+    };
+
     public async Task<List<MovieResponse>> Handle(
         GetMoviesByFilterQuery request,
         CancellationToken cancellationToken)
     {
-        logger.LogInformation("Getting movies by filter");
+        var key = $"movies:filter:" +
+                  $"category={request.CategoryId}:" +
+                  $"year={request.Year}:" +
+                  $"maxPrice={request.MaxPrice}:" +
+                  $"age={request.AgeRating}";
+
+        try
+        {
+            var cached = await cache.GetStringAsync(key, cancellationToken);
+            if (cached is not null)
+            {
+                logger.LogInformation("Movies by filter found in cache");
+                return JsonSerializer.Deserialize<List<MovieResponse>>(cached)!;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Redis недоступен, читаем из базы: {Key}", key);
+        }
+
+        logger.LogInformation("Getting movies by filter from database");
 
         var query = context.Movies
             .AsNoTracking()
@@ -40,9 +68,20 @@ public class GetMoviesByFilterQueryHandler(
         if (request.AgeRating.HasValue)
             query = query.Where(x => x.AgeRating == request.AgeRating.Value);
 
-        return await query
+        var result = await query
             .OrderBy(x => x.Id)
             .Select(MovieProjections.ToResponse)
             .ToListAsync(cancellationToken);
+
+        try
+        {
+            await cache.SetStringAsync(key, JsonSerializer.Serialize(result), CacheOptions, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Не удалось записать в кэш: {Key}", key);
+        }
+
+        return result;
     }
 }

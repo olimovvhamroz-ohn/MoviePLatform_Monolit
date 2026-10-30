@@ -7,3 +7,6 @@ obj/
 secrets.json
 *.log
 logs-log-*.txt
+logs/
+.idea/
+*.user

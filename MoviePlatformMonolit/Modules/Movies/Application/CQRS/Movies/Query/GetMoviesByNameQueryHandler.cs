@@ -1,9 +1,7 @@
-﻿//using System.Text.Json;
-
-using AutoMapper;
+﻿using System.Text.Json;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-//using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Distributed;
 using MoviePlatformMonolit.Modules.Command.Data;
 using MoviePlatformMonolit.Modules.Movies.Application.Projections;
 using MoviePlatformMonolit.Modules.Movies.Domain.DTO.RESPONSE;
@@ -15,11 +13,15 @@ public record GetMoviesByNameQuery(string Title)
 
 public class GetMoviesByNameQueryHandler(
     ApplicationDbContext context,
-    ILogger<GetMoviesByNameQueryHandler> logger
-    //,IDistributedCache cache
-)
+    ILogger<GetMoviesByNameQueryHandler> logger,
+    IDistributedCache cache)
     : IRequestHandler<GetMoviesByNameQuery, List<MovieResponse>>
 {
+    private static readonly DistributedCacheEntryOptions CacheOptions = new()
+    {
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+    };
+
     public async Task<List<MovieResponse>> Handle(
         GetMoviesByNameQuery request,
         CancellationToken cancellationToken)
@@ -28,50 +30,32 @@ public class GetMoviesByNameQueryHandler(
 
         if (string.IsNullOrEmpty(term))
             return new List<MovieResponse>();
-        //var key = $"movie:name:{request.Title}";
 
+        var key = $"movie:name:{term}";
 
-        /*var cachedMovies = await cache.GetStringAsync(
-            key,
-            cancellationToken);
+        var cachedMovies = await cache.GetStringAsync(key, cancellationToken);
 
         if (!string.IsNullOrEmpty(cachedMovies))
         {
-            logger.LogInformation(
-                "Movies with title {Title} found in Redis",
-                request.Title);
+            logger.LogInformation("Movies with title {Title} found in cache", term);
+            return JsonSerializer.Deserialize<List<MovieResponse>>(cachedMovies)!;
+        }
 
-            return JsonSerializer.Deserialize<List<MovieResponse>>(
-                cachedMovies)!;
-        }*/
+        logger.LogInformation("Searching movies by title {Title} in database", term);
 
-        logger.LogInformation(
-            "Searching movies by title {Title} in database",
-            request.Title);
-
-        return await context.Movies
+        var movies = await context.Movies
             .AsNoTracking()
             .Where(x => !x.IsDeleted && x.Title.ToLower().Contains(term))
             .OrderBy(x => x.Id)
             .Select(MovieProjections.ToResponse)
             .ToListAsync(cancellationToken);
 
+        await cache.SetStringAsync(
+            key,
+            JsonSerializer.Serialize(movies),
+            CacheOptions,
+            cancellationToken);
 
-        
-
-        /* // 4. Response → JSON
-         var json = JsonSerializer.Serialize(response);
-
-         // 5. Save to Redis
-         await cache.SetStringAsync(
-             key,
-             json,
-             new DistributedCacheEntryOptions
-             {
-                 AbsoluteExpirationRelativeToNow =
-                     TimeSpan.FromMinutes(10)
-             },
-             cancellationToken);
- */
+        return movies;
     }
 }
